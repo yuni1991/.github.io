@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+		<style type="text/css">
+			body, html{
+				width: 100%;
+				height: 100%;
+				margin:0;
+				font-family:"微软雅黑";
+				overflow: hidden;
+				}
+
+			.navigation_bar{
+				position: relative;
+				height: 6%;
+				background-color: #333;
+				color: #fff;
+				text-align: center;
+				display: flex;
+				font-size: 14px;
+			}
+
+			.dropdown {
+				position: relative;	
+				display: inline-block;				
+				height: 100%;
+				display: flex;
+				align-items: center;
+			}
+
+			.dropdown_text{
+				width: 100px;
+			}
+
+			.dropdown:hover .dropdown_text{
+				height: 100%;
+				background-color: #111;
+				cursor:pointer;
+			}
+
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				top: 100%;
+				background-color: rgba(1, 1, 1,0.5);
+				min-width: 160px;
+				box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+			}
+
+			.dropdown-content p {
+				color: white;
+				padding: 3px 4px;
+				text-decoration: none;
+				display: block;
+			}
+
+			.dropdown-content p:hover {
+				background-color: #111;
+				cursor:pointer;
+			}
+
+			.dropdown:hover .dropdown-content {
+				display: block;				
+			}
+
+			.button:hover {
+				border: none;
+				background-color: #111;
+				color: white;
+			}
+			
+			#allmap{
+				position: relative;
+				height:94%;
+				width:100%;
+				z-index: -1;
+			}
+			#r-result{height:4%;}
+
+			.tooltip {
+				position: absolute; 
+				top: 16%; 
+				bottom: 10%; 
+				width:300px; 
+				right: 80px; 
+				z-index: 8; 
+				color: white;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 5px;
+			}
+
+			#conversion{
+				position: absolute;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				bottom: 3%;
+				left: 50%;
+				width: 120px;
+				height: 30px;
+				margin-left: -60px;				
+				z-index: 100;
+
+			}
+			.conversion_children{
+				width: 40px;
+				height: 80%;
+				color: rgba(255, 255, 255, 0.5);
+				font-size: 12px;
+				font-weight: bolder;
+				background-color:  rgba(136, 127, 127, 0.4);
+				border-radius: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border:1px;
+				border-style: solid;				
+				cursor:pointer;
+			}
+
+			#statistic{
+				position: absolute;
+				display: none;
+				height:94%;
+				width:100%;
+				bottom: 0px;
+				z-index: 8;
+				background-color: rgba(10, 0, 0, 0.6);
+				animation:move 1s 1;
+			}
+
+			@keyframes move
+			{
+				from {left:100%;}
+				to {left:0%;}
+			}
+
+			@keyframes move_1
+			{
+				from {left:0%;}
+				to {left:100%;}
+			}
+			
+		</style>
+
+		<!--bdmap-->
+        <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=gIbYVk5GSnu2hZNQfBzd65bk48Ll93Rm"></script>
+        <script type="text/javascript" src="https://api.map.baidu.com/library/DistanceTool/1.2/src/DistanceTool_min.js"></script>
+        <script type="text/javascript" src="https://api.map.baidu.com/library/MarkerTool/1.2/src/MarkerTool_min.js"></script>
+        <script type="text/javascript" src="https://api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
+        <script type="text/javascript" src="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.js"></script>
+        <link rel="stylesheet" href="https://api.map.baidu.com/library/DrawingManager/1.4/src/DrawingManager_min.css" />
+        <script type="text/javascript" src="http://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/library/MarkerClusterer/1.2/src/MarkerClusterer_min.js"></script>
+		
+        <!--jQuery UI Slider-->
+		<link rel="stylesheet" href="https://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+		<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="https://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+		
+		 <!--mapv-->
+		<script type="text/javascript" src="https://mapv.baidu.com/build/mapv.js"></script>
+
+		<!--json-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.js"></script>
+		<script type="text/javascript" src="//Users/yuni1/Desktop/demo.json"></script>
+
+		<title>V3.0 应用版</title>
+	</head>
+
+	<body>
+		<div class="navigation_bar">
+			<div class="dropdown">
+				<div class="dropdown_text">渠道分布</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="hongqi_country_display();">全国各店</p>
+					<p onclick="dealer_heatmap();">红旗热力</p>
+					<p onclick="add_mapv1();">竞品热力</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">距离位置</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="add_myDis();">测量距离</p>
+					<p onclick="add_lnglat();">测经纬度</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">地图风格</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="add_normal();">默认样式</p>
+					<p onclick="add_googlelite();">精简风格</p>
+					<p onclick="add_light();">清 新 蓝</p>
+					<p onclick="add_dark();">黑夜风格</p>
+					<p onclick="add_redalert();">红色警戒</p>
+					<p onclick="add_grassgreen();">自 然 绿</p>
+					<p onclick="add_midnight();">午 夜 蓝</p>
+					<p onclick="add_pink();">浪 漫 粉</p>
+					<p onclick="add_darkgreen();">青 春 绿</p>
+					<p onclick="add_bluish();">清新蓝绿</p>
+					<p onclick="add_grayscale();">高 端 灰</p>
+					<p onclick="add_hardedge();">强 边 界</p>					
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">行政边界</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p><input type="text" id="map_boundary" value="输入省市区县" style="width: 120px; color:rgb(141, 133, 133); background-color: rgba(3, 3, 3, 0.5); outline-style: none; border: 0px; text-align:center;"></p>					
+					<p onclick="getBoundary();">获取边界</p>											
+					<div style="border-top:2px dashed rgba(255,255,255,0.4); padding: 12px 4px;">边界颜色</div>
+					<input type="color" id="stroke_color">	
+					<div style="position: relative; left: 10px;">边界粗细<input type="text" id="stroke_amount" style="display:inline; width: 19px; background-color: rgba(0,0,0,0); border: 0; color:#fff; padding: 12px;"></div>
+					<div style="width: 80%; left: 10%;" id="slider_stroke"></div>
+					<div style="height: 16px;"></div>
+					<div style="border-top:2px dashed rgba(255,255,255,0.4); padding: 12px 4px;">覆盖颜色</div>
+					<input type="color" id="stroke_area_color">					
+					<div style="position: relative; left: 10px;">可见度<input type="text" style="display:inline; width: 20px; background-color: rgba(0,0,0,0); border: 0; color:#fff; padding: 12px;" id="stroke_area_a_text"></div>
+					<div style="top:0px; width: 80%; left: 10%;" id="stroke_area_a"></div>
+					<div style="height: 16px;"></div>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">绘图工具</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p><input value="输入热力半径" type="text" id="heatr" style="width: 120px; color:rgb(141, 133, 133); background-color: rgba(3, 3, 3, 0.5); outline-style: none; border: 0px; text-align:center;"></p>
+					<p onclick="add_red();">绘制热力图</p>
+					<p onclick="drawingManager_show_hide()" style="border-top:2px dashed rgba(255,255,255,0.4); padding: 12px 4px;">鼠标绘制工具</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">Tooltip</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="add_tooltip_show_hide();">地域信息</p>
+					<p onclick="add_tooltip_show_hide_hqc();">红旗伙伴</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">Clear</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="clear_all();">全部清除</p>
+					<p onclick="clear_lastone();">末位清除</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div class="dropdown_text">预留</div> 	
+				<div class="dropdown-content" style="z-index: 9;">
+					<p onclick="add_test();">预留</p>
+				</div>
+			</div>
+			<div class="dropdown">
+				<div style="border-radius: 3px; display:flex; height: 80%; background-color: rgba(172, 164, 164, 0.514); outline-style: none; border: 0px; text-align:center;">
+					<input value="搜索地址" type="text" id="search_id" style="border: none; height:100%; background-color: rgba(255, 255, 255, 0);">
+					<input onclick="add_search();" class="button" type="button" id="search_id_button" value="搜索一下" style="height: 100%; border: none;">
+				</div>
+			</div>
+		</div>
+
+		<div id="allmap"></div>
+
+		<div style="position: absolute; bottom: 0px; right: 12px; z-index: 8;">
+			<a href="http://hongqi.faw.cn/" target="_blank">
+				<img src="../icon/lixiangfeiyang.png" height="32px"></a></p>					
+		</div>
+
+		<div class="tooltip" id="tooltip" style="display: none;">
+			<div onclick="add_sniper_mirror()" style="position: absolute; top: 5%; left: 90%; margin-top: -10px; margin-left: -10px; width: 20px; height: 20px; border-radius: 100%; background-color: rgba(0, 0, 0, 0.2); cursor:pointer; z-index: 12">
+				<div style="position: absolute; top: 0px; margin-top: -0.5px; width: 100%; height: 50%; border-bottom: 1px dashed rgba(0, 0, 0, 0.5);"></div>
+				<div style="position: absolute; left: 0px; margin-left: -0.5px; width: 50%; height: 100%; border-right: 1px dashed rgba(0, 0, 0, 0.5);"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 20%;">省份</div>
+				<div id="province_info" style="display: inline; width: 80%;"></div>		
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 185px; font-size: 14px; display: flex; flex-direction:column; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div style="position:relative; width: 100%;">
+					<div style="font-weight: bold;">百户家用汽车拥有量</div>
+					<div style="position: absolute; top: 0px; left: 130px; width: 100%; font-size: 8px;">2018</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">
+					<div>城镇农村</div>
+					<div>城镇居民</div>
+					<div>农村居民</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">					
+					<div id="province_national_data_citycountry" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_city" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_country" style="width: 80px; text-align: center;">-</div>
+				</div>
+				<div style="position:relative; width: 100%;">
+					<div style="font-weight: bold;">民用汽车拥有量</div>
+					<div style="position: absolute; top: 0px; left: 102px; width: 100%; font-size: 8px;">2018</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">
+					<div>总计拥有量</div>
+					<div>载客拥有量</div>
+					<div>驾驶员数量</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">					
+					<div id="province_national_data_total" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_passenger" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_driver" style="width: 80px; text-align: center;">-</div>
+				</div>
+				<div style="position:relative; width: 100%;">
+					<div style="font-weight: bold;">人均收入与支出</div>
+					<div style="position: absolute; top: 0px; left: 102px; width: 100%; font-size: 8px;">2018</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">
+					<div style="width: 120px; text-align: center;">可支配收入</div>
+					<div style="width: 120px; text-align: center;">消费支出</div>
+					<div style="width: 120px; text-align: center;">年末人口</div>
+				</div>
+				<div style="display: flex; justify-content: space-around;">					
+					<div id="province_national_data_income" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_expenditure" style="width: 80px; text-align: center;">-</div>
+					<div id="province_national_data_population" style="width: 80px; text-align: center;">-</div>
+				</div>
+				<div style="height: 10px;"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 20%;">城市</div>
+				<div id="city_info" style="display: inline; width: 80%;"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div style="position:relative; display: inline; width: 40%;">
+					<div>城市级别</div>
+					<div style="position: absolute; top: 0px; left: 60px; font-size: 8px;">2020</div>
+				</div>
+				<div id="city_level_info" style="display: inline; width: 60%;"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 20%;">区县</div>
+				<div id="district_info" style="display: inline; width: 80%;"></div>
+			</div>			
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="district_counties_top100" style="display: inline; width: 100%;"></div>
+			</div>
+
+		</div>
+		<div class="tooltip" id="tooltip1" style="display: none;">
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 100%;">经销商名称</div>	
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="dealer_name" style="display: inline; width: 100%;"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 100%;">店面级别</div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="dealer_level" style="display: inline; width: 100%;"></div>
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 100%;">开业时间</div>		
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="dealer_openingtime" style="display: inline; width: 100%;"></div>
+			</div>			
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 100%;">投资人</div>	
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="dealer_investor" style="display: inline; width: 100%;"></div>
+			</div>	
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; display: flex; justify-content: space-around;">
+				<div style="display: inline; font-weight: bolder; width: 100%;">该投资人开业店数</div>	
+			</div>
+			<div style="position: relative; top: 20px; left: 20px; width: 260px; height: 25px; font-size: 14px; display: flex; justify-content: space-around; color: rgba(255, 255, 255, 0.842); border-top:2px solid rgba(255,255,255,0.4);">
+				<div id="dealer_investornum" style="display: inline; width: 100%;"></div>
+			</div>
+		</div>
+		<div id="sniper_mirror" style="position: absolute; display: none; top: 53%; left: 50%; margin-top: -100px; margin-left: -100px; width: 200px; height: 200px; border-radius: 100%; background-color: rgba(0, 0, 0, 0.2);">
+			<div style="position: absolute; top: 0px; margin-top: -1px; width: 100%; height: 50%; border-bottom: 2px dashed rgba(0, 0, 0, 0.5);"></div>
+			<div style="position: absolute; left: 0px; margin-left: -1px; width: 50%; height: 100%; border-right: 2px dashed rgba(0, 0, 0, 0.5);"></div>
+		</div>
+
+		<div id="conversion">
+			<div class="conversion_children" onclick="conversion()">
+				地图
+			</div>
+			<div class="conversion_children" onclick="conversion_1()">
+				统计
+			</div>
+		</div>
+
+		<div id="statistic" >
+			<div style="position: relative; left: 40%; top: 40%; width: 20%; height: 20%; background-color: red;">222</div>
+		</div>
+
+	</body>
+</html>
+
+
+<script type="text/javascript"> 
+	function classification_by_city(result){
+		data_classification_by_city = result;
+	} 
+</script>
+<script type="text/javascript" src="classification_by_city.json"></script>
+
+<script type="text/javascript">
+	var map = new BMap.Map("allmap",{preserveDrawingBuffer:true});
+	map.centerAndZoom("北京",5);
+	map.enableScrollWheelZoom();
+	map.enableContinuousZoom();
+	map.enableKeyboard();//启用键盘操作
+	//map.enablePinchToZoom();//启用双指缩放地图
+
+	
+	//mapv展示竞品网点
+	function add_mapv1(){
+		var data_mapv1 = [];
+		for (var i = 0; i < data_classification_by_city[e.city].length; i++) {  
+			data_mapv1.push({
+                geometry: {
+                    type: 'Point',
+                    coordinates: [data_classification_by_city[e.city][i][0], data_classification_by_city[e.city][i][1]]
+                },
+				count: 30
+			});
+		}
+		var dataSet = new mapv.DataSet(data_mapv1);
+
+		var options = {
+			fillStyle: 'rgba(255, 50, 50, 0.6)',
+			//shadowColor: 'rgba(255, 50, 50, 1)',
+			//shadowBlur: 30,
+			globalCompositeOperation: 'lighter',
+			methods: {
+				click: function (item) {
+					console.log(item);
+				}
+			},
+			size: 3,
+			// updateImmediate: true,
+			//draw: 'simple',
+			//draw: 'honeycomb', //蜂窝状展示
+			//draw: 'grid', //网格状展示
+			//draw: 'heatmap', //热力图展示
+			//draw: 'bubble', //用不同大小的圆来展示
+			draw: 'intensity', //根据不同的值对应按渐变色中颜色进行展示
+			//draw: 'category', //按不同的值进行分类，并使用对应的颜色展示
+			//draw: 'choropleth', //按不同的值区间进行分类，并使用对应的颜色展示
+			//draw: 'text', //展示文本
+			//draw: 'icon' //展示icon
+			//mapv.baiduMapLayer  https://github.com/huiyan-fe/mapv/blob/master/src/map/baidu-map/Layer.md
+		}
+
+		var mapvLayer = new mapv.baiduMapLayer(map, dataSet, options);
+
+		// dataSet.set(data); // 修改数据
+		// mapvLayer.show(); // 显示图层
+		// mapvLayer.hide(); // 删除图层	
+	}
+
+	//清除全部覆盖物
+	function clear_all(){
+		map.clearOverlays();
+	}
+	//获取所有覆盖物，删除最后一项覆盖物
+	function clear_lastone(){//test
+		//map.clearOverlays();//不显示覆盖物
+		var alloverlays = map.getOverlays();
+		alloverlays.reverse();
+		console.log(alloverlays[0]);
+		map.removeOverlay(alloverlays[0]);
+	}
+
+	//定义各函数中所需常量constant、变量variable
+	var add_sniper_mirror_variable = 1;
+	var add_tooltip_show_hide_variable = 1;
+	var add_tooltip_show_hide_hqc_variable = 1;
+
+	//显示全国红旗店面country_dispaly
+	function hongqi_country_display(){
+		for (var i = 0; i< hongqi_data.length; i++ ){
+			let point = new BMap.Point(hongqi_data[i].lng,hongqi_data[i].lat);	
+			let marker= new BMap.Marker(point,{icon:hongqi,enableDragging:true,raiseOnDrag:true,title:hongqi_data[i].名称});
+			marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
+			marker.addEventListener("click", function(){
+				var circle = new BMap.Circle(point, 5000, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+				map.addOverlay(circle);			
+			})
+			marker.addEventListener("rightclick", function(e){
+				var circle = new BMap.Circle(point, 10000, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+				circle.enableEditing();
+				map.addOverlay(circle);
+				//map.removeOverlay(marker);
+			})
+			map.addOverlay(marker);			
+			marker.setAnimation(BMAP_ANIMATION_DROP);
+		
+			let name = hongqi_data[i].名称;
+			let level = hongqi_data[i].级别;
+			let openingtime = hongqi_data[i].开业时间;
+			let investor = hongqi_data[i].投资人;
+			let investornum = hongqi_data[i].现有店数;
+			marker.addEventListener("click",function(){
+				document.getElementById("dealer_name").innerHTML= name;
+				document.getElementById("dealer_level").innerHTML= level;
+				document.getElementById("dealer_openingtime").innerHTML= openingtime;
+				document.getElementById("dealer_investor").innerHTML= investor;
+				document.getElementById("dealer_investornum").innerHTML= investornum;
+			});
+		}
+	}
+
+	//显示隐藏tooltip
+	//tooltip之地域信息
+	function add_tooltip_show_hide(){
+		document.getElementById("tooltip1").style.display= "none";
+		if(add_tooltip_show_hide_variable>0){
+			document.getElementById("tooltip").style.display= "block";
+			add_tooltip_show_hide_variable = add_tooltip_show_hide_variable*-1;
+			add_tooltip_show_hide_hqc_variable = add_tooltip_show_hide_variable*-1;
+		}
+		else{
+			document.getElementById("tooltip").style.display= "none";
+			add_tooltip_show_hide_variable = add_tooltip_show_hide_variable*-1;
+		}	
+	}	
+	//tooltip之红旗伙伴
+	function add_tooltip_show_hide_hqc(){
+		document.getElementById("tooltip").style.display= "none";
+		if(add_tooltip_show_hide_hqc_variable>0){
+			document.getElementById("tooltip1").style.display= "block";
+			add_tooltip_show_hide_hqc_variable = add_tooltip_show_hide_hqc_variable*-1;
+			add_tooltip_show_hide_variable = add_tooltip_show_hide_hqc_variable*-1;
+		}
+		else{
+			document.getElementById("tooltip1").style.display= "none";
+			add_tooltip_show_hide_hqc_variable = add_tooltip_show_hide_hqc_variable*-1;
+		}
+	}
+	
+	//显示隐藏狙击镜
+	function add_sniper_mirror(){
+		if(add_sniper_mirror_variable>0){
+			document.getElementById("sniper_mirror").style.display= "block";
+			add_sniper_mirror_variable = add_sniper_mirror_variable*-1;
+		}
+		else{
+			document.getElementById("sniper_mirror").style.display= "none";
+			add_sniper_mirror_variable = add_sniper_mirror_variable*-1;
+		}		
+	}	
+
+	//移动完成 输出中心城市 城市级别 省份 国家数据
+	function location_name(){
+		var point = map.getCenter();
+		new BMap.Geocoder().getLocation(point,function(rs){
+			var province =  rs.addressComponents.province;
+			document.getElementById("province_info").innerHTML= province;	
+			var city =  rs.addressComponents.city;
+			document.getElementById("city_info").innerHTML= city;
+			var district =  rs.addressComponents.district;
+			document.getElementById("district_info").innerHTML= district;
+			document.getElementById("city_level_info").innerHTML= city_level[city];
+			document.getElementById("province_national_data_citycountry").innerHTML= national_data[province]["城镇农村"];
+			document.getElementById("province_national_data_city").innerHTML= national_data[province]["城镇居民"];
+			document.getElementById("province_national_data_country").innerHTML= national_data[province]["农村居民"];			
+			document.getElementById("province_national_data_total").innerHTML= national_data[province]["总计"];
+			document.getElementById("province_national_data_passenger").innerHTML= national_data[province]["载客"];
+			document.getElementById("province_national_data_driver").innerHTML= national_data[province]["汽车驾驶员数量"];
+			document.getElementById("province_national_data_income").innerHTML= national_data[province]["人均可支配收入"];
+			document.getElementById("province_national_data_expenditure").innerHTML= national_data[province]["人均消费支出"];
+			document.getElementById("province_national_data_population").innerHTML= national_data[province]["年末人口"];
+			document.getElementById("district_counties_top100").innerHTML= counties_top100[district];
+		})
+	
+	}
+	map.addEventListener("moveend",location_name)
+
+	//conversion 切换窗口
+	function conversion(){
+		document.getElementById("statistic").style.animation= "move_1 0.5s 1";
+		setTimeout(() => {
+			document.getElementById("statistic").style.display= "none";
+		}, 500);		
+	}	
+	function conversion_1(){
+		document.getElementById("statistic").style.display= "block"
+		document.getElementById("statistic").style.animation= "move 0.5s 1"
+	}
+
+	//localsearch 搜索框
+	var local = new BMap.LocalSearch(map, {
+			renderOptions:{map: map}
+		});
+	function add_search(){
+		var bs = map.getBounds();   //获取可视区域经纬度
+		//var bssw = bs.getSouthWest();   //可视区域左下角
+		//var bsne = bs.getNorthEast();   //可视区域右上角
+		//alert("搜索范围：" + "\n" + bssw.lng + "," + bssw.lat + "\n" + bsne.lng + "," + bsne.lat);
+		local.clearResults();
+		local.search(document.getElementById("search_id").value);
+		local.searchInBounds(document.getElementById("search_id").value,bs);//bs区域内搜索
+	}
+
+	//获取行政边界
+	function getBoundary(){       
+		var bdary = new BMap.Boundary();
+		bdary.get(document.getElementById("map_boundary").value , function(rs){       //获取行政区域
+			//map.clearOverlays();        //清除地图覆盖物       
+			var count = rs.boundaries.length; //行政区域的点有多少个
+			if (count === 0) {
+				alert('未能获取当前输入行政区域');
+				return ;
+			}
+          	var pointArray = [];
+			for (var i = 0; i < count; i++) {
+				var ply = new BMap.Polygon(rs.boundaries[i], {strokeWeight: document.getElementById("stroke_amount").value, strokeColor: document.getElementById("stroke_color").value, fillOpacity: document.getElementById("stroke_area_a_text").value, fillColor: document.getElementById("stroke_area_color").value }); //建立多边形覆盖物
+				map.addOverlay(ply);  //添加覆盖物
+				pointArray = pointArray.concat(ply.getPath());
+			}    
+			map.setViewport(pointArray);    //调整视野  
+		});   
+	}
+	//stroke 行政区边界粗细
+	$(function() {
+		$( "#slider_stroke" ).slider({
+		range: "max",
+		min: 0.001,
+		max: 10,
+		step: 0.1,
+		value: 2,
+		slide: function( event, ui ) {
+			$( "#stroke_amount" ).val( ui.value );
+		}
+		});
+		$( "#stroke_amount" ).val( $( "#slider_stroke" ).slider( "value" ) );
+	});	
+	//stroke 行政区覆盖物透明度
+	$(function() {
+		$( "#stroke_area_a" ).slider({
+		range: "max",
+		min: 0,
+		max: 1,
+		step: 0.1,
+		value: 0.2,
+		slide: function( event, ui ) {
+			$( "#stroke_area_a_text" ).val( ui.value );
+		}
+		});
+		$( "#stroke_area_a_text" ).val( $( "#stroke_area_a" ).slider( "value" ) );
+	});
+
+	//2D图，混合图
+	var mapType1 = new BMap.MapTypeControl(
+		{
+		mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP],
+		anchor: BMAP_ANCHOR_TOP_LEFT
+		}
+	);		
+  	map.addControl(mapType1);
+
+	//全景控件
+	var stCtrl = new BMap.PanoramaControl(); //构造全景控件
+	//stCtrl.setOffset(new BMap.Size(20, 20));
+	map.addControl(stCtrl);
+
+	// 左上角，添加比例尺
+	//var ScaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_RIGHT});
+	//map.addControl(ScaleControl);  
+
+	//鼠标测距
+	//开始测距
+	function add_myDis(){
+		var opt_myDis = {
+			followText : '双击结束',
+			//"unit" : {String} 测距结果所用的单位制，可接受的属性为"metric"表示米制和"us"表示美国传统单位
+			lineColor : 'yellow',//{String} 折线颜色
+			lineStroke : 3,//{Number} 折线宽度
+			opacity : 0.5, //透明度
+			lineStyle : 'dashed',//{String} 折线的样式，只可设置solid和dashed
+			//secIcon : hongqi, //转折点的Icon
+			//closeIcon : {BMap.Icon} 关闭按钮的Icon
+			//cursor : {String} 跟随的鼠标样式
+		}
+		var myDis = new BMapLib.DistanceTool(map, opt_myDis);	
+		myDis.open();
+	}
+	
+	
+	//鼠标工具显示
+	function drawingManager_show_hide(){  
+		//实例化鼠标绘制工具（opt）
+		var styleOptions = {
+			strokeColor:"gray",    //边线颜色。
+			fillColor:"gray",      //填充颜色。当参数为空时，圆形将没有填充效果。
+			strokeWeight: 2,       //边线的宽度，以像素为单位。
+			strokeOpacity: 0.6,	   //边线透明度，取值范围0 - 1。
+			fillOpacity: 0.3,      //填充的透明度，取值范围0 - 1。
+			strokeStyle: 'solid' //边线的样式，solid或dashed。
+		}
+		//实例化鼠标绘制工具
+		var drawingManager = new BMapLib.DrawingManager(map, {
+			isOpen: false, //是否开启绘制模式
+			enableDrawingTool: true, //是否显示工具栏
+			drawingToolOptions: {
+				anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+				offset: new BMap.Size(70, 10), //偏离值
+				enableCalculate : 'true', //{Boolean} 绘制是否进行测距(画线时候)、测面(画圆、多边形、矩形)
+				drawingModes : [
+					BMAP_DRAWING_MARKER,
+					BMAP_DRAWING_CIRCLE,
+					BMAP_DRAWING_POLYLINE,
+					BMAP_DRAWING_POLYGON,
+					BMAP_DRAWING_RECTANGLE 
+				]
+			},
+			circleOptions: styleOptions, //圆的样式
+			polylineOptions: styleOptions, //线的样式
+			polygonOptions: styleOptions, //多边形的样式
+			rectangleOptions: styleOptions //矩形的样式
+		});
+	}
+	
+
+	//icon定义
+	var icon_size = new BMap.Size(20, 20)
+	var hongqi = new BMap.Icon("../icon/红旗.png", new BMap.Size(20, 20));
+	hongqi.setImageSize(new BMap.Size(20, 20));//baoma.setAnchor(new BMap.Size(-200, 0));
+	var DS = new BMap.Icon("../icon/DS.png", new BMap.Size(40,40));
+	DS.setImageSize(icon_size);//baoma.setAnchor(new BMap.Size(-200, 0));
+	var wey = new BMap.Icon("../icon/wey.png", new BMap.Size(40,40));
+	wey.setImageSize(icon_size);
+	var 阿尔法罗密欧 = new BMap.Icon("../icon/阿尔法罗密欧.png", new BMap.Size(40,40));
+	阿尔法罗密欧.setImageSize(icon_size);
+	var 阿瑟顿马丁 = new BMap.Icon("../icon/阿瑟顿马丁.png", new BMap.Size(40,40));
+	阿瑟顿马丁.setImageSize(icon_size);
+	var 奥迪 = new BMap.Icon("../icon/奥迪.png", new BMap.Size(40,40));
+	奥迪.setImageSize(icon_size);
+	var 宝马 = new BMap.Icon("../icon/宝马.png", new BMap.Size(40,40));
+	宝马.setImageSize(icon_size);
+	var 保时捷 = new BMap.Icon("../icon/保时捷.png", new BMap.Size(40,40));
+	保时捷.setImageSize(icon_size);
+	var 北京现代 = new BMap.Icon("../icon/北京现代.png", new BMap.Size(40,40));
+	北京现代.setImageSize(icon_size);
+	var 奔驰 = new BMap.Icon("../icon/奔驰.png", new BMap.Size(40,40));
+	奔驰.setImageSize(icon_size);
+	var 别克 = new BMap.Icon("../icon/别克.png", new BMap.Size(40,40));
+	别克.setImageSize(icon_size);
+	var 道奇 = new BMap.Icon("../icon/道奇.png", new BMap.Size(40,40));
+	道奇.setImageSize(icon_size);
+	var 东风本田 = new BMap.Icon("../icon/东风本田.png", new BMap.Size(40,40));
+	东风本田.setImageSize(icon_size);
+	var 东风标志 = new BMap.Icon("../icon/东风标志.png", new BMap.Size(40,40));
+	东风标志.setImageSize(icon_size);
+	var 东风日产 = new BMap.Icon("../icon/东风日产.png", new BMap.Size(40,40));
+	东风日产.setImageSize(icon_size);
+	var 东风悦达起亚 = new BMap.Icon("../icon/东风悦达起亚.png", new BMap.Size(40,40));
+	东风悦达起亚.setImageSize(icon_size);
+	var 福特 = new BMap.Icon("../icon/福特.png", new BMap.Size(40,40));
+	福特.setImageSize(icon_size);
+	var 广汽本田 = new BMap.Icon("../icon/广汽本田.png", new BMap.Size(40,40));
+	广汽本田.setImageSize(icon_size);
+	var 广汽丰田 = new BMap.Icon("../icon/广汽丰田.png", new BMap.Size(40,40));
+	广汽丰田.setImageSize(icon_size);
+	var 凯迪拉克 = new BMap.Icon("../icon/凯迪拉克.png", new BMap.Size(40,40));
+	凯迪拉克.setImageSize(icon_size);
+	var 雷克萨斯 = new BMap.Icon("../icon/雷克萨斯.png", new BMap.Size(40,40));
+	雷克萨斯.setImageSize(icon_size);
+	var 林肯 = new BMap.Icon("../icon/林肯.png", new BMap.Size(40,40));
+	林肯.setImageSize(icon_size);
+	var 路虎 = new BMap.Icon("../icon/路虎.png", new BMap.Size(40,40));
+	路虎.setImageSize(icon_size);
+	var 讴歌 = new BMap.Icon("../icon/讴歌.png", new BMap.Size(40,40));
+	讴歌.setImageSize(icon_size);
+	var 荣威 = new BMap.Icon("../icon/荣威.png", new BMap.Size(40,40));
+	荣威.setImageSize(icon_size);
+	var 上汽大众 = new BMap.Icon("../icon/上汽大众.png", new BMap.Size(40,40));
+	上汽大众.setImageSize(icon_size);
+	var 特斯拉 = new BMap.Icon("../icon/特斯拉.png", new BMap.Size(40,40));
+	特斯拉.setImageSize(icon_size);
+	var 蔚来 = new BMap.Icon("../icon/蔚来.png", new BMap.Size(40,40));
+	蔚来.setImageSize(icon_size);
+	var 沃尔沃 = new BMap.Icon("../icon/沃尔沃.png", new BMap.Size(40,40));
+	沃尔沃.setImageSize(icon_size);
+	var 一汽大众 = new BMap.Icon("../icon/一汽大众.png", new BMap.Size(40,40));
+	一汽大众.setImageSize(icon_size);
+	var 一汽丰田 = new BMap.Icon("../icon/一汽丰田.png", new BMap.Size(40,40));
+	一汽丰田.setImageSize(icon_size);
+	var 英菲尼迪 = new BMap.Icon("../icon/英菲尼迪.png", new BMap.Size(40,40));
+	英菲尼迪.setImageSize(icon_size);
+	var icon_List = {'DS':DS, 'wey':wey, '阿尔法罗密欧':阿尔法罗密欧, '阿瑟顿马丁':阿瑟顿马丁, '奥迪':奥迪, '宝马':宝马, '保时捷':保时捷, '北京现代':北京现代, '奔驰':奔驰, '别克':别克, '道奇':道奇, '东风本田':东风本田, '东风标志':东风标志, '东风日产':东风日产, '东风悦达起亚':东风悦达起亚, '福特':福特, '广汽本田':广汽本田, '广汽丰田':广汽丰田, '凯迪拉克':凯迪拉克, '雷克萨斯':雷克萨斯, '林肯':林肯, '路虎':路虎, '讴歌':讴歌, '荣威':荣威, '上汽大众':上汽大众, '特斯拉':特斯拉, '蔚来':蔚来, '沃尔沃':沃尔沃, '一汽大众':一汽大众, '一汽丰田':一汽丰田, '英菲尼迪':英菲尼迪}
+
+
+	//单击获取点击的经纬度
+	function add_lnglat(){
+		map.addEventListener("click",function(e){
+			alert(e.point.lng + "," + e.point.lat);
+		});	
+	}
+
+	//监听地图zoom级别变化
+	map.addEventListener("zoomend", zoom_conversion);
+	function zoom_conversion(){
+		console.log(map.getZoom())
+	}
+
+	//添加城市list及竞品展示
+	var cityListControlSize = new BMap.Size(10, 40);
+	map.addControl(new BMap.CityListControl({
+    anchor: BMAP_ANCHOR_TOP_LEFT,
+    offset: cityListControlSize,
+	  onChangeSuccess: function (e) {
+		for (var i = 0; i < data_classification_by_city[e.city].length; i++){
+			var point = new BMap.Point(data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[0], data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[1]);
+			var icon_I = icon_List[data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4]]
+			var markern = new BMap.Marker(point, {icon:icon_I, enableDragging:true,raiseOnDrag:true,title:data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[2]+"   "+data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[3]});
+			map.addOverlay(markern);//绘制到地图上			
+			//markern.setAnimation(BMAP_ANIMATION_DROP)
+		};
+	}
+	}));
+
+	//更改地图风格
+	function add_normal(){
+		map.setMapStyleV2({styleId: '24f37baa04f273dc4e7eefaf292ca778'});
+	}
+	function add_light(){
+		map.setMapStyle({style:'light'});
+	}
+	function add_dark(){
+		map.setMapStyle({style:'dark'});
+	}
+	function add_redalert(){
+		map.setMapStyleV2({styleId:'a1fd2493e0077d5e2a52d014b1d8e933'});
+	}
+	function add_googlelite(){
+		map.setMapStyle({style:'googlelite'});
+	}
+	function add_grassgreen(){
+		map.setMapStyle({style:'grassgreen'});
+	}
+	function add_midnight(){
+		map.setMapStyle({style:'midnight'});
+	}
+	function add_googlelite(){
+		map.setMapStyle({style:'midnight'});
+	}
+	function add_pink(){
+		map.setMapStyle({style:'pink'});
+	}
+	function add_googlelite(){
+		map.setMapStyle({style:'googlelite'});
+	}
+	function add_darkgreen(){
+		map.setMapStyle({style:'darkgreen'});
+	}
+	function add_bluish(){
+		map.setMapStyle({style:'bluish'});
+	}
+	function add_grayscale(){
+		map.setMapStyleV2({styleId: 'bccda03a97544413459fe3fb0791e84b'});
+	}
+	function add_hardedge(){
+		map.setMapStyle({style:'hardedge'});
+	}
+    
+	//热力图绘制
+    function add_red(){
+        let points =[];
+        var xx;
+        xx = document.getElementById("heatr").value;           
+        var heatmapOverlay = new BMapLib.HeatmapOverlay({"radius":xx}); //, "gradient" :{.2:'rgb(255,255,255)',.8:'rgb(255,0,0)'}  ,"opacity":0.3
+        map.addOverlay(heatmapOverlay);                          
+		map.addEventListener("click",function(e){           
+        points.push({"lng":e.point.lng,"lat": e.point.lat,"count":90});
+        heatmapOverlay.setDataSet({data:points,max:100});                             
+	    });	
+	}    
+	//红旗伙伴热力图绘制
+    function dealer_heatmap(){		
+        let points =[];
+		for (var i = 0; i< hongqi_data.length; i++ ){
+      		points.push({"lng":hongqi_data[i].lng,"lat": hongqi_data[i].lat,"count":80});
+		};
+        var xx;
+        xx = document.getElementById("heatr").value;
+        var heatmapOverlay1 = new BMapLib.HeatmapOverlay({"radius":xx}); //, "gradient" :{.2:'rgb(255,255,255)',.8:'rgb(255,0,0)'}  ,"opacity":0.3
+        map.addOverlay(heatmapOverlay1);                        
+        heatmapOverlay1.setDataSet({data:points,max:100});
+	}
+
+
+	//红旗数据————————————————————————————————————————————————————————
+	var hongqi_data = [
+		{省份:"河南",城市:"郑州",名称:"郑州大展红旗汽车销售有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"郑州市金水区中州大道与天伦路交汇处西500米路南",lng:"113.694621",lat:"34.831094",投资人:"李文庆+张火丁+李韵娴",现有店数:"2",营业状态:"开业"},
+		{省份:"河南",城市:"驻马店",名称:"驻马店祥诚汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"驻马店市驿城区开源大道与驿城大道交叉口金龙科技园西门院内",lng:"114.072053",lat:"33.019055",投资人:"余自锋+刘艳青",现有店数:"1",营业状态:"开业"},
+		{省份:"山西",城市:"太原",名称:"山西大昌宏源汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"山西省太原市学府西街9号2#展厅",lng:"112.554767",lat:"37.813939",投资人:"代全民",现有店数:"5",营业状态:"开业"},
+		{省份:"山西",城市:"临汾",名称:"临汾荣翔汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"临汾市尧都区屯里镇屯里村口",lng:"111.537813",lat:"36.131425",投资人:"郭小万+郭金贵+王香香",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京龙泽红旗汽车销售有限公司",开业时间:"2018.02.28",级别:"GA",地址:"北京市朝阳区姚家园东方基业汽车城甲一号",lng:"116.532508",lat:"39.946716",投资人:"王桂秋+王龙芳",现有店数:"3",营业状态:"开业"},
+		{省份:"河北",城市:"保定",名称:"保定市华达汽车销售服务有限公司",开业时间:"2018.02.28",级别:"GB1",地址:"河北省保定市七一东路2456号",lng:"115.57329",lat:"38.881718",投资人:"沙晓曼+李超",现有店数:"2",营业状态:"开业"},
+		{省份:"河北",城市:"石家庄",名称:"石家庄庞大华旗汽车销售有限公司",开业时间:"2018.03.31",级别:"XB1",地址:" 石家庄市裕华区南二环东路3号副1号",lng:"114.520979",lat:"38.008023",投资人:"庞庆华+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"白城",名称:"白城市荣耀红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"白城市经济开发区洮白公路1010号 ",lng:"122.836414",lat:"45.581348",投资人:"孙远航",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"长春",名称:"长春通立红旗汽车销售服务有限公司",开业时间:"2018.01.31",级别:"XA",地址:"净月高新技术产业开发区生态大街7588号",lng:"125.387338",lat:"43.772976",投资人:"宋立恭+麦雪年",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"怀化",名称:"怀化市旗通汽车贸易有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"怀化市沿河路58号",lng:"109.974845",lat:"27.529037",投资人:"汤国华+郑敏+钱志荣+汤佳利+姚胜石",现有店数:"2",营业状态:"开业"},
+		{省份:"湖南",城市:"长沙",名称:"长沙旗展汽车销售有限公司",开业时间:"2018.02.28",级别:"GB3",地址:"长沙市高新区麓谷汽车世界嘉运路69号红旗体验中心",lng:"112.862956",lat:"28.214304",投资人:"李文庆+王培+张火丁+李韵娴",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"赣州",名称:"赣州市凯迪汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"江西省赣州市经开区迎宾大道西段南侧红旗体验中心",lng:"114.870258",lat:"25.852676",投资人:"曹建国",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"南昌",名称:"南昌龙和汽车销售有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"南昌新建区望城新区武功山大道4109号（恒望汽车城）",lng:"115.733869",lat:"28.632",投资人:"江西省汽车销售技术服务总公司",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"武汉",名称:"湖北长泽汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"湖北省武汉市洪山区野芷湖西路10号（保利心语6期）",lng:"114.330544",lat:"30.483868",投资人:"正通汽车服务有限公司",现有店数:"2",营业状态:"开业"},
+		{省份:"湖北",城市:"武汉",名称:"武汉市东瑞汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"湖北省武汉市洪山区白沙大道9号爱家名校华城对面",lng:"114.265133",lat:"30.431288",投资人:"张义+韩立雄+张东+王才学",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"襄阳",名称:"湖北英驰汽车集团有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"湖北省襄阳市襄州区钻石大道49号",lng:"112.183861",lat:"32.098799",投资人:"张扬武+王章武+刘章贵",现有店数:"3",营业状态:"开业"},
+		{省份:"广东",城市:"佛山",名称:"佛山市南海区罗村骏乔汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"佛山市南海区罗村镇联星村上二经济合作社“新街头”尖沙咀酒店旁 ",lng:"113.097257",lat:"23.066913",投资人:"徐桥华+肖莹",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"佛山",名称:"佛山飞扬红旗汽车销售服务有限公司",开业时间:"2020.10.22",级别:"GB1",地址:"佛山禅城区魁奇西路与佛山大道交汇处佛山世纪车城",lng:"113.1066367495559",lat:"23.001008355112514",投资人:"吴超+吴滨+黄子津",现有店数:"2",营业状态:"开业"},
+		{省份:"广东",城市:"惠州",名称:"惠州市通利华实业有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"广东省惠州市惠城区三栋数码工业园惠南汽车城二期D2位",lng:"114.466502",lat:"22.985247",投资人:"李玉娟+罗锦容+利移发",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"中山",名称:"中山市中升汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"广东省中山市东升镇坦背东二马路162号",lng:"113.329145",lat:"22.584181",投资人:"蔡贡+蔡盈+郑永红",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"广州",名称:"广东鸿粤益嘉汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"广东省广州市白云区白云大道北859号",lng:"113.302815",lat:"23.226107",投资人:"陈相宇+赵关艳+于珺+李艳",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"广州",名称:"广州锦龙红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"广州市番禺区东环街大北路552号锦龙名车城2层",lng:"113.378086",lat:"22.966895",投资人:"麦庆德",现有店数:"4",营业状态:"开业"},
+		{省份:"广东",城市:"深圳",名称:"深圳锦龙红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"深圳市南山区蛇口港湾大道26号太子湾汽车文化园内",lng:"113.913916",lat:"22.480961",投资人:"麦庆德",现有店数:"4",营业状态:"开业"},
+		{省份:"安徽",城市:"蚌埠",名称:"蚌埠市承业轿车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"蚌埠市高新区燕山路2211号",lng:"117.31607",lat:"32.916395",投资人:"潘天军+王芳",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"合肥",名称:"合肥万帮之星汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"安徽省合肥市长春街606号",lng:"117.352853",lat:"31.804264",投资人:"魏蕤+乔宜勇+吴朝龙",现有店数:"1",营业状态:"开业"},
+		{省份:"陕西",城市:"西安",名称:"陕西奥诚红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GA",地址:"西安市未央区天台八路西段2公里",lng:"108.803455",lat:"34.292656",投资人:"姚福顺+刘卫红+张喜云",现有店数:"1",营业状态:"开业"},
+		{省份:"陕西",城市:"西安",名称:"西安新丰泰红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"西安市浐灞生态区欧亚一路1688号",lng:"109.003413",lat:"34.337391",投资人:"新丰泰（香港）有限公司",现有店数:"1",营业状态:"开业"},
+		{省份:"甘肃",城市:"兰州",名称:"兰州金岛红旗汽车销售服务有限公司",开业时间:"2018.02.28",级别:"XB3",地址:"兰州市安宁区北滨河西路88号安宁汽车城",lng:"103.640746",lat:"36.145294",投资人:"邵兴国+常乃明",现有店数:"1",营业状态:"开业"},
+		{省份:"青海",城市:"西宁",名称:"西宁金岛红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"西宁市经济技术开发区昆仑东路6号金岛汽车城",lng:"101.86447",lat:"36.57422",投资人:"邵新贵+邵振轩",现有店数:"1",营业状态:"开业"},
+		{省份:"宁夏",城市:"银川",名称:"银川大世界红旗汽车销售有限公司",开业时间:"2018.03.31",级别:"XA",地址:"银川市正源北街北绕城旁园艺路向东600米",lng:"106.28826",lat:"38.5873",投资人:"宋丽娟",现有店数:"1",营业状态:"开业"},
+		{省份:"重庆",城市:"重庆",名称:"重庆璐菲汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"重庆市九龙坡区创业大道1号",lng:"106.454756",lat:"29.506113",投资人:"张耀冲",现有店数:"2",营业状态:"开业"},
+		{省份:"重庆",城市:"重庆",名称:"重庆万家红枫汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GA",地址:"重庆市巴南区龙洲大道1865号",lng:"106.550668",lat:"29.455406",投资人:"邢世文+邢亮+吕淑黠+王平+李凤才+邢世明",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"巴中",名称:"巴中先锋恒远汽车服务有限公司",开业时间:"2018.03.31",级别:"XC1",地址:"四川省巴中市西部国际商贸城秦巴大道杨家沟段先锋汽车产业园",lng:"106.786345",lat:"31.849142",投资人:"袁术+王玉琼",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"成都",名称:"成都新元素红旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"XA",地址:"成都市锦江区皇经楼路259号",lng:"104.117265",lat:"30.598953",投资人:"吴亚丽+吴昌谋+刘连海+林秀琼",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"达州",名称:"达州天裕汽车服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"达州市达川区翠屏街道办事处杨柳路13号",lng:"107.512611",lat:"31.175827",投资人:"覃财剑+覃才平+康卫彬+杨洪斌",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"遂宁",名称:"遂宁清巍瑞祥汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GC3",地址:"遂宁市玫瑰大道西侧，遂渝高速出口南侧",lng:"105.573057",lat:"30.46291",投资人:"陈水清+陈巍+李秀君+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"宜宾",名称:"宜宾吉茂汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GA",地址:"宜宾市临港经济开发区飞云路北段安吉汽车城",lng:"104.669536",lat:"28.801851",投资人:"宜宾市人民政府国资委",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"贵阳",名称:"贵州大雍峻辰汽车销售有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"贵阳市花溪区红星路十和田精品汽车库",lng:"106.752707",lat:"26.406625",投资人:"雷炫+王峻波",现有店数:"3",营业状态:"开业"},
+		{省份:"云南",城市:"昆明",名称:"昆明海伟宏亦汽车销售有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"云南省昆明市西山区碧鸡路碧鸡博览园内",lng:"102.631593",lat:"24.999048",投资人:"蒋辉+周峻亦+杨超",现有店数:"3",营业状态:"开业"},
+		{省份:"上海",城市:"上海",名称:"上海东昌宏旗汽车服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"上海市宝山区共和新路5179号（宝山万达旁）",lng:"121.451639",lat:"31.330911",投资人:"丁建勇+丁建祖",现有店数:"1",营业状态:"开业"},
+		{省份:"上海",城市:"上海",名称:"上海旗泽汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"上海市徐汇区龙吴路2996号",lng:"121.461483",lat:"31.108518",投资人:"正通汽车服务有限公司",现有店数:"2",营业状态:"开业"},
+		{省份:"山东",城市:"济南",名称:"济南泊思汽车服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"济南市槐荫区张庄路38号（广友茶城东临）",lng:"116.964493",lat:"36.673228",投资人:"杨红星+杨支锋",现有店数:"3",营业状态:"开业"},
+		{省份:"山东",城市:"济宁",名称:"济宁天禧汽车贸易有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"济宁市105国道金宇汽配城对过 ",lng:"116.554152",lat:"35.433178",投资人:"张如杰",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"临沂",名称:"临沂美华汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"山东省临沂市罗庄区蒙山大道与沂河路交汇向西2公里路南（远通汽车超市院内）",lng:"118.309598",lat:"35.021724",投资人:"周昆+王宗航+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"烟台",名称:"烟台鸿旗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"山东省烟台市芝罘区机场路158号",lng:"121.371261",lat:"37.497026",投资人:"苑庆飞+夏清",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"常州",名称:"常州美奇罗汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"常州市新北区庐山路198号",lng:"119.990499",lat:"31.845454",投资人:"罗荣国",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"常州",名称:"常州外汽红豪汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"常州市武进区湖塘镇武进汽车城c区5号",lng:"119.970229",lat:"31.700177",投资人:"戴永治+陈建华+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"南京",名称:"南京大有国威汽车服务有限公司",开业时间:"2018.03.31",级别:"GA",地址:"江苏省南京市雨花台区板桥汽车园雨瑞路6号",lng:"118.663898",lat:"31.94884",投资人:"秦臻",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"南通",名称:"南通百恒汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB2",地址:"南通市港闸区城港路85号（港闸区管委会对面）",lng:"120.818803",lat:"32.037852",投资人:"郁卫兴+赵水平+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"苏州",名称:"昆山联合红旗汽车销售有限公司",开业时间:"2018.03.31",级别:"GB3",地址:"江苏省昆山市宝益路101号 312国道旁",lng:"120.948804",lat:"31.348907",投资人:"杨雪华+曾级富+杨雪良+等等",现有店数:"2",营业状态:"开业"},
+		{省份:"江苏",城市:"扬州",名称:"扬州广成扬旗汽车有限公司",开业时间:"2018.03.31",级别:"GA",地址:"江苏省扬州市邗江区扬子江北路西北绕城公路交叉口东南角",lng:"119.393809",lat:"32.454591",投资人:"李新成+李斌",现有店数:"5",营业状态:"开业"},
+		{省份:"浙江",城市:"金华",名称:"义乌市正通汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"义乌市后宅街道宗泽北路1157号",lng:"120.052678",lat:"29.373379",投资人:"骆晓鹏+骆立康",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"宁波",名称:"宁波鑫之旗汽车有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"浙江省宁波市海曙区鄞县大道古林段777号",lng:"121.461217",lat:"29.84111",投资人:"陈方捷+林志虹",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"南平",名称:"福建赢宸汽车销售服务有限公司",开业时间:"2018.03.31",级别:"GB1",地址:"福建省建瓯市东安路15号(建瓯高速出口)",lng:"118.369486",lat:"27.061136",投资人:"邱洁+黄超+王桂秋",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"宜昌",名称:"宜昌市华健晟旗汽车销售服务有限责任公司",开业时间:"2018.04.30",级别:"GB1",地址:"宜昌市猇亭区猇亭大道179号",lng:"111.434951",lat:"30.552078",投资人:"陈露+陈圣才",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"东莞",名称:"东莞德现汽车销售服务有限公司",开业时间:"2018.04.30",级别:"GB2",地址:"广东省东莞市寮步镇国际汽车城寮城中路C-02-01B",lng:"113.855094",lat:"23.012883",投资人:"麦庆德",现有店数:"4",营业状态:"开业"},
+		{省份:"重庆",城市:"重庆",名称:"重庆九禾缘汽车销售服务有限公司",开业时间:"2018.04.30",级别:"GA",地址:"重庆市万州区龙都大道390号1号楼",lng:"108.413204",lat:"30.759732",投资人:"杨航+杨丹",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"南充",名称:"南充明云日月宏新车业有限公司",开业时间:"2018.04.30",级别:"XA",地址:"南充市高坪区东顺路三段",lng:"106.181099",lat:"30.775045",投资人:"韩大进+谭治国+范锡军",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"昆明",名称:"云南宏通达汽车销售服务有限公司",开业时间:"2018.04.25",级别:"GA",地址:"昆明市经济技术开发区国际汽车城博望路F04号地块",lng:"102.811939",lat:"24.971299",投资人:"康鹏+杨绍彬+朱文龙+魏伟",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"福州",名称:"福建华奥红旗汽车销售有限公司",开业时间:"2018.04.28",级别:"GB1",地址:"福建省福州市仓山区天水路1号",lng:"119.29852",lat:"26.001217",投资人:"陈清池+陈清渊+张进福+张秀瑜",现有店数:"2",营业状态:"开业"},
+		{省份:"河南",城市:"许昌",名称:"许昌市恒旭汽车销售服务有限公司",开业时间:"2018.05.20",级别:"GB3",地址:"许昌市延安路与陈庄街交叉口魏都汽贸城",lng:"113.803868",lat:"34.059448",投资人:"朱晓林+王德民",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"乐山",名称:"乐山市大众汽车贸易（集团）有限公司",开业时间:"2018.05.27",级别:"GB2",地址:"乐山市市中区柏杨西路615号",lng:"103.737681",lat:"29.601383",投资人:"杨建国+吴洁",现有店数:"1",营业状态:"开业"},
+		{省份:"山西",城市:"运城",名称:"运城大昌宏源汽车销售服务有限公司",开业时间:"2018.05.27",级别:"XB2",地址:"山西省运城市空港开发区关公街22号",lng:"111.037907",lat:"35.114416",投资人:"代全民",现有店数:"5",营业状态:"开业"},
+		{省份:"河南",城市:"商丘",名称:"商丘市恒美汽车销售服务有限公司",开业时间:"2018.06.19",级别:"GB1",地址:"商丘市富商大道与车城路交叉口",lng:"115.706387",lat:"34.396834",投资人:"芦宝岩+芦文西+芦玉洁",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"合肥",名称:"安徽博融众旗汽车销售服务有限公司",开业时间:"2018.06.28",级别:"XB1",地址:"合肥市肥东县新合马路与东华路交汇",lng:"117.450783",lat:"31.828615",投资人:"杨三来+武连章+路海鹰+陈婷",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"绵阳",名称:"绵阳兴艾潇商贸有限公司",开业时间:"2018.06.28",级别:"XA",地址:"绵阳市永兴镇辽宁大道西侧B-16号",lng:"104.624529",lat:"31.471486",投资人:"王杰+冯梁+燕正熙+罗文",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"绍兴",名称:"绍兴市汇金汽车销售服务有限公司",开业时间:"2018.06.28",级别:"GB1",地址:"浙江省绍兴市袍江中兴大道与三二九国道东北角（原标致店）",lng:"120.613819",lat:"30.093913",投资人:"熊慧丽+金百海",现有店数:"1",营业状态:"开业"},
+		{省份:"山西",城市:"长治",名称:"长治市大昌汽车销售服务有限公司",开业时间:"2018.06.28",级别:"XB3",地址:"山西省长治市北环西街华信汽贸园内",lng:"113.118655",lat:"36.238366",投资人:"代全民",现有店数:"5",营业状态:"开业"},
+		{省份:"陕西",城市:"宝鸡",名称:"宝鸡威凯红旗汽车销售服务有限公司",开业时间:"2018.06.30",级别:"XB2",地址:"宝鸡市陈仓物流园区汽博园内",lng:"107.366185",lat:"34.352467",投资人:"武玥宇+闫浩",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"邢台",名称:"邢台邦华汽车销售服务有限公司",开业时间:"2018.06.30",级别:"GB2",地址:"邢台市龙岗东大街邢台汽车城园区",lng:"114.562249",lat:"37.123094",投资人:"彭雪晶+王雷",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"杭州",名称:"浙江裕旗汽车有限公司",开业时间:"2018.06.30",级别:"GB1",地址:"浙江省杭州市余杭区仓前街道余杭塘路2620号",lng:"119.99172",lat:"30.2865",投资人:"浙江省机关后勤经济发展中心+等等",现有店数:"2",营业状态:"开业"},
+		{省份:"内蒙古",城市:"包头",名称:"包头市宏腾汽车销售服务有限公司",开业时间:"2018.07.27",级别:"GA",地址:"包头市110国道与清源道交汇处",lng:"109.954872",lat:"40.657613",投资人:"田军+肖炜",现有店数:"1",营业状态:"开业"},
+		{省份:"内蒙古",城市:"呼和浩特",名称:"内蒙古思旗汽车销售有限责任公司",开业时间:"2018.07.31",级别:"GB2",地址:"内蒙古自治区呼和浩特市赛罕区巴彦镇利丰技术服务园A座",lng:"111.817376",lat:"40.874765",投资人:"赵志刚+张子飏+包庆军+党鑫+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"长沙",名称:"湖南兰天天旗汽车销售有限公司",开业时间:"2018.07.31",级别:"XA",地址:"湖南长沙岳麓西大道3599号（河西汽车城）",lng:"112.793193",lat:"28.250724",投资人:"汤国华+钱志荣+汤佳利+姚胜石",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"大连",名称:"大连通洲汽车销售有限公司",开业时间:"2018.08.14",级别:"XA",地址:"大连市保税区护港北一路与盛港路交汇",lng:"121.846101",lat:"39.052414",投资人:"宋立恭+高明伟+富斌",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"聊城",名称:"聊城远达汽车销售服务有限公司",开业时间:"2018.08.29",级别:"XB2",地址:"聊城市光岳北路江北汽车城",lng:"116.03923",lat:"36.486042",投资人:"吉忠阳+王正锋+吉淑桂",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"淄博",名称:"淄博恒吉祥汽车贸易有限公司",开业时间:"2018.08.29",级别:"GB3",地址:"淄博市金晶大道与鲁泰大道交叉路口西北角",lng:"118.079341",lat:"36.853347",投资人:"周永方+周大鑫",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"衡阳",名称:"衡阳市恒宇汽车销售服务有限公司",开业时间:"2018.08.29",级别:"XB3",地址:"湖南省衡阳市蒸湘区西外环路杨柳汽贸城 ",lng:"112.576846",lat:"26.875717",投资人:"陈启利+陈新星+陈铭志+刘小菊",现有店数:"1",营业状态:"开业"},
+		{省份:"内蒙古",城市:"兴安盟",名称:"兴安盟华盛汽车销售服务有限公司",开业时间:"2018.08.30",级别:"XB1",地址:"内蒙古兴安盟科右前旗工业园区天骄路鑫华玉集团院内  ",lng:"121.989949",lat:"46.073819",投资人:"张朝华+苗玉",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"辽阳",名称:"辽阳红兴汽车销售服务有限公司",开业时间:"2018.09.25",级别:"GB3",地址:"辽阳巿白塔区八一街8-5号",lng:"123.168917",lat:"41.255523",投资人:"赵敏+王敏",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"盐城",名称:"盐城市洪兆连车业有限公司 ",开业时间:"2018.09.26",级别:"GB1",地址:"盐城市开放大道668号",lng:"120.095596",lat:"33.459818",投资人:"洪兆连 和 宋春花",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京龙泽百旺销售服务有限公司",开业时间:"2018.09.27",级别:"GA",地址:"北京市石景山区古城大街国际汽车园f-15号",lng:"116.186826",lat:"39.924119",投资人:"王桂秋+王龙芳",现有店数:"3",营业状态:"开业"},
+		{省份:"贵州",城市:"遵义",名称:"遵义市星尊程汽车销售服务有限公司",开业时间:"2018.09.27",级别:"GA",地址:"贵州省遵义市播州区遵南大道黔北国际汽车博览中心25号",lng:"106.882657",lat:"27.615981",投资人:"赵恩念+杨帆",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"宁波",名称:"宁波中基明瑞汽车销售服务有限公司",开业时间:"2018.09.27",级别:"GB3",地址:"浙江省宁波市鄞州区下应北路700-1号",lng:"121.59957",lat:"29.821305",投资人:"崔建方+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"秦皇岛",名称:"秦皇岛瑞通嘉禾汽车销售服务有限公司",开业时间:"2018.09.27",级别:"GB1",地址:"秦皇岛市京沈高速北出口瑞通汽车园内",lng:"119.555004",lat:"39.977889",投资人:"郭洪艳+刘永波",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"淮安",名称:"江苏腾起汽车销售服务有限公司",开业时间:"2018.09.28",级别:"GB1",地址:"淮安市清河新区水渡口大道129号",lng:"119.124304",lat:"33.621338",投资人:"张其文+张怀洪",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"泉州",名称:"泉州市同行汽车销售有限公司 ",开业时间:"2018.09.28",级别:"GB3",地址:"福建省泉州市丰泽区城东街道城华南路110号",lng:"118.644318",lat:"24.925922",投资人:"陈文清+李坚柱+彭金地",现有店数:"1",营业状态:"开业"},
+		{省份:"新疆",城市:"乌鲁木齐",名称:"新疆天汇华辉汽车销售服务有限公司",开业时间:"2018.09.29",级别:"GB1",地址:"乌鲁木齐市河滩北路34号",lng:"87.606674",lat:"43.817505",投资人:"李建平",现有店数:"3",营业状态:"开业"},
+		{省份:"广东",城市:"东莞",名称:"东莞鸿粤益嘉汽车销售服务有限公司",开业时间:"2018.09.29",级别:"GC2",地址:"东莞市南城区石鼓盛嘉汽车城1号",lng:"113.712445",lat:"22.984447",投资人:"陈相宇+于珺+李艳",现有店数:"1",营业状态:"开业"},
+		{省份:"广西",城市:"南宁",名称:"广西弘博汽车销售服务有限公司",开业时间:"2018.09.30",级别:"GB2",地址:"广西省南宁市江南区白沙大道52号",lng:"108.320797",lat:"22.784708",投资人:"李建平",现有店数:"3",营业状态:"开业"},
+		{省份:"天津",城市:"天津",名称:"天津奥吉通红韵汽车销售有限公司",开业时间:"2018.09.30",级别:"XB2",地址:"天津市西青区大寺镇兴业道北侧",lng:"117.278518",lat:"39.004005",投资人:"张天舒+张铁镝",现有店数:"2",营业状态:"开业"},
+		{省份:"辽宁",城市:"沈阳",名称:"沈阳汇旗通汽车销售服务有限公司",开业时间:"2018.09.30",级别:"GB2",地址:"沈阳市浑南新区远航中路33号 ",lng:"123.466936",lat:"41.7328",投资人:"李建平",现有店数:"3",营业状态:"开业"},
+		{省份:"海南",城市:"海口",名称:"海南优之杰商贸有限公司",开业时间:"2018.09.30",级别:"XB1",地址:"海口市南海大道63号         ",lng:"110.325834",lat:"20.001792",投资人:"颜伟+梁伟",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"开封",名称:"河南圆诺汽车销售有限公司",开业时间:"2018.09.29",级别:"XB1",地址:"河南省开封市汴东产业集聚区宏达大道东侧、昌盛路北侧",lng:"114.444308",lat:"34.803517",投资人:"芦宝岩+翟成",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"安庆",名称:"安庆市天位汽车销售服务有限公司",开业时间:"2018.09.30",级别:"GB2",地址:"安庆市英德利国际汽车城",lng:"117.067133",lat:"30.574981",投资人:"王昊+王婧玮",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"济南",名称:"济南快爱特有限公司",开业时间:"2018.10.30",级别:"GA",地址:"济南市历城区凤凰路（原铁骑路14号）",lng:"117.153834",lat:"36.717629",投资人:"吉忠阳+鲍青",现有店数:"2",营业状态:"开业"},
+		{省份:"天津",城市:"天津",名称:"天津汇裕永达汽车贸易有限公司",开业时间:"2018.11.25",级别:"GA",地址:"天津市津汉公路空港物流加工区汽车园中路35号",lng:"117.381891",lat:"39.166221",投资人:"康鹏+朱文龙+魏伟+吴凤萍+张学力",现有店数:"1",营业状态:"开业"},
+		{省份:"广西",城市:"南宁",名称:"广西钜荣红旗汽车销售服务有限公司",开业时间:"2018.11.30",级别:"XB3",地址:"南宁市平乐大道49号钜荣汽车园内5号展厅",lng:"108.393347",lat:"22.710541",投资人:"劳建华+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"成都",名称:"成都建国汽车贸易有限公司",开业时间:"2018.12.03",级别:"GB3",地址:"成都市高新区火车南站西路799号 ",lng:"104.053967",lat:"30.609159",投资人:"袁国彬",现有店数:"3",营业状态:"开业"},
+		{省份:"山西",城市:"大同",名称:"大同大昌宏源汽车销售服务有限公司",开业时间:"2018.12.20",级别:"GB3",地址:"山西省大同市庞大汽车文化园林内",lng:"113.263031",lat:"40.045369",投资人:"代全民",现有店数:"5",营业状态:"开业"},
+		{省份:"山东",城市:"日照",名称:"日照晟瑞汽车销售服务有限公司",开业时间:"2018.12.20",级别:"GB1",地址:"日照经济技术开发区汽贸城大同路与绍兴路交汇处（大同路北，绍兴路西）",lng:"119.445169",lat:"35.39684",投资人:"高勇+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京嘉程泓旗汽车销售服务有限公司",开业时间:"2018.12.22",级别:"XB1",地址:"北京房山区阎村镇前沿村村委会南88米（澎湃汽车城内）",lng:"116.111126",lat:"39.729066",投资人:"常晓南+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"杭州",名称:"杭州杭旗汽车有限公司",开业时间:"2018.12.22",级别:"GA",地址:"杭州市 拱墅区 杭行路202号",lng:"120.128455",lat:"30.328681",投资人:"李新成+李斌",现有店数:"5",营业状态:"开业"},
+		{省份:"陕西",城市:"渭南",名称:"渭南广行汽车销售服务有限公司",开业时间:"2018.12.24",级别:"XB3",地址:"陕西省渭南市经开区创业大道东侧渭南申华汽车博展园",lng:"109.471309",lat:"34.585927",投资人:"王文怡+左沛",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"菏泽",名称:"菏泽兴邦汽车销售服务有限公司",开业时间:"2018.12.26",级别:"GB1",地址:"山东省菏泽市定陶区范阳路汽车小镇园区一路南侧 ",lng:"115.596626",lat:"35.120345",投资人:"许娟+刘世豪",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"石家庄",名称:"河北华美汽车销售服务有限公司",开业时间:"2019.3.14",级别:"XB1",地址:"河北省石家庄市新华区石获北路与古城西路交汇处河北康恒国际汽车园区A区8号",lng:"114.395128",lat:"38.083738",投资人:"沙晓曼+汪晶+李超",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"大理市",名称:"大理国源汽车销售服务有限公司",开业时间:"2019.4.25",级别:"GC2",地址:"大理市下关镇泛亚汽车城南侧",lng:"100.271017",lat:"25.601171",投资人:"李永忠+李晓艳+李小朦",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京祥龙博瑞汽车服务（集团）有限公司一分公司",开业时间:"2019.4.28",级别:"GB3",地址:"北京市德外双泉堡花虎沟2号",lng:"116.371335",lat:"40.019322",投资人:"北京祥龙资产经营有限责任公司",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"兴义",名称:"黔西南州星尊程领航汽车销售服务有限公司",开业时间:"2019.5.31",级别:"GC2",地址:"兴义市木贾街道东贡社区坡贡组",lng:"104.853886",lat:"25.128091",投资人:"赵恩念+汪琼",现有店数:"2",营业状态:"开业"},
+		{省份:"浙江",城市:"杭州",名称:"杭州广旗汽车有限公司",开业时间:"2019.6.10",级别:"GB1",地址:"杭州市萧山区新世纪市场园区旺园路279号",lng:"120.299461",lat:"30.209315",投资人:"李新成+李斌",现有店数:"5",营业状态:"开业"},
+		{省份:"浙江",城市:"温州",名称:"温州宝旗汽车服务有限公司",开业时间:"2019.6.18",级别:"GB3",地址:"温州市机场大道衢江路208号",lng:"120.751287",lat:"27.986048",投资人:"李宝海+高立峰",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"长春​",名称:"吉林省神州红旗汽车销售服务有限公司",开业时间:"2019.6.19",级别:"GA",地址:"长春市硅谷大街与佳园路交汇，硅谷大街3500号",lng:"125.262203",lat:"43.823371",投资人:"王清华+张越",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"无锡",名称:"无锡红博汽车销售有限公司",开业时间:"2019.6.19",级别:"XB2",地址:"无锡市梁溪区梁东路1-1号",lng:"120.336121",lat:"31.530134",投资人:"张天舒+张铁镝",现有店数:"2",营业状态:"开业"},
+		{省份:"江苏",城市:"无锡",名称:"苏州天利和汽车实业有限公司（筹建）",开业时间:"筹建中",级别:"XB2",地址:"无锡市滨湖区钱胡路与芙蓉北路交叉口东北侧地块",lng:"120.14021318587395",lat:"31.567359184305143",投资人:"郭小坚+朱天晓+等等",现有店数:"2",营业状态:"筹建"},
+		{省份:"四川",城市:"德阳​",名称:"​德阳冠仑汽车服务有限公司",开业时间:"2019.6.19",级别:"GB3",地址:"德阳市旌阳区泰山南路三段299号",lng:"104.393595",lat:"31.083046",投资人:"袁术+王玉琼+马璇",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"长春",名称:"长春金山红旗汽车销售服务有限公司",开业时间:"2019.6.21",级别:"GA",地址:"长春市长沈路3285号",lng:"125.212734",lat:"43.833426",投资人:"王威+赵军+杨成宝+杨光+刘玉友+金咏",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"厦门",名称:"厦门亿海红祺汽车服务有限公司",开业时间:"2019.6.25",级别:"GB3",地址:"中国（福建）自有贸易试验区厦门片区翔远一路25号",lng:"118.134218",lat:"24.531586",投资人:"张海峰+陈培玲",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"自贡",名称:"自贡新成红兴汽车销售服务有限责任公司",开业时间:"2019.6.25",级别:"GC2",地址:"四川省自贡市大安区马吃水盐都大道126号新成车业",lng:"104.739476",lat:"29.335893",投资人:"周敬坚+陈岚",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"广元",名称:"广元市峰帆汽车商贸有限公司",开业时间:"2019.6.26",级别:"XB3",地址:"四川省广元市利州区盘龙镇川北国际汽车城",lng:"105.731184",lat:"32.416469",投资人:"石怀燕+周宏+周光富",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"信阳",名称:"信阳天泓汽车销售服务有限公司",开业时间:"2019.6.27",级别:"GB2",地址:"信阳市平东路与南京大道交汇",lng:"114.170188",lat:"32.128119",投资人:"芦宝岩+刘永利",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"佛山",名称:"佛山挥扬汽车销售服务有限公司",开业时间:"2019.6.27",级别:"GB3",地址:"广东省佛山市顺德区广珠公路伦教路段周生生大楼往广州方向200米 ",lng:"113.226136",lat:"22.879615",投资人:"吴超+吴滨+黄子津",现有店数:"2",营业状态:"开业"},
+		{省份:"河南",城市:"郑州",名称:"郑州吉展汽车销售服务有限公司",开业时间:"2019.6.28",级别:"GB1",地址:"郑州市中原区郑上路与杭州路交叉口大中原汽车城C区06号西侧 ",lng:"113.494773",lat:"34.758763",投资人:"李文庆+张火丁+李韵娴",现有店数:"2",营业状态:"开业"},
+		{省份:"浙江",城市:"台州",名称:"台州中通旗进汽车销售服务有限公司",开业时间:"2019.7.16",级别:"XB1",地址:"浙江省台州市温岭市泽国镇景观花苑南侧",lng:"121.390464",lat:"28.509308",投资人:"陈炫霖+蒋奇伟+郑香英+陈勇",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"德州",名称:"德州润吉汽车销售服务有限公司",开业时间:"2019.7.16",级别:"GB3",地址:"德州市经济开发区晶华大道3109号",lng:"116.38922",lat:"37.464736",投资人:"吉忠阳+鲍青",现有店数:"2",营业状态:"开业"},
+		{省份:"江西",城市:"吉安",名称:"吉安市凯迪汽车销售服务有限公司",开业时间:"2019.7.16",级别:"GB1",地址:"吉安市吉州区长塘镇吉安北大道",lng:"114.987309",lat:"27.16557",投资人:"曹建国+彭玉萍",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"曲靖",名称:"曲靖开源汽车销售服务有限公司",开业时间:"2019.7.16",级别:"GB3",地址:"曲靖市麒麟区西城街道高家屯社区靖阳路与教苑路西侧",lng:"103.755382",lat:"25.533179",投资人:"李祖辉+李永忠+李小朦",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"青岛",名称:"青岛泰岳宏旗汽车销售服务有限公司",开业时间:"2019.7.16",级别:"GB1",地址:"青岛市黑龙江路3178号",lng:"120.436759",lat:"36.20739",投资人:"岳曰安+成晓莹",现有店数:"5",营业状态:"开业"},
+		{省份:"河北",城市:"沧州",名称:"沧州市华泽汽车贸易有限公司",开业时间:"2019.7.26",级别:"GB2",地址:"河北省沧州市开发区石港路29号",lng:"116.924451",lat:"38.279493",投资人:"沙晓曼+李超",现有店数:"2",营业状态:"开业"},
+		{省份:"重庆",城市:"重庆",名称:"重庆两江璐菲汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GA",地址:"重庆市北部新区金开大道15号附5号（经开园金渝大道商圈西边缘）",lng:"106.539294",lat:"29.642847",投资人:"张耀冲",现有店数:"2",营业状态:"开业"},
+		{省份:"河南",城市:"洛阳",名称:"洛阳随诺汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GB1",地址:"洛阳市洛龙区政和路3号",lng:"112.474769",lat:"34.62791",投资人:"王小伟+王高菲",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"六安",名称:"六安之道汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GA",地址:"安徽省六安市金安区承接产业转移集中示范区南京路",lng:"116.624802",lat:"31.766539",投资人:"蒋天赐+蒋甲天",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"衢州",名称:"衢州君悦宏旗汽车有限公司",开业时间:"2019.7.26",级别:"GC1",地址:"衢江区振兴东路699号",lng:"118.977011",lat:"28.980568",投资人:"李和林+李大江",现有店数:"2",营业状态:"开业"},
+		{省份:"贵州",城市:"铜仁",名称:"贵州铜仁市星尊程鑫航汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GB2",地址:"贵州省铜仁市碧江区武陵山国际汽车城汽车超市A区1楼",lng:"109.246881",lat:"27.749078",投资人:"赵恩念+汪琼",现有店数:"2",营业状态:"开业"},
+		{省份:"山西",城市:"晋城",名称:"晋城中一汽车有限公司",开业时间:"2019.7.26",级别:"GB3",地址:"山西省晋城市城区太行南路982号",lng:"112.868195",lat:"35.487218",投资人:"关元根+任海军+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"南京",名称:"南京大道汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GA",地址:"南京市江宁区东山街道润麟路1号",lng:"118.882454",lat:"31.985527",投资人:"戚福霞+秦永贵",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"阳江",名称:"阳江市鑫通达汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GC2",地址:"阳江市江城区南排留用地康泰路8号",lng:"111.983511",lat:"21.893976",投资人:"黄英杰+李玉娟",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"郑州",名称:"郑州泰岳宏旗汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GA",地址:"郑州市经开区经北六路与第五大街交叉口向东200米路北 ",lng:"113.763459",lat:"34.739947",投资人:"岳曰安+成晓莹",现有店数:"5",营业状态:"开业"},
+		{省份:"河南",城市:"濮阳",名称:"濮阳市德源汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GC1",地址:"濮阳市106国道濮阳北高速路口南500米路东（德众汽车产业园 ）",lng:"115.125646",lat:"35.808221",投资人:"吕兆德+李记超",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"珠海",名称:"珠海市中升汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GB2",地址:"珠海市香洲区前山上冲国际名城 ",lng:"113.502949",lat:"22.294067",投资人:"蔡贡+胡坚",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"南阳",名称:"南阳宛骏汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GB2",地址:"南阳市卧龙区光武西路与百里奚路交汇处西300米",lng:"112.518335",lat:"33.022279",投资人:"袁晓+康海欧",现有店数:"1",营业状态:"开业"},
+		{省份:"澳门",城市:"澳门",名称:"澳门红旗汽车有限公司",开业时间:"2019.7.26",级别:"——",地址:"澳门青州河边马路之珠港澳跨界工业区澳门园区C",lng:"113.550489",lat:"22.21354",投资人:"麦庆德",现有店数:"4",营业状态:"开业"},
+		{省份:"山东",城市:"潍坊",名称:"潍坊广潍旗胜汽车销售服务有限公司",开业时间:"2019.7.26",级别:"GB2",地址:"潍坊市奎文区潍州路369号 ",lng:"119.138134",lat:"36.648785",投资人:"潍坊市广潍进口汽车修理厂",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"长沙",名称:"长沙美捷汽车贸易有限公司",开业时间:"2019.8.26",级别:"GB1",地址:" 湖南省长沙市芙蓉区远大二路702号",lng:"113.0906",lat:"28.209358",投资人:"付胜龙+刘大成+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京泰岳宏旗汽车销售服务有限公司",开业时间:"2019.8.26",级别:"GB1",地址:"北京市朝阳区金盏乡金港汽车公园金港红旗路1号  ",lng:"116.57339",lat:"40.02133",投资人:"岳曰安+成晓莹",现有店数:"5",营业状态:"开业"},
+		{省份:"广西",城市:"桂林",名称:"桂林弘帆桂仕汽车销售服务有限公司",开业时间:"2019.8.26",级别:"GB3",地址:"广西桂林市八里街经济技术开发区29-2号",lng:"110.314664",lat:"25.359681",投资人:"朱风暴+朱丹+周敬+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"阜阳",名称:"阜阳博融亚之旗汽车销售服务有限公司",开业时间:"2019.8.26",级别:"XA",地址:"安徽省阜阳市经济开发区卫武路553号",lng:"115.8692",lat:"32.842487",投资人:"武连章+路海鹰+王文武+张小星+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"成都",名称:"成都东创国城实业有限公司",开业时间:"2019.8.26",级别:"GB3",地址:"四川省成都市天府新区麓山大道二段",lng:"104.120514",lat:"30.483515",投资人:"袁国彬",现有店数:"3",营业状态:"开业"},
+		{省份:"河南",城市:"新乡",名称:"新乡市盛世汽车销售服务有限公司",开业时间:"2019.9.11",级别:"XB3",地址:"新东产业集聚区新长北线以北，新规划新正街以东“东安汽车园”",lng:"114.00877",lat:"35.304481",投资人:"赵会春+吴建丽+曹小娟",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"南通",名称:"南通百弘汽车销售服务有限公司",开业时间:"2019.9.11",级别:"GB1",地址:"江苏省南通市崇川区通启路8号",lng:"120.89941748000534",lat:"31.997558458095195",投资人:"郁卫兴+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"金华",名称:"浙江金华裕旗汽车有限公司",开业时间:"2019.9.11",级别:"GB3",地址:"金华市金东区横二路与纵二路交叉口西北50米 ",lng:"119.694574",lat:"29.149209",投资人:"浙江省机关后勤经济发展中心+等等",现有店数:"2",营业状态:"开业"},
+		{省份:"山东",城市:"东营",名称:"东营鑫红汽车销售服务有限公司",开业时间:"2019.09.26",级别:"XB1",地址:"东营市垦利区郝家镇北二路16号",lng:"118.448047",lat:"37.483702",投资人:"孙宜芬+李秀丽",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"青岛",名称:"青岛欣盛汽车销售有限公司",开业时间:"2019.09.16",级别:"GB3",地址:"青岛市市北区重庆南路186号 ",lng:"120.395342",lat:"36.131166",投资人:"高剑+周明慧",现有店数:"1",营业状态:"开业"},
+		{省份:"陕西",城市:"汉中",名称:"汉中天汉旗胜汽车销售服务有限责任公司",开业时间:"2019.09.28",级别:"GB1",地址:"陕西省汉中市汉台区铺镇西汉高速公路引导南侧汉中天汉智慧车城内",lng:"107.116567",lat:"33.084157",投资人:"李海波+姜小花",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"漯河",名称:"漯河市和荣汽车销售服务有限公司",开业时间:"2019.09.20",级别:"GC1",地址:"漯河市源汇区漯舞路口亿通汽车城内桂江路",lng:"113.999021",lat:"33.557018",投资人:"刘文强+刘彩玲+吕文良",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"温州（瑞安）",名称:"瑞安市宝合汽车销售有限公司",开业时间:"2019.09.17",级别:"GB2",地址:"瑞安市塘下镇肇平垟南路222号 ",lng:"120.68204",lat:"27.83423",投资人:"李宝海+苏尔秒",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"安顺",名称:"贵州安晟汽车销售服务有限公司",开业时间:"2019.09.27",级别:"GB1",地址:"贵州省安顺市开发区王庄村委会旁",lng:"105.909445",lat:"26.232193",投资人:"杨松+魏庆+王浩钧+张家南",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"潍坊",名称:"潍坊泰岳宏旗汽车销售服务有限公司",开业时间:"2019.09.27",级别:"GB3",地址:"潍坊市寒亭区海龙路4870号 ",lng:"119.19296",lat:"36.752058",投资人:"岳曰安+张铁",现有店数:"2",营业状态:"开业"},
+		{省份:"山东",城市:"滨州",名称:"滨州利华晟旗悦汽车销售服务有限公司",开业时间:"2019.09.23",级别:"GB2",地址:"滨州市滨城区渤海五路张富路",lng:"117.99962104376516",lat:"37.45885605925021",投资人:"杨红星+杨支锋",现有店数:"3",营业状态:"开业"},
+		{省份:"广东",城市:"河源",名称:"广东中红汽车实业有限公司",开业时间:"2019.09.27",级别:"GB2",地址:"广东省河源市源城区205国道桂山路口",lng:"114.695078",lat:"23.704903",投资人:"深圳市柏尔智能科技股份有限公司",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"安阳",名称:"安阳世祥汽车销售服务有限公司",开业时间:"2019.09.24",级别:"GA",地址:"安阳市文昌大道与彰德路交叉口南200米路西 ",lng:"114.351817",lat:"36.07397",投资人:"余自锋+段银柱",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"泉州",名称:"晋江市同行汽车销售有限公司",开业时间:"2019.09.28",级别:"GB3",地址:"福建省泉州市晋江市罗山街道和平南路171号豪信汽车城3期A区2号",lng:"118.572177",lat:"24.775972",投资人:"陈文清+彭金地",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"贵阳",名称:"贵阳冉丰汽车服务有限公司",开业时间:"2019.09.27",级别:"GB1",地址:"贵阳市观山湖区百花大道与远通路交叉口",lng:"106.635727",lat:"26.59961",投资人:"雷炫+王峻波",现有店数:"3",营业状态:"开业"},
+		{省份:"四川",城市:"泸州",名称:"泸州明云华盛汽车销售服务有限公司",开业时间:"2019.09.30",级别:"XB3",地址:"泸州市纳溪区蓝安路3段13号                        ",lng:"105.41338",lat:"28.830855",投资人:"韩大进+黄静+谭治国+范锡军",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"红河（蒙自）",名称:"云南红河海伟宏亦汽车销售有限公司",开业时间:"2019.09.30",级别:"GB3",地址:"红河哈尼族彝族自治州蒙自市天马路(市人民医院斜对面) 振兴路交汇处",lng:"103.371075",lat:"23.390088",投资人:"蒋辉+周峻亦+杨超",现有店数:"3",营业状态:"开业"},
+		{省份:"浙江",城市:"湖州",名称:"湖州湖旗汽车有限公司",开业时间:"2019.10.04",级别:"GB2",地址:"浙江省湖州市蜀山路3003号",lng:"120.161763",lat:"30.892962",投资人:"李新成+李斌",现有店数:"5",营业状态:"开业"},
+		{省份:"浙江",城市:"嘉兴",名称:"嘉兴禾旗汽车销售服务有限公司",开业时间:"2019.10.16",级别:"GB2",地址:"浙江省嘉兴市嘉杭路640号",lng:"120.730555",lat:"30.736285",投资人:"郑春定+孙景+张跃平",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"嘉兴",名称:"浙江裕都汽车有限公司（桐乡）",开业时间:"筹建",级别:"XB1",地址:"嘉兴市桐乡中华东路",lng:"120.59661782649904",lat:"30.62384002452212",投资人:"吴德金",现有店数:"1",营业状态:"筹建中"},
+		{省份:"江苏",城市:"泰州",名称:"泰州海沃汽车销售服务有限公司",开业时间:"2019.10.18",级别:"GC1",地址:"泰州市经济开发区国际汽车城内",lng:"119.908353",lat:"32.424264",投资人:"杨荣+李艳",现有店数:"1",营业状态:"开业"},
+		{省份:"天津",城市:"天津",名称:"天津市永濠红旗汽车销售服务有限公司",开业时间:"2019.10.18",级别:"GB2",地址:"天津市西青区中北镇卉康道13号",lng:"117.085892",lat:"39.121953",投资人:"王学军+冯合营",现有店数:"1",营业状态:"开业"},
+		{省份:"上海",城市:"上海",名称:"上海绅亚汽车销售服务有限公司",开业时间:"2019.10.28",级别:"GB3",地址:"上海市闵行区中春路9998号                 ",lng:"121.336121",lat:"31.173178",投资人:"余慕",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"揭阳",名称:"广东容大星旗汽车有限公司",开业时间:"2019.10.28",级别:"GB3",地址:"揭阳市揭东区206国道中国银行揭东支行右侧",lng:"116.421688",lat:"23.578499",投资人:"李洁龙+张创雄",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"娄底",名称:"娄底市宝盛汽车销售服务有限公司",开业时间:"2019.10.29",级别:"GB3",地址:"娄底市娄星区湘中大道市政府往西2公里，湘中大道与紫鹊界路交叉处 ",lng:"111.973274",lat:"27.701999",投资人:"吴建升+唐迪华",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"济南",名称:"济南民福汽车服务有限公司",开业时间:"2019.10.29",级别:"GB3",地址:"济南市莱芜高新区汇源大街39号北姜庄小区",lng:"117.734741",lat:"36.203327",投资人:"樊庆华",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"泰安",名称:"泰安利华晟旗悦汽车销售服务有限公司",开业时间:"2019.11.12",级别:"GB3",地址:"山东省泰安市岱岳区泰东路国际汽车城龙信汽车广场3号",lng:"117.038993",lat:"36.159037",投资人:"杨红星+杨支锋",现有店数:"3",营业状态:"开业"},
+		{省份:"河南",城市:"周口",名称:"周口市昱旗汽车销售有限公司",开业时间:"2019.11.14",级别:"GB1",地址:"周口市太清路中段路南 （北环路）",lng:"114.693669",lat:"33.655295",投资人:"李刘通+李留伟",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"抚州",名称:"抚州市龙旗汽车销售有限公司",开业时间:"2019.11.21",级别:"GB2",地址:"抚州市迎宾大道赣东国际汽车城",lng:"116.337382",lat:"27.960012",投资人:"邓斌+吴珍",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"邵阳",名称:"邵阳旗乐汽车销售服务有限公司",开业时间:"2019.11.21",级别:"GB1",地址:"湖南省邵阳市邵阳经开区邵阳大道建龙路口",lng:"111.56464",lat:"27.262344",投资人:"姚英+李选刚+肖正红",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"玉溪",名称:"玉溪国臻汽车销售服务有限公司",开业时间:"2019.11.27",级别:"XB3",地址:"玉溪市红塔区太极路中段（中升丰田斜对面）",lng:"102.551125",lat:"24.391509",投资人:"龚学金+吴美珍+李敏",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"苏州",名称:"苏州华朔汽车销售服务有限公司",开业时间:"2019.11.27",级别:"GB1",地址:"苏州市吴中区木渎镇凯马大街88号",lng:"120.551984",lat:"31.26063",投资人:"杨雪华+曾级富+杨雪良+等等",现有店数:"2",营业状态:"开业"},
+		{省份:"湖北",城市:"孝感",名称:"孝感祥沃汽车销售服务有限公司",开业时间:"2019.11.27",级别:"GB1",地址:"孝南市经济开发区澴川路325号",lng:"113.976832",lat:"30.910956",投资人:"余自锋+都博",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"西昌",名称:"西昌璞瑞汽车销售服务有限责任公司",开业时间:"2019.11.29",级别:"GC1",地址:"西昌市机场路安宁段（108国道） ",lng:"102.203182",lat:"27.960004",投资人:"韩大进+谭治国+范锡军+丁立昌+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"北京",城市:"北京",名称:"北京中润发汽车销售有限公司",开业时间:"2019.11.29",级别:"GB2",地址:"北京市丰台区西三环与丽泽路交汇",lng:"116.323313",lat:"39.874017",投资人:"李春明+李京义",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"唐山",名称:"唐山岳泰宏旗汽车销售服务有限公司",开业时间:"2019.12.04",级别:"XB1",地址:"唐山市开平区规划北新东道南侧、中心环线东侧（开平区工业园区路2号）",lng:"118.263999",lat:"39.632918",投资人:"岳曰安+张铁",现有店数:"2",营业状态:"开业"},
+		{省份:"贵州",城市:"黔东南",名称:"凯里市凯通汽车贸易有限公司",开业时间:"2019.12.09",级别:"GC1",地址:"凯里市经济开发区经纬国际汽车红绿灯路口下坡50米",lng:"118.263999",lat:"39.632918",投资人:"汤国华+郑敏+钱志荣+汤佳利+姚胜石",现有店数:"2",营业状态:"开业"},
+		{省份:"河北",城市:"衡水",名称:"衡水华奕汽车销售服务有限公司",开业时间:"2019.12.11",级别:"GB1",地址:"衡水市桃城区榕花北大街高速路口南388米路东",lng:"115.705877",lat:"37.780997",投资人:"沙晓曼 和 李巧梅",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"常德",名称:"常德时茂汽车销售服务有限公司",开业时间:"2019.12.11",级别:"XB1",地址:"常德市武陵区双拥路与常德大道交汇处东北角",lng:"111.729725",lat:"29.007804",投资人:"龚波勇+龚道清",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"十堰",名称:"十堰亨运红晟汽车销售服务有限公司",开业时间:"2019.12.11",级别:"GC1",地址:"十堰市茅箭区东风大道40号",lng:"110.852229",lat:"32.611147",投资人:"湖北省亨运集团有限公司工会",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"毕节",名称:"贵州毕节丽安汽车销售服务有限公司",开业时间:"2019.12.12",级别:"XB3",地址:"毕节小瓦路双山国际汽车城",lng:"105.454464",lat:"27.272796",投资人:"杨松+魏庆+刘世兴",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"南昌",名称:"南昌美乘汽车销售服务有限公司",开业时间:"2019.12.13",级别:"GB1",地址:"南昌市东湖区洪都北大道336号",lng:"115.928284",lat:"28.701527",投资人:"熊卫斌+周钰涛",现有店数:"1",营业状态:"开业"},
+		{省份:"内蒙古",城市:"鄂尔多斯",名称:"鄂尔多斯市宏旗汽车销售有限公司",开业时间:"2019.12.10",级别:"GC2",地址:"鄂尔多斯市东胜区铜川镇北二环路 ",lng:"110.107785",lat:"39.792128",投资人:"高有清+卢占义",现有店数:"1",营业状态:"开业"},
+		{省份:"上海",城市:"上海",名称:"上海岳宏泰汽车销售服务有限公司",开业时间:"2019.12.13",级别:"GB3",地址:"上海市浦东新区北蔡镇康杉路118号2号楼101室",lng:"121.563597",lat:"31.163534",投资人:"岳曰安+成晓莹",现有店数:"5",营业状态:"开业"},
+		{省份:"福建",城市:"福州",名称:"福州华奥鸿旗汽车销售有限公司",开业时间:"2019.12.13",级别:"XB3",地址:"福州市闽侯县青口镇镜上村",lng:"119.387839",lat:"25.917067",投资人:"陈清池+陈清渊+张进福+张秀瑜",现有店数:"2",营业状态:"开业"},
+		{省份:"云南",城市:"普洱",名称:"普洱海伟宏亦汽车销售有限公司",开业时间:"2019.12.16",级别:"GB3",地址:"普洱市思茅区普洱路中段",lng:"100.981496",lat:"22.805141",投资人:"蒋辉+周峻亦+杨超",现有店数:"3",营业状态:"开业"},
+		{省份:"黑龙江",城市:"牡丹江",名称:"牡丹江中信恒安汽车销售服务有限公司",开业时间:"2019.12.17",级别:"GB3",地址:"牡丹江市裕民路南兴业路西777号",lng:"129.686375",lat:"44.630519",投资人:"朱志强+陈香兰",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"株洲",名称:"株洲宏旗汽车销售服务有限公司",开业时间:"2019.12.17",级别:"GB3",地址:"株洲市荷塘区红港路汽车城汽贸路株洲宏福店右边",lng:"113.161756",lat:"27.868675",投资人:"黄爱莲+庄园+庄启宁",现有店数:"2",营业状态:"开业"},
+		{省份:"陕西",城市:"咸阳",名称:"西咸新区骏益汽车销售有限公司",开业时间:"2019.12.18",级别:"XB2",地址:"陕西省西咸新区秦汉新城北上召汽车产业园五陵塬路",lng:"113.161756",lat:"27.868675",投资人:"王文怡+岳保胜+程瑶+李沛东+周涛",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"九江",名称:"九江华宏昇汽车有限公司",开业时间:"2019.12.18",级别:"GB3",地址:"九江市濂溪区新港镇太平村13组九湖路旁",lng:"116.106284",lat:"29.743648",投资人:"戴华+何宏云+何宏勇+马树英",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"丽水",名称:"丽水君悦宏旗汽车有限公司",开业时间:"2019.12.20",级别:"GC1",地址:"丽水市南明山街道文丽二路99号—水阁汽车城二号地块 ",lng:"119.856473",lat:"28.413958",投资人:"李和林+李大江",现有店数:"2",营业状态:"开业"},
+		{省份:"湖北",城市:"黄冈",名称:"黄冈旗胜汽车服务有限公司",开业时间:"2019.12.20",级别:"GB1",地址:"黄冈市黄州区南湖大道南湖办事处旁",lng:"114.974859",lat:"30.449744",投资人:"郑本江+林欣龙",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"漳州",名称:"漳州市宏旗汽车销售服务有限公司",开业时间:"2019.12.20",级别:"GC1",地址:"福建省漳州市龙文北路90号",lng:"117.724165",lat:"24.52978",投资人:"蔡芳城+陈国文",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"马鞍山",名称:"马鞍山金福联汽车销售服务有限公司",开业时间:"2019.12.21",级别:"GC1",地址:"马鞍山经济技术开发区湖西南路3380号2栋 ",lng:"118.505084",lat:"31.646072",投资人:"毛里求斯国",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"绍兴（诸暨）",名称:"诸暨悦旗汽车有限公司",开业时间:"2019.12.23",级别:"GA",地址:"浙江省诸暨市陶朱街道北二环路10号",lng:"120.19939",lat:"29.74865",投资人:"李新成+李斌",现有店数:"5",营业状态:"开业"},
+		{省份:"西藏",城市:"拉萨",名称:"西藏泰立汽车销售服务有限公司",开业时间:"2019.12.23",级别:"GC2",地址:"拉萨市金珠西路169号",lng:"91.035954",lat:"29.65091",投资人:"刘天均+赵瑜+季军",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"四平",名称:"四平通立汽车销售服务有限公司",开业时间:"2020.01.02",级别:"GB2",地址:"四平市经济开发区大路4111号",lng:"124.457894",lat:"43.143083",投资人:"宋立恭+陆明辉+麦雪年",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"都匀",名称:"黔南州大雍汇盛汽车销售服务有限公司",开业时间:"2020.01.02",级别:"GB2",地址:"都匀市绿茵湖办事处毛尖大道汽车产业园美炬电器大楼B-1号",lng:"107.46945",lat:"26.315742",投资人:"雷炫+王峻波",现有店数:"3",营业状态:"开业"},
+		{省份:"四川",城市:"广安",名称:"广安祥龙车业有限公司",开业时间:"2020.01.02",级别:"GC2",地址:"四川省广安市前锋区护安镇护安村汽车城建国汽车产业园",lng:"106.702778",lat:"30.513479",投资人:"袁国彬",现有店数:"3",营业状态:"开业"},
+		{省份:"内蒙古",城市:"通辽",名称:"通辽市大鹏泰达汽车销售服务有限公司 ",开业时间:"2020.01.06",级别:"GB3",地址:"内蒙古通辽市经济技术开发区瑞丰汽贸物流园区L1区L1  ",lng:"122.227397",lat:"43.656373",投资人:"崔云鹏+刘燕",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"邯郸",名称:"邯郸市鸿博汽车销售服务有限公司",开业时间:"2020.01.06",级别:"GB1",地址:"邯郸市复兴区北环路88号",lng:"114.475706",lat:"36.654693",投资人:"刘洪+吴丽娜",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"肇庆",名称:"肇庆市诚利汽车销售服务有限公司",开业时间:"2020.01.09",级别:"GC1",地址:"肇庆市端州区321国道肇庆学院牌坊往东800",lng:"112.501586",lat:"23.112805",投资人:"李红梅+张艳振",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"亳州",名称:"亳州市远景特润汽车销售服务有限责任公司",开业时间:"2020.01.12",级别:"GB2",地址:"亳州市谯城区工业园区杜仲路",lng:"115.767639",lat:"33.837254",投资人:"李振杰+刘燕",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"眉山",名称:"四川融裕汽车贸易有限责任公司",开业时间:"2020.01.13",级别:"XB3",地址:"四川省眉山市东坡区本草大道 ",lng:"103.800639",lat:"30.079785",投资人:"余学忠+黄丽平",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"镇江",名称:"镇江利正汽车销售服务有限公司",开业时间:"2020.01.11",级别:"GB2",地址:"镇江市丁卯街道丁卯桥路303号",lng:"119.5217",lat:"32.18459",投资人:"杨荣+胡振东",现有店数:"2",营业状态:"开业"},
+		{省份:"河北",城市:"承德",名称:"承德天美汽车销售有限公司",开业时间:"2020.02.10",级别:"GB2",地址:"承德市双滦区狮子园路汽车小镇 ",lng:"117.82847",lat:"41.021848",投资人:"许飞+田秀娟+刘赛冲",现有店数:"1",营业状态:"开业"},
+		{省份:"贵州",城市:"六盘水",名称:"贵州省星尊程悦航汽车销售服务有限公司",开业时间:"2020.03.24",级别:"GB1",地址:"六盘水市钟山区会展中心底层商铺S-2-12号",lng:"104.906549",lat:"26.548686",投资人:"田景龙+汪琼",现有店数:"1",营业状态:"开业"},
+		{省份:"内蒙古",城市:"赤峰",名称:"赤峰天永汽车销售服务有限公司",开业时间:"2020.03.25",级别:"GB3",地址:"赤峰市红山区桥北物流园辽河路西",lng:"118.921483",lat:"42.338333",投资人:"梁立妍+张永刚+于海泳",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"湛江",名称:"湛江市宝旗汽车销售服务有限公司",开业时间:"2020.03.25",级别:"GB2",地址:"湛江市赤坎区东盛路7号-Z104",lng:"110.385775",lat:"21.301709",投资人:"蔡贡",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"郴州",名称:"郴州市恒晨汽车销售服务有限公司",开业时间:"2020.04.16",级别:"GC1",地址:"郴州市北湖区南岭大道城前岭立交桥南侧 ",lng:"113.002887",lat:"25.753647",投资人:"唐继林+詹立武+雷秀云+彭瑞辉",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"荆州",名称:"荆州旗阳汽车销售服务有限公司",开业时间:"2020.04.16",级别:"GB3",地址:"荆州市荆州区荆州大道188号荆州竹叶山车世界第C9栋103号",lng:"112.212464",lat:"30.389206",投资人:"谢百科+杨勇军",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"江门",名称:"江门市裕立汽车销售服务有限公司",开业时间:"2020.04.22",级别:"GB3",地址:"江门市江海区五邑路119号1幢",lng:"113.082832",lat:"22.559548",投资人:"裕隆（中国）汽车投资有限公司",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"岳阳",名称:"岳阳广宸汽车销售服务有限公司",开业时间:"2020.04.22",级别:"XB1",地址:"岳阳市岳阳楼区梅溪乡滨湖村，联港路以西 ",lng:"113.177529",lat:"29.428161",投资人:"吴彪民+欧作平",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"广州",名称:"广东广物鸿福汽车销售服务有限公司",开业时间:"2020.05.20",级别:"GB1",地址:"广州市荔湾区龙溪大道488号",lng:"113.196954",lat:"23.072205",投资人:"广东省人民政府",现有店数:"2",营业状态:"开业"},
+		{省份:"黑龙江",城市:"齐齐哈尔",名称:"齐齐哈尔粤华汽贸集团有限公司",开业时间:"2020.05.26",级别:"GB3",地址:"齐齐哈尔市龙沙区鹤城路1号 ",lng:"123.93966",lat:"47.312308",投资人:"于航+张秀君+于德军",现有店数:"1",营业状态:"开业"},
+		{省份:"河南",城市:"平顶山",名称:"平顶山市盛大汽车销售服务有限公司",开业时间:"2020.05.26",级别:"XB2",地址:"河南省平顶山市建设路东段许平南高速出口西一公里  ",lng:"113.494135",lat:"33.741732",投资人:"赵会春+吴建丽",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"昭通",名称:"昭通国源汽车销售服务有限公司",开业时间:"2020.06.09",级别:"GB3",地址:"昭通市昭阳区工业园区石渣河社区",lng:"103.789584",lat:"27.38877",投资人:"李永忠+李小朦+李晓艳",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"沈阳",名称:"辽宁神州红旗汽车销售服务有限公司",开业时间:"2020.06.09",级别:"GB1",地址:"沈阳市铁西区北二中路41号",lng:"123.363357",lat:"41.820795",投资人:"王清华+岳维森+马震",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"益阳",名称:"益阳宏旗汽车销售服务有限公司",开业时间:"2020.06.12",级别:"GB3",地址:"益阳市赫山区十洲路（益阳蓝马北京现代4S店）",lng:"112.398011",lat:"28.577559",投资人:"黄爱莲+庄园+庄启宁",现有店数:"2",营业状态:"开业"},
+		{省份:"河南",城市:"焦作",名称:"焦作市天宏汽车销售服务有限公司",开业时间:"2020.06.16",级别:"XB2",地址:"焦作市迎宾路沙河桥南550米路西",lng:"113.268818",lat:"35.15789",投资人:"岳天有",现有店数:"1",营业状态:"开业"},
+		{省份:"江苏",城市:"连云港",名称:"连云港海旗汽车销售服务有限公司",开业时间:"2020.06.17",级别:"GC1",地址:"连云港市海州区解放东路振兴汽车城",lng:"119.196077",lat:"34.646751",投资人:"杨荣+胡振东",现有店数:"2",营业状态:"开业"},
+		{省份:"云南",城市:"西双版纳",名称:"西双版纳骏杰汽车销售服务有限公司",开业时间:"2020.06.18",级别:"XB3",地址:"西双版纳州景洪农场三分场场部旁原胶厂（214国道交叉线旁）",lng:"100.7607",lat:"21.992564",投资人:"易兰春+蒋仙定",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"宿州",名称:"宿州市韵昌汽车销售服务有限责任公司",开业时间:"2020.06.24",级别:"GB3",地址:"宿州市开发区鞋城西昌南路，卓耕广场东侧，广汽丰田4S店南侧",lng:"116.976705",lat:"33.598482",投资人:"王昌+姬梅",现有店数:"1",营业状态:"开业"},
+		{省份:"山西",城市:"太原",名称:"山西大昌福源汽车销售服务有限公司",开业时间:"2020.06.23",级别:"GB1",地址:"山西省太原市小店区平阳南路88号，大昌汽贸园立体展厅一楼",lng:"112.560106",lat:"37.788618",投资人:"代全民",现有店数:"5",营业状态:"开业"},
+		{省份:"江苏",城市:"徐州",名称:"徐州市世纪恒望汽车销售服务有限公司",开业时间:"2020.06.20",级别:"GB3",地址:"徐州市铜山区欣欣路大成物流汽车园",lng:"117.231875",lat:"34.209854",投资人:"刘铮+刘洪伟",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"韶关",名称:"韶关市荣耀汽车销售服务有限公司",开业时间:"2020.06.23",级别:"GC1",地址:"韶关市浈江区韶南大道七公里东侧 ",lng:"113.587651",lat:"24.74414",投资人:"戴亮",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"深圳",名称:"深圳市通利华实业有限公司",开业时间:"2020.06.24",级别:"GB3",地址:"深圳市龙岗区园山街道银盛路33号信义汽车城17、18号展位",lng:"114.229897",lat:"22.673173",投资人:"李玉娟+罗锦容+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"黑龙江",城市:"哈尔滨",名称:"黑龙江省华之诚万家汽车销售服务有限公司",开业时间:"2020.06.22",级别:"GB2",地址:"哈尔滨市道里区机场路18号",lng:"126.557874",lat:"45.710433",投资人:"邢世文+王丽+王萍+王平+邢亮+李凤才+邢士明",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"威海",名称:"威海鸿运汽车销售服务有限公司",开业时间:"2020.06.29",级别:"GB1",地址:"威海市环翠区温泉镇冶口村金蚂蚁汽车广场38号",lng:"122.141562",lat:"37.37188",投资人:"夏清",现有店数:"1",营业状态:"开业"},
+		{省份:"安徽",城市:"滁州",名称:"滁州钰祥汽车销售服务有限公司",开业时间:"2020.06.29",级别:"GB3",地址:"滁州市花亭路889号 ",lng:"118.352488",lat:"32.273406",投资人:"陈长春+徐强+叶刚",现有店数:"1",营业状态:"开业"},
+		{省份:"湖南",城市:"湘西",名称:"湘西旗胜汽车销售有限责任公司",开业时间:"2020.06.30",级别:"GB2",地址:"湘西土家族苗族自治州吉首市武陵国际汽车城兰天大道12号",lng:"109.68167",lat:"28.232844",投资人:"郑刚英+姚祖清+王四明",现有店数:"1",营业状态:"开业"},
+		{省份:"吉林",城市:"通化",名称:"通化市汇升汽车销售服务有限公司",开业时间:"2020.07.02",级别:"GB1",地址:"通化市东昌区环通乡长流村303国道旁距收费站500米",lng:"125.9247",lat:"41.780037",投资人:"沈显峰+庞凤秀",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"龙岩",名称:"龙岩市亿海冠旗汽车销售有限公司",开业时间:"2020.07.10",级别:"GB2",地址:"龙岩市新罗区龙门镇物流大道328号 ",lng:"116.960716",lat:"25.106733",投资人:"张海峰+潘法斌",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"文山",名称:"文山市鑫桥汽车销售服务有限公司",开业时间:"2020.07.10",级别:"XC1",地址:"文山壮族苗族自治州文山市城南路花桥国际汽车城内",lng:"104.286631",lat:"23.328988",投资人:"童桥+朱强",现有店数:"1",营业状态:"开业"},
+		{省份:"云南",城市:"楚雄",名称:"楚雄安晟汽车销售服务有限公司",开业时间:"2020.07.15",级别:"GC",地址:"楚雄彝族自治州楚雄市鹿城镇河前社区滇大商汇109幢101号 ",lng:"101.496412",lat:"25.070972",投资人:"杨松+魏庆+王治钧+张家南",现有店数:"1",营业状态:"开业"},
+		{省份:"福建",城市:"莆田",名称:"莆田星奥汽车销售服务有限公司",开业时间:"2020.07.21",级别:"GB2",地址:"莆田市荔城区经济开发区洞湖工业小区地块一",lng:"119.04766",lat:"25.473232",投资人:"陈清池+王光荣+陈清渊+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"深圳",名称:"深圳锦红汽车销售服务有限公司",开业时间:"2020.07.22",级别:"GB2",地址:"深圳市宝安区航城街道三围社区航空路",lng:"113.849731",lat:"22.613191",投资人:"麦庆德+麦燕芳",现有店数:"1",营业状态:"开业"},
+		{省份:"山东",城市:"枣庄",名称:"枣庄旗尚汽车销售服务有限公司",开业时间:"2020.07.26",级别:"GB1",地址:"枣庄市薛城区光明大街北侧 ",lng:"117.438745",lat:"34.827749",投资人:"苏国峰和樊庆华",现有店数:"1",营业状态:"开业"},
+		{省份:"河北",城市:"石家庄",名称:"河北华晟汽车服务有限公司",开业时间:"2020.07.26",级别:"GB1",地址:"石家庄市北二环东路86号国际汽车贸易园区",lng:"114.553253",lat:"38.076774",投资人:"沙晓曼+张丽霞+汪晶+李超",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"荆门",名称:"荆门英驰汽车销售有限公司",开业时间:"2020.07.27",级别:"GC",地址:"荆门市掇刀区月亮湖路76号 ",lng:"112.243711",lat:"31.047974",投资人:"张扬武+王章武+刘章贵",现有店数:"3",营业状态:"开业"},
+		{省份:"河北",城市:"张家口",名称:"张家口龙瀚汽车销售服务有限公司",开业时间:"2020.07.28",级别:"GB1",地址:"张家口市察哈尔大街东山科技园路西",lng:"114.929774",lat:"40.704432",投资人:"王桂秋+王龙芳",现有店数:"3",营业状态:"开业"},
+		{省份:"陕西",城市:"榆林",名称:"榆林恒盛德岳汽车贸易有限公司",开业时间:"2020.07.28",级别:"GB1",地址:"榆林市榆阳区榆麻路汽车产业园",lng:"109.87146",lat:"38.339861",投资人:"杨万利+杨万雄",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"大连",名称:"大连汽贸集团华宇汽车销售服务有限公司",开业时间:"2020.07.30",级别:"GB3",地址:"大连市甘井子区山东路80-9号",lng:"121.582797",lat:"38.971552",投资人:"依晓军+李士忠+邹立颖+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"四川",城市:"成都",名称:"成都岳宏泰汽车销售服务有限公司",开业时间:"2020.08.13",级别:"GA",地址:"成都市双流区东升街道宗申赛纳维54栋 ",lng:"103.960564",lat:"30.604977",投资人:"岳曰安+成晓莹",现有店数:"5",营业状态:"开业"},
+		{省份:"湖北",城市:"武汉",名称:"武汉泰岳宏旗汽车销售服务有限公司",开业时间:"2020.08.12",级别:"GB1",地址:"湖北武汉黄陂区汉口北大道88号汽车大世界H-3#",lng:"114.323717",lat:"30.713746",投资人:"岳曰安+高超",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"黄石",名称:"黄石市新兴振宇汽车销售有限公司",开业时间:"2020.08.12",级别:"GC",地址:"黄石市金山街道办事处大棋大道358号",lng:"115.02894",lat:"30.141515",投资人:"张继东+谢国珍",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"随州",名称:"湖北骏翔汽车销售服务有限公司",开业时间:"2020.08.13",级别:"GB2",地址:"随州市曾都区鹿鹤大道特28号",lng:"113.44238",lat:"31.709867",投资人:"马军伟+马红伟",现有店数:"1",营业状态:"开业"},
+		{省份:"江西",城市:"景德镇",名称:"景德镇市景旗汽车销售服务有限责任公司",开业时间:"2020.08.18",级别:"GB2",地址:"景德镇市浮梁县洪源大桥北侧",lng:"117.162687",lat:"29.318011",投资人:"刘叙+罗序文+罗月蕾",现有店数:"1",营业状态:"开业"},
+		{省份:"湖北",城市:"恩施",名称:"恩施英驰汽车销售有限公司",开业时间:"2020.08.17",级别:"GC",地址:"恩施土家族苗族自治州硒江路六角亭街道办事处松树坪国际汽车城第3号楼1单元",lng:"109.460527",lat:"30.287826",投资人:"张扬武+王章武+刘章贵",现有店数:"3",营业状态:"开业"},
+		{省份:"江苏",城市:"南京",名称:"南京天沃汽车销售服务有限公司",开业时间:"2020.08.16",级别:"GB1",地址:"南京市秦淮区土城头106号",lng:"118.802683",lat:"32.003028",投资人:"张鹏+王延彬+张建胜+宋建东+宣鲁明",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"舟山",名称:"舟山旗翔汽车销售服务有限公司",开业时间:"2020.08.19",级别:"GB3",地址:"舟山市定海区弘生大道158号 ",lng:"122.145842",lat:"30.001092",投资人:"郑春定+乐旭波+孙景",现有店数:"1",营业状态:"开业"},
+		{省份:"广东",城市:"茂名",名称:"广东广物鸿福汽车销售服务有限公司茂名分公司",开业时间:"2020.08.20",级别:"GC",地址:"茂名市电白区高水路（茂名大道）278号",lng:"110.967385",lat:"21.619226",投资人:"广东省人民政府",现有店数:"2",营业状态:"开业"},
+		{省份:"广东",城市:"汕头",名称:"汕头市众驰汽车有限公司",开业时间:"2020.08.18",级别:"GB1",地址:"汕头市龙湖区黄河路39号之一 ",lng:"116.738771",lat:"23.391749",投资人:"厦门建发股份有限公司",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"鞍山",名称:"鞍山天美汽车销售有限公司",开业时间:"2020.08.21",级别:"GB1",地址:"鞍山市达道湾经济开发区建设大道593号",lng:"122.955192",lat:"41.164344",投资人:"许飞+李拥军+等等",现有店数:"1",营业状态:"开业"},
+		{省份:"浙江",城市:"台州",名称:"台州星旗汽车销售服务有限公司",开业时间:"2020.08.18",级别:"GB3",地址:"台州市路桥区路南街道迎宾社区花卉路88号",lng:"121.390148",lat:"28.559545",投资人:"郑春定+孙景+孙丽华+孙小莉+潘柯宇+孙玉莲",现有店数:"1",营业状态:"开业"},
+		{省份:"辽宁",城市:"锦州",名称:"锦州新东方汽车销售服务有限公司",开业时间:"2020.08.15",级别:"GB3",地址:"锦州市太和区新民乡大围子村锦州盛世汽车交易市场院内",lng:"121.111329",lat:"41.046977",投资人:"孙世刚+孙昊阳",现有店数:"1",营业状态:"开业"}
+
+	];
+	console.log(hongqi_data.length)
+	//创建招募区域——————————————————————————————————————————————————————
+	//	var polygon = new BMap.Polygon([
+	//		new BMap.Point(116.387112,39.920977),
+	//		new BMap.Point(116.385243,39.913063),
+	//		new BMap.Point(116.394226,39.917988),
+	//		new BMap.Point(116.401772,39.921364),
+	//		new BMap.Point(116.41248,39.927893)
+	//	], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});  
+	//	map.addOverlay(polygon);
+	//	polygon.disableMassClear();
+
+	//城市级别数据
+	var city_level = {
+		北京市:"一线  1",
+		上海市:"一线  2",
+		广州市:"一线  3",
+		深圳市:"一线  4",
+		成都市:"一线  5",
+		重庆市:"一线  6",
+		杭州市:"一线  7",
+		武汉市:"一线  8",
+		西安市:"一线  9",
+		天津市:"一线  10",
+		苏州市:"一线  11",
+		南京市:"一线  12",
+		郑州市:"一线  13",
+		长沙市:"一线  14",
+		东莞市:"一线  15",
+		沈阳市:"一线  16",
+		青岛市:"一线  17",
+		合肥市:"一线  18",
+		佛山市:"一线  19",
+		宁波市:"二线  20",
+		昆明市:"二线  21",
+		福州市:"二线  22",
+		无锡市:"二线  23",
+		厦门市:"二线  24",
+		济南市:"二线  25",
+		大连市:"二线  26",
+		哈尔滨市:"二线  27",
+		温州市:"二线  28",
+		石家庄市:"二线  29",
+		泉州市:"二线  30",
+		南宁市:"二线  31",
+		长春市:"二线  32",
+		南昌市:"二线  33",
+		贵阳市:"二线  34",
+		金华市:"二线  35",
+		常州市:"二线  36",
+		惠州市:"二线  37",
+		嘉兴市:"二线  38",
+		南通市:"二线  39",
+		徐州市:"二线  40",
+		太原市:"二线  41",
+		珠海市:"二线  42",
+		中山市:"二线  43",
+		保定市:"二线  44",
+		兰州市:"二线  45",
+		台州市:"二线  46",
+		绍兴市:"二线  47",
+		烟台市:"二线  48",
+		廊坊市:"二线  49",
+		潍坊市:"三线  50",
+		扬州市:"三线  51",
+		海口市:"三线  52",
+		汕头市:"三线  53",
+		洛阳市:"三线  54",
+		乌鲁木齐市:"三线  55",
+		临沂市:"三线  56",
+		唐山市:"三线  57",
+		镇江市:"三线  58",
+		盐城市:"三线  59",
+		湖州市:"三线  60",
+		赣州市:"三线  61",
+		泰州市:"三线  62",
+		济宁市:"三线  63",
+		呼和浩特市:"三线  64",
+		咸阳市:"三线  65",
+		漳州市:"三线  66",
+		揭阳市:"三线  67",
+		江门市:"三线  68",
+		桂林市:"三线  69",
+		邯郸市:"三线  70",
+		芜湖市:"三线  71",
+		三亚市:"三线  72",
+		阜阳市:"三线  73",
+		淮安市:"三线  74",
+		遵义市:"三线  75",
+		银川市:"三线  76",
+		衡阳市:"三线  77",
+		上饶市:"三线  78",
+		柳州市:"三线  79",
+		淄博市:"三线  80",
+		莆田市:"三线  81",
+		绵阳市:"三线  82",
+		湛江市:"三线  83",
+		商丘市:"三线  84",
+		宜昌市:"三线  85",
+		沧州市:"三线  86",
+		连云港市:"三线  87",
+		南阳市:"三线  88",
+		九江市:"三线  89",
+		新乡市:"三线  90",
+		信阳市:"三线  91",
+		襄阳市:"三线  92",
+		岳阳市:"三线  93",
+		蚌埠市:"三线  94",
+		驻马店市:"三线  95",
+		滁州市:"三线  96",
+		威海市:"三线  97",
+		宿迁市:"三线  98",
+		株洲市:"三线  99",
+		宁德市:"三线  100",
+		邢台市:"三线  101",
+		潮州市:"三线  102",
+		秦皇岛市:"三线  103",
+		肇庆市:"三线  104",
+		荆州市:"三线  105",
+		周口市:"三线  106",
+		马鞍山市:"三线  107",
+		清远市:"三线  108",
+		宿州市:"三线  109",
+		鞍山市:"三线  110",
+		安庆市:"三线  111",
+		菏泽市:"三线  112",
+		宜春市:"三线  113",
+		黄冈市:"三线  114",
+		泰安市:"三线  115",
+		南充市:"三线  116",
+		六安市:"三线  117",
+		大庆市:"三线  118",
+		舟山市:"三线  119",
+		常德市:"四线  120",
+		渭南市:"四线  121",
+		孝感市:"四线  122",
+		丽水市:"四线  123",
+		运城市:"四线  124",
+		德州市:"四线  125",
+		许昌市:"四线  126",
+		湘潭市:"四线  127",
+		晋中市:"四线  128",
+		安阳市:"四线  129",
+		三明市:"四线  130",
+		开封市:"四线  131",
+		郴州市:"四线  132",
+		茂名市:"四线  133",
+		邵阳市:"四线  134",
+		德阳市:"四线  135",
+		龙岩市:"四线  136",
+		南平市:"四线  137",
+		淮南市:"四线  138",
+		黄石市:"四线  139",
+		营口市:"四线  140",
+		亳州市:"四线  141",
+		日照市:"四线  142",
+		西宁市:"四线  143",
+		衢州市:"四线  144",
+		东营市:"四线  145",
+		吉林市:"四线  146",
+		韶关市:"四线  147",
+		枣庄市:"四线  148",
+		包头市:"四线  149",
+		怀化市:"四线  150",
+		宣城市:"四线  151",
+		临汾市:"四线  152",
+		聊城市:"四线  153",
+		梅州市:"四线  154",
+		盘锦市:"四线  155",
+		锦州市:"四线  156",
+		榆林市:"四线  157",
+		北海市:"四线  158",
+		宝鸡市:"四线  159",
+		抚州市:"四线  160",
+		景德镇市:"四线  161",
+		玉林市:"四线  162",
+		十堰市:"四线  163",
+		汕尾市:"四线  164",
+		咸宁市:"四线  165",
+		宜宾市:"四线  166",
+		焦作市:"四线  167",
+		平顶山市:"四线  168",
+		滨州市:"四线  169",
+		吉安市:"四线  170",
+		永州市:"四线  171",
+		益阳市:"四线  172",
+		黔南布依族苗族自治州:"四线  173",
+		丹东市:"四线  174",
+		曲靖市:"四线  175",
+		乐山市:"四线  176",
+		黔东南苗族侗族自治州:"四线  177",
+		张家口市:"四线  178",
+		黄山市:"四线  179",
+		鄂尔多斯市:"四线  180",
+		阳江市:"四线  181",
+		泸州市:"四线  182",
+		恩施土家族苗族自治州:"四线  183",
+		衡水市:"四线  184",
+		铜陵市:"四线  185",
+		承德市:"四线  186",
+		红河哈尼族彝族自治州:"四线  187",
+		大理白族自治州:"四线  188",
+		大同市:"四线  189",
+		漯河市:"四线  190",
+		葫芦岛市:"四线  191",
+		河源市:"四线  192",
+		娄底市:"四线  193",
+		延边朝鲜族自治州:"四线  194",
+		齐齐哈尔市:"四线  195",
+		延安市:"四线  196",
+		抚顺市:"四线  197",
+		拉萨市:"四线  198",
+		铜仁市:"四线  199",
+		长治市:"四线  200",
+		达州市:"四线  201",
+		鄂州市:"四线  202",
+		忻州市:"四线  203",
+		吕梁市:"四线  204",
+		淮北市:"四线  205",
+		濮阳市:"四线  206",
+		眉山市:"四线  207",
+		池州市:"四线  208",
+		荆门市:"四线  209",
+		汉中市:"五线  210",
+		辽阳市:"五线  211",
+		梧州市:"五线  212",
+		鹰潭市:"五线  213",
+		百色市:"五线  214",
+		毕节市:"五线  215",
+		钦州市:"五线  216",
+		云浮市:"五线  217",
+		佳木斯市:"五线  218",
+		朝阳市:"五线  219",
+		贵港市:"五线  220",
+		丽江市:"五线  221",
+		四平市:"五线  222",
+		内江市:"五线  223",
+		六盘水市:"五线  224",
+		安顺市:"五线  225",
+		三门峡市:"五线  226",
+		赤峰市:"五线  227",
+		新余市:"五线  228",
+		牡丹江市:"五线  229",
+		晋城市:"五线  230",
+		自贡市:"五线  231",
+		本溪市:"五线  232",
+		防城港市:"五线  233",
+		铁岭市:"五线  234",
+		随州市:"五线  235",
+		广安市:"五线  236",
+		广元市:"五线  237",
+		天水市:"五线  238",
+		遂宁市:"五线  239",
+		萍乡市:"五线  240",
+		西双版纳傣族自治州:"五线  241",
+		绥化市:"五线  242",
+		鹤壁市:"五线  243",
+		湘西土家族苗族自治州:"五线  244",
+		松原市:"五线  245",
+		阜新市:"五线  246",
+		酒泉市:"五线  247",
+		张家界市:"五线  248",
+		黔西南布依族苗族自治州:"五线  249",
+		保山市:"五线  250",
+		昭通市:"五线  251",
+		克拉玛依市:"五线  252",
+		呼伦贝尔市:"五线  253",
+		贺州市:"五线  254",
+		通化市:"五线  255",
+		阳泉市:"五线  256",
+		河池市:"五线  257",
+		来宾市:"五线  258",
+		玉溪市:"五线  259",
+		安康市:"五线  260",
+		通辽市:"五线  261",
+		德宏傣族景颇族自治州:"五线  262",
+		楚雄彝族自治州:"五线  263",
+		朔州市:"五线  264",
+		伊犁哈萨克自治州:"五线  265",
+		文山壮族苗族自治州:"五线  266",
+		嘉峪关市:"五线  267",
+		凉山彝族自治州:"五线  268",
+		资阳市:"五线  269",
+		锡林郭勒盟:"五线  270",
+		雅安市:"五线  271",
+		普洱市:"五线  272",
+		崇左市:"五线  273",
+		庆阳市:"五线  274",
+		巴音郭楞蒙古自治州:"五线  275",
+		乌兰察布市:"五线  276",
+		白山市:"五线  277",
+		昌吉回族自治州:"五线  278",
+		白城市:"五线  279",
+		兴安盟:"五线  280",
+		定西市:"五线  281",
+		喀什地区:"五线  282",
+		白银市:"五线  283",
+		陇南市:"五线  284",
+		张掖市:"五线  285",
+		商洛市:"五线  286",
+		黑河市:"五线  287",
+		哈密市:"五线  288",
+		吴忠市:"五线  289",
+		攀枝花市:"五线  290",
+		巴彦淖尔市:"五线  291",
+		巴中市:"五线  292",
+		鸡西市:"五线  293",
+		乌海市:"五线  294",
+		临沧市:"五线  295",
+		海东市:"五线  296",
+		双鸭山市:"五线  297",
+		阿克苏地区:"五线  298",
+		石嘴山市:"五线  299",
+		阿拉善盟:"五线  300",
+		海西蒙古族藏族自治州:"五线  301",
+		平凉市:"五线  302",
+		辽源市:"五线  303",
+		临夏回族自治州:"五线  304",
+		铜川市:"五线  305",
+		金昌市:"五线  306",
+		鹤岗市:"五线  307",
+		伊春市:"五线  308",
+		林芝市:"五线  309",
+		固原市:"五线  310",
+		武威市:"五线  311",
+		儋州市:"五线  312",
+		吐鲁番市:"五线  313",
+		甘孜藏族自治州:"五线  314",
+		中卫市:"五线  315",
+		怒江傈僳族自治州:"五线  316",
+		和田地区:"五线  317",
+		迪庆藏族自治州:"五线  318",
+		甘南藏族自治州:"五线  319",
+		阿坝藏族羌族自治州:"五线  320",
+		大兴安岭地区:"五线  321",
+		七台河市:"五线  322",
+		山南市:"五线  323",
+		日喀则市:"五线  324",
+		塔城地区:"五线  325",
+		博尔塔拉蒙古自治州:"五线  326",
+		昌都市:"五线  327",
+		阿勒泰地区:"五线  328",
+		玉树藏族自治州:"五线  329",
+		海南藏族自治州:"五线  330",
+		克孜勒苏柯尔克孜自治州:"五线  331",
+		阿里地区:"五线  332",
+		海北藏族自治州:"五线  333",
+		黄南藏族自治州:"五线  334",
+		果洛藏族自治州:"五线  335",
+		那曲市:"五线  336",
+		三沙市:"五线  337"
+	};
+
+	//国家统计局数据
+	var national_data = {
+		全国:{城镇农村:33.0,城镇居民:41.0,农村居民:22.3,总计:"",载客:"",汽车驾驶员数量:"",人均可支配收入:28228.0,人均消费支出:19853.1,年末人口:139538},
+		北京市:{城镇农村:53.1,城镇居民:53.6,农村居民:49.8,总计:574.04,载客:527.96,汽车驾驶员数量:1115.9,人均可支配收入:62361.2,人均消费支出:39842.7,年末人口:2154},
+		天津市:{城镇农村:53.0,城镇居民:55.0,农村居民:42.5,总计:298.65,载客:263.27,汽车驾驶员数量:455.86,人均可支配收入:39506.1,人均消费支出:29902.9,年末人口:1560},
+		河北省:{城镇农村:44.9,城镇居民:51.4,农村居民:37.6,总计:1529.98,载客:1330.39,汽车驾驶员数量:2116.74,人均可支配收入:23445.7,人均消费支出:16722.0,年末人口:7556},
+		山西省:{城镇农村:27.9,城镇居民:38.3,农村居民:17.0,总计:652.15,载客:579.32,汽车驾驶员数量:963.51,人均可支配收入:21990.1,人均消费支出:14810.1,年末人口:3718},
+		内蒙古自治区:{城镇农村:39.5,城镇居民:48.1,农村居民:26.6,总计:531.91,载客:468.21,汽车驾驶员数量:718.41,人均可支配收入:28375.7,人均消费支出:19665.2,年末人口:2534},
+		辽宁省:{城镇农村:27.3,城镇居民:31.5,农村居民:18.3,总计:796.37,载客:698.36,汽车驾驶员数量:1252.36,人均可支配收入:29701.4,人均消费支出:21398.3,年末人口:4359},
+		吉林省:{城镇农村:29.5,城镇居民:33.9,农村居民:23.3,总计:421.96,载客:375.39,汽车驾驶员数量:694.34,人均可支配收入:22798.4,人均消费支出:17200.4},年末人口:2704,
+		黑龙江省:{城镇农村:16.6,城镇居民:18.4,农村居民:13.9,总计:477.41,载客:409.87,汽车驾驶员数量:848.41,人均可支配收入:22725.8,人均消费支出:16994.0,年末人口:3773},
+		上海市:{城镇农村:36.9,城镇居民:37.9,农村居民:28.1,总计:393.37,载客:358.37,汽车驾驶员数量:737.87,人均可支配收入:64182.6,人均消费支出:43351.3,年末人口:2424},
+		江苏省:{城镇农村:38.1,城镇居民:46.0,农村居民:23.3,总计:1776.57,载客:1652.1,汽车驾驶员数量:2641.83,人均可支配收入:38095.8,人均消费支出:25007.4,年末人口:8051},
+		浙江省:{城镇农村:44.4,城镇居民:52.4,农村居民:28.8,总计:1532.95,载客:1391.32,汽车驾驶员数量:2097.52,人均可支配收入:45839.8,人均消费支出:29470.7,年末人口:5737},
+		安徽省:{城镇农村:27.4,城镇居民:32.0,农村居民:22.8,总计:814.2,载客:698.45,汽车驾驶员数量:1407.97,人均可支配收入:23983.6,人均消费支出:17044.6,年末人口:6324},
+		福建省:{城镇农村:24.9,城镇居民:30.9,农村居民:15.1,总计:622.82,载客:545.63,汽车驾驶员数量:1017.37,人均可支配收入:32643.9,人均消费支出:22996.0,年末人口:3941},
+		江西省:{城镇农村:29.4,城镇居民:38.7,农村居民:20.1,总计:537.55,载客:461.45,汽车驾驶员数量:1113.09,人均可支配收入:24979.7,人均消费支出:15792.0,年末人口:4648},
+		山东省:{城镇农村:46.7,城镇居民:58.2,农村居民:31.5,总计:2128.29,载客:1883.47,汽车驾驶员数量:2850.76,人均可支配收入:29204.6,人均消费支出:18779.8,年末人口:10047},
+		河南省:{城镇农村:29.6,城镇居民:37.9,农村居民:22.3,总计:1449.68,载客:1281.65,汽车驾驶员数量:2638.91,人均可支配收入:21963.5,人均消费支出:15168.5,年末人口:9605},
+		湖北省:{城镇农村:29.9,城镇居民:36.3,农村居民:21.6,总计:772.4,载客:683.57,汽车驾驶员数量:1467.23,人均可支配收入:25814.5,人均消费支出:19537.8,年末人口:5917},
+		湖南省:{城镇农村:22.8,城镇居民:33.1,农村居民:12.5,总计:780.96,载客:703.07,汽车驾驶员数量:1310.53,人均可支配收入:25240.7,人均消费支出:18807.9,年末人口:6899},
+		广东省:{城镇农村:36.9,城镇居民:42.9,农村居民:22.7,总计:2116.28,载客:1891.3,汽车驾驶员数量:3306.62,人均可支配收入:35809.9,人均消费支出:26054.0,年末人口:11346},
+		广西壮族自治区:{城镇农村:27.2,城镇居民:43.0,农村居民:15.5,总计:588.42,载客:509.85,汽车驾驶员数量:1077.22,人均可支配收入:21485.0,人均消费支出:14934.8,年末人口:4926},
+		海南省:{城镇农村:26.3,城镇居民:39.6,农村居民:9.80,总计:126.9,载客:110.54,汽车驾驶员数量:193.85,人均可支配收入:24579.0,人均消费支出:17528.4,年末人口:934},
+		重庆市:{城镇农村:23.7,城镇居民:31.0,农村居民:13.2,总计:419.1,载客:372.88,汽车驾驶员数量:734.43,人均可支配收入:26385.8,人均消费支出:19248.5,年末人口:3102},
+		四川省:{城镇农村:25.2,城镇居民:33.8,农村居民:17.8,总计:1098.17,载客:988.77,汽车驾驶员数量:1896.04,人均可支配收入:22460.6,人均消费支出:17663.6,年末人口:8341},
+		贵州省:{城镇农村:28.0,城镇居民:39.9,农村居民:19.6,总计:478.98,载客:414.49,汽车驾驶员数量:753.69,人均可支配收入:18430.2,人均消费支出:13798.1,年末人口:3600},
+		云南省:{城镇农村:37.7,城镇居民:52.7,农村居民:25.3,总计:677.5,载客:580.12,汽车驾驶员数量:1011.64,人均可支配收入:20084.2,人均消费支出:14249.9,年末人口:4830},
+		西藏自治区:{城镇农村:37.3,城镇居民:45.7,农村居民:32.1,总计:51.45,载客:34.31,汽车驾驶员数量:47.7,人均可支配收入:17286.1,人均消费支出:11520.2,年末人口:344},
+		陕西省:{城镇农村:27.7,城镇居民:36.6,农村居民:17.4,总计:616.8,载客:549.94,汽车驾驶员数量:1025.84,人均可支配收入:22528.3,人均消费支出:16159.7,年末人口:3864},
+		甘肃省:{城镇农村:25.1,城镇居民:30.0,农村居民:20.9,总计:315.07,载客:257.52,汽车驾驶员数量:525.14,人均可支配收入:17488.4,人均消费支出:14624.0,年末人口:2637},
+		青海省:{城镇农村:38.8,城镇居民:40.4,农村居民:36.9,总计:109.87,载客:91.42,汽车驾驶员数量:145.32,人均可支配收入:20757.3,人均消费支出:16557.2,年末人口:603},
+		宁夏回族自治区:{城镇农村:38.3,城镇居民:42.8,农村居民:32.0,总计:144.78,载客:113.07,汽车驾驶员数量:197.74,人均可支配收入:22400.4,人均消费支出:16715.1,年末人口:688},
+		新疆维吾尔自治区:{城镇农村:29.7,城镇居民:38.3,农村居民:19.4,总计:396.7,载客:329.34,汽车驾驶员数量:559.56,人均可支配收入:21500.2,人均消费支出:16189.1,年末人口:2487},
+	}
+
+	//百强县数据
+	var counties_top100 = {
+		昆山市:"百强县 1",
+		江阴市:"百强县 2",
+		张家港市:"百强县 3",
+		晋江市:"百强县 4",
+		常熟市:"百强县 5",
+		慈溪市:"百强县 6",
+		宜兴市:"百强县 7",
+		长沙县:"百强县 8",
+		义乌市:"百强县 9",
+		太仓市:"百强县 10",
+		浏阳市:"百强县 11",
+		神木市:"百强县 12",
+		海门区:"百强县 13",
+		惠安县:"百强县 14",
+		诸暨市:"百强县 15",
+		怀仁市:"百强县 16",
+		南安市:"百强县 17",
+		宁乡市:"百强县 18",
+		如皋市:"百强县 19",
+		乐清市:"百强县 20",
+		福清市:"百强县 21",
+		余姚市:"百强县 22",
+		启东市:"百强县 23",
+		胶州市:"百强县 24",
+		海安市:"百强县 25",
+		丹阳市:"百强县 26",
+		温岭市:"百强县 27",
+		泰兴市:"百强县 28",
+		龙口市:"百强县 29",
+		如东县:"百强县 30",
+		南昌县:"百强县 31",
+		海宁市:"百强县 32",
+		溧阳市:"百强县 33",
+		瑞安市:"百强县 34",
+		靖江市:"百强县 35",
+		桐乡市:"百强县 36",
+		邳州市:"百强县 37",
+		迁安市:"百强县 38",
+		沭阳县:"百强县 39",
+		东台市:"百强县 40",
+		荣成市:"百强县 41",
+		石狮市:"百强县 42",
+		瓦房店市:"百强县 43",
+		兴化市:"百强县 44",
+		仙桃市:"百强县 45",
+		准格尔旗:"百强县 46",
+		高邮市:"百强县 47",
+		潜江市:"百强县 48",
+		邹城市:"百强县 49",
+		肥西县:"百强县 50",
+		巩义市:"百强县 51",
+		沛县:"百强县 52",
+		仪征市:"百强县 53",
+		寿光市:"百强县 54",
+		禹州市:"百强县 55",
+		滕州市:"百强县 56",
+		闽侯县:"百强县 57",
+		伊金霍洛旗:"百强县 58",
+		新郑市:"百强县 59",
+		醴陵市:"百强县 60",
+		枣阳市:"百强县 61",
+		库尔勒市:"百强县 62",
+		宁海县:"百强县 63",
+		长兴县:"百强县 64",
+		肥城市:"百强县 65",
+		济源市:"百强县 66",
+		新沂市:"百强县 67",
+		平度市:"百强县 68",
+		新密市:"百强县 69",
+		招远市:"百强县 70",
+		宜都市:"百强县 71",
+		莱芜区:"百强县 72",
+		句容市:"百强县 73",
+		苍南市:"百强县 74",
+		东阳市:"百强县 75",
+		武安市:"百强县 76",
+		庄河市:"百强县 77",
+		诸城市:"百强县 78",
+		新泰市:"百强县 79",
+		永康市:"百强县 80",
+		普宁市:"百强县 81",
+		惠东县:"百强县 82",
+		大冶市:"百强县 83",
+		盘州市:"百强县 84",
+		玉环市:"百强县 85",
+		永城市:"百强县 86",
+		任丘市:"百强县 87",
+		长丰县:"百强县 88",
+		汉川市:"百强县 89",
+		平湖市:"百强县 90",
+		广饶县:"百强县 91",
+		嵊州市:"百强县 92",
+		嘉善县:"百强县 93",
+		博罗县:"百强县 94",
+		安宁市:"百强县 95",
+		福安市:"百强县 96",
+		射阳县:"百强县 97",
+		邹平市:"百强县 98",
+		海城市:"百强县 99",
+		青州市:"百强县 100"
+	}
+</script>
