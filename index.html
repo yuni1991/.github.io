@@ -478,7 +478,7 @@
 	function hongqi_country_display(){
 		for (var i = 0; i< hongqi_data.length; i++ ){
 			let point = new BMap.Point(hongqi_data[i].lng,hongqi_data[i].lat);	
-			let marker= new BMap.Marker(point,{icon:hongqi,enableDragging:true,raiseOnDrag:true,title:hongqi_data[i].名称});
+			let marker= new BMap.Marker(point,{icon:new BMap.Icon("icon/hongqi.png", new BMap.Size(20, 20)),enableDragging:true,raiseOnDrag:true,title:hongqi_data[i].名称});
 			marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
 			marker.addEventListener("click", function(){
 				var circle = new BMap.Circle(point, 5000, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
