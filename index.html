@@ -73,6 +73,7 @@
         <li class = "btn" onclick = "hideIcon()">隐藏POI的Icon</li>
         <li class = "btn" onclick = "hongqi_country_display()">红旗</li>
         <li class = "btn" onclick = "addmarker()">addmarker</li>
+        <input class = "btn" type="text" id="input_1" value="输入">
     </ul>
     
 </body>
@@ -209,6 +210,35 @@
 	}
 	}));
 
+    function addmarker(){
+        map.addEventListener('click', function (e) {
+        //alert('点击位置经纬度：' + e.latlng.lng + ',' + e.latlng.lat);
+        var marker_add = new BMapGL.Marker(new BMapGL.Point(e.latlng.lng, e.latlng.lat))
+        map.addOverlay(marker_add);
+        
+
+        var opts = {
+            position: new BMapGL.Point(e.latlng.lng, e.latlng.lat), // 指定文本标注所在的地理位置
+            offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+        };
+        // 创建文本标注对象
+        var label = new BMapGL.Label(document.getElementById("input_1").value, opts);
+        // 自定义文本标注样式
+        label.setStyle({
+            color: 'blue',
+            borderRadius: '5px',
+            borderColor: '#ccc',
+            padding: '4px',
+            fontSize: '12px',
+            height: '20px',
+            lineHeight: '20px',
+            fontFamily: '微软雅黑'
+        });
+        map.addOverlay(label);
+
+        map.removeEventListener('click');
+        });
+    }
 
 
     //红旗数据
