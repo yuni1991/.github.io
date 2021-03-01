@@ -195,7 +195,19 @@
 	}
 
 	//添加城市list及竞品展示
-
+	map.addControl(new BMapGL.CityListControl({
+    anchor: BMAP_ANCHOR_TOP_LEFT,
+    offset: new BMapGL.Size(10, 5),
+	  onChangeSuccess: function (e) {
+		for (var i = 0; i < data_classification_by_city[e.city].length; i++){
+			var point = new BMapGL.Point(data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[0], data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[1]);
+			var icon_I = icon_List[data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4]]
+			var markern = new BMapGL.Marker(point, {icon:icon_I, enableDragging:true,raiseOnDrag:true,title:data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[2]+"   "+data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[3]});
+			map.addOverlay(markern);//绘制到地图上			
+			//markern.setAnimation(BMAP_ANIMATION_DROP)
+		};
+	}
+	}));
 
 
 
