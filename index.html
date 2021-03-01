@@ -106,30 +106,14 @@
     }       
     
 
-    var myIcon = new BMapGL.Icon('http://map.baidu.com/image/us_mk_icon.png', new BMapGL.Size(144, 92));
-    var pt = new BMapGL.Point(116.417, 39.909);
-    var marker = new BMapGL.Marker(pt, {icon:myIcon, title:"yes"});
-    marker.setZIndex(999);
-    map.addOverlay(marker);
-
-  
-    var myIcon1 = new BMapGL.Icon("3.png", new BMapGL.Size(138, 67), {
-        anchor: new BMapGL.Size(-72, 46),
-        imageSize: new BMapGL.Size(72, 46)
-    });
+    var hongqi = new BMapGL.Icon('hongqi.png', new BMapGL.Size(20, 20));
     
-    var marker1 = new BMapGL.Marker(pt, {icon:myIcon1, title:"yes1"});
-    marker1.setZIndex(99);
-    map.addOverlay(marker1);
-
-
-
     
 	//显示全国红旗店面country_dispaly
 	function hongqi_country_display(){
 		for (var i = 0; i< hongqi_data.length; i++ ){
 			let point = new BMapGL.Point(hongqi_data[i].lng,hongqi_data[i].lat);	
-			let marker= new BMapGL.Marker(point,{enableDragging:true,enableClicking:true,title:hongqi_data[i].name});
+			let marker= new BMapGL.Marker(point,{icon:hongqi, enableDragging:true,enableClicking:true,title:hongqi_data[i].name});
 			marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
 			marker.addEventListener("click", function(){
 				var circle = new BMapGL.Circle(point, 5000, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
