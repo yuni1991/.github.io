@@ -73,6 +73,7 @@
         <li class = "btn" onclick = "hideIcon()">隐藏POI的Icon</li>
         <li class = "btn" onclick = "hongqi_country_display()">红旗</li>
         <li class = "btn" onclick = "addmarker()">addmarker</li>
+        <li class = "btn" onclick = "addname_hongqi()">红旗店面名称</li>
         <input class = "btn" type="text" id="input_1" value="输入">
     </ul>
     
@@ -178,7 +179,7 @@
 	function hongqi_country_display(){
 		for (var i = 0; i< hongqi_data.length; i++ ){
 			let point = new BMapGL.Point(hongqi_data[i].lng,hongqi_data[i].lat);	
-			let marker= new BMapGL.Marker(point,{icon:hongqi, enableDragging:true,enableClicking:true,title:hongqi_data[i].name});
+			let marker= new BMapGL.Marker(point,{ enableDragging:true,enableClicking:true,title:hongqi_data[i].name});
 			marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
 			marker.addEventListener("click", function(){
 				var circle = new BMapGL.Circle(point, 5000, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
@@ -204,12 +205,13 @@
 		for (var i = 0; i < data_classification_by_city[e.city].length; i++){
             var point = new BMapGL.Point(data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[0], data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[1]);
             var icon_I = icon_List[data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4]]
-            var markern = new BMapGL.Marker(point, {icon:icon_I, enableDragging:true,raiseOnDrag:true,title:data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[2]+"   "+data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[3]});
+            var markern = new BMapGL.Marker(point, { enableDragging:true,raiseOnDrag:true,title:data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[2]+"   "+data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[3]});
             map.addOverlay(markern);//绘制到地图上
 		};
 	}
 	}));
 
+    //添加标注点
     function addmarker(){
         map.addEventListener('click', function (e) {
         //alert('点击位置经纬度：' + e.latlng.lng + ',' + e.latlng.lat);
@@ -240,6 +242,30 @@
         });
     }
 
+    //显示红旗店面名称
+    function addname_hongqi(){
+        for (var i = 0; i < hongqi_data.length; i++){
+            var opts = {
+                position: new BMapGL.Point(hongqi_data[i].lng,hongqi_data[i].lat), // 指定文本标注所在的地理位置
+                offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+            };
+            // 创建文本标注对象
+            var label = new BMapGL.Label(hongqi_data[i].name, opts);
+            // 自定义文本标注样式
+            label.setStyle({
+                color: 'white',
+                backgroundColor: 'darkred',
+                borderRadius: '5px',
+                borderColor: '#ccc',
+                padding: '2px',
+                fontSize: '10px',
+                height: '14px',
+                lineHeight: '14px',
+                fontFamily: '微软雅黑'
+            });
+            map.addOverlay(label);
+        };
+    }
 
     //红旗数据
     var hongqi_data = [
