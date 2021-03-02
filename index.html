@@ -117,8 +117,11 @@
         })
     }       
     
-    map.addControl(new BMapGL.MapTypeControl());          //添加地图类型控件
+    map.addTileLayer(new BMapGL.PanoramaCoverageLayer());
 
+    map.addControl(new BMapGL.MapTypeControl());          //添加地图类型控件
+    
+    map.addTileLayer(new BMap.PanoramaCoverageLayer());
     function set_maptype(){
         map.setMapType(BMAP_EARTH_MAP);  
     }
