@@ -83,6 +83,7 @@
         <li class = "btn" onclick = "getBoundary()">行政区</li>
         <li class = "btn" onclick = "local_search()">检索</li>
         <li class = "btn" onclick = "set_maptype()">地球</li>
+        <li class = "btn" onclick = "test()">测试</li>
         <input class = "btn" type="text" id="input_1" value="输入">
     </ul>
     
@@ -117,14 +118,11 @@
         })
     }       
     
-    map.addTileLayer(new BMapGL.PanoramaCoverageLayer());
-
-    map.addControl(new BMapGL.MapTypeControl());          //添加地图类型控件
-    
-    map.addTileLayer(new BMap.PanoramaCoverageLayer());
+ 
     function set_maptype(){
-        map.setMapType(BMAP_EARTH_MAP);  
+        map.setMapType(SATELLITE);  
     }
+
     function local_search(){
         var local = new BMapGL.LocalSearch(map, {
             renderOptions:{map: map}
