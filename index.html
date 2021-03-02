@@ -62,7 +62,10 @@
         }
     </style>
     <!--bdmap-->
-    <script type="text/javascript" src="https://api.map.baidu.com/api?type=webgl&ak=gIbYVk5GSnu2hZNQfBzd65bk48Ll93Rm"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=gIbYVk5GSnu2hZNQfBzd65bk48Ll93Rm"></script>
+    <script type="text/javascript" src="https://mapopen.cdn.bcebos.com/github/BMapGLLib/DistanceTool/src/DistanceTool.min.js"></script>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=3.0&ak=gIbYVk5GSnu2hZNQfBzd65bk48Ll93Rm"></script>
+
 </head>
 <body>
     <div id="container"></div>
@@ -74,6 +77,12 @@
         <li class = "btn" onclick = "hongqi_country_display()">红旗</li>
         <li class = "btn" onclick = "addmarker()">addmarker</li>
         <li class = "btn" onclick = "addname_hongqi()">红旗店面名称</li>
+        <li class = "btn" onclick = "myDis.open()">测距</li>
+        <li class = "btn" onclick = "set_Tilt()">角度</li>
+        <li class = "btn" onclick = "removeOverlay()">全清除</li>
+        <li class = "btn" onclick = "getBoundary()">行政区</li>
+        <li class = "btn" onclick = "local_search()">检索</li>
+        <li class = "btn" onclick = "set_maptype()">地球</li>
         <input class = "btn" type="text" id="input_1" value="输入">
     </ul>
     
@@ -85,6 +94,7 @@
     map.enableScrollWheelZoom(true); // 开启鼠标滚轮缩放
     map.enableKeyboard();//启用键盘操作
     map.enablePinchToZoom()//启用双指缩放地图
+
 
     function showText() {
         map.setDisplayOptions({
@@ -107,6 +117,48 @@
         })
     }       
     
+    map.addControl(new BMapGL.MapTypeControl());          //添加地图类型控件
+
+    function set_maptype(){
+        map.setMapType(BMAP_EARTH_MAP);  
+    }
+    function local_search(){
+        var local = new BMapGL.LocalSearch(map, {
+            renderOptions:{map: map}
+        });
+        local.search(document.getElementById("input_1").value);
+    }
+       
+    function getBoundary(){       
+		var bdary = new BMapGL.Boundary();
+		bdary.get(document.getElementById("input_1").value, function(rs){       //获取行政区域
+			map.clearOverlays();        //清除地图覆盖物       
+			var count = rs.boundaries.length; //行政区域的点有多少个
+			if (count === 0) {
+				alert('未能获取当前输入行政区域');
+				return ;
+			}
+          	var pointArray = [];
+			for (var i = 0; i < count; i++) {
+				var ply = new BMapGL.Polygon(rs.boundaries[i], {strokeWeight: 2, strokeColor: "#ff0000"}); //建立多边形覆盖物
+				map.addOverlay(ply);  //添加覆盖物
+				pointArray = pointArray.concat(ply.getPath());
+			}    
+			map.setViewport(pointArray);    //调整视野  
+			addlabel();               
+		});   
+	}
+
+    function removeOverlay() {
+        map.clearOverlays();
+    }
+
+    function set_Tilt(){
+        map.setTilt(document.getElementById("input_1").value);
+    }
+    
+    var myDis = new BMapGLLib.DistanceTool(map);
+
     var icon_size = new BMapGL.Size(20, 20)
     var hongqi = new BMapGL.Icon('hongqi.png', icon_size);
     
@@ -257,10 +309,10 @@
                 backgroundColor: 'darkred',
                 borderRadius: '5px',
                 borderColor: '#ccc',
-                padding: '2px',
-                fontSize: '10px',
-                height: '14px',
-                lineHeight: '14px',
+                padding: '4px',
+                fontSize: '12px',
+                height: '20px',
+                lineHeight: '20px',
                 fontFamily: '微软雅黑'
             });
             map.addOverlay(label);
