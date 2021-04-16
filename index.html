@@ -152,12 +152,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.js"></script>
-<script type="text/javascript"> 
-	function marker_icon(result){
-		data_marker_icon1 = result;
-	} 
-</script>
-<script type="text/javascript" src="marker_icon.json"></script>
+
 
 <script type="text/javascript"> 
 	function classification_by_city(result){
@@ -253,8 +248,6 @@
 
     function ADDBBA(){
         var benchi = new BMapGL.Icon(data_marker_icon["奔驰"], new BMapGL.Size(20, 20));
-        var baoma = new BMapGL.Icon(data_marker_icon["宝马"], new BMapGL.Size(20, 27));
-        var aodi = new BMapGL.Icon(data_marker_icon["奥迪"], new BMapGL.Size(30, 15));
             for (var i = 0; i< benchi_data.length; i++ ){
                 let point = new BMapGL.Point(benchi_data[i].lng,benchi_data[i].lat);	
 			    let marker= new BMapGL.Marker(point,{icon:benchi, enableDragging:true, enableClicking:true,title:benchi_data[i].dealer_fullName+" | "+benchi_data[i].storeType});
@@ -1492,13 +1485,13 @@
     ]
 
     var data_marker_icon={
-    "baidu":"http://map.baidu.com/image/us_mk_icon.png",
-    "奥迪":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcc3ZBfHORIzlIhSPF6fqVJQKSGdVE8Lf*8mm8029c*pP0lmdvgI1j7F1X4fzkV8W9pmqk0eauTDe2JlvYUY8kmg!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
-    "宝马":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mccbq1uOgyQl2.j3WyQib5o7*PJYW4XC8JhbZsYwD8JKeNbTH9usIXsDQEe27V8QybJ4wR2FGG6uRby0Q1x0O5Cs!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
-    "奔驰":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mccbq1uOgyQl2.j3WyQib5o7bfUdwSXeJvHGrU1fIH5gFVDXxH9yTReTTaJ1ki8cAAZGNAoAPbEcZMO1gVAIjCLI!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
-    "红旗":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcRpl3EGSgxsrTt3ga5zKZNdk30Lyc1npea849twfT*3qK**Z7T7EvgeZCnotxBYs4zFw2qYaVkVvgG4WHoen63o!/b&bo=EQARAAAAAAADFzI!&rf=viewer_4",
-    "红旗1":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/ruAMsa53pVQWN7FLK88i5h0ZoLLscuS8JWHP01OOo1IGVdhJkaYOSR.6FH*OKAyffw5JEiiHzXaFzxXl6hl89vi*NvSrI.H8RyJqmp2B*PE!/mnull&bo=QQBWAAAAAAADBzU!&rf=photolist&t=5",
-    "红旗2":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/ruAMsa53pVQWN7FLK88i5jn9p*UJ0lbiCPWGvPmcXlfWLtkDgmhP2NaXY*BG42QSHMHQY1rg98RzwDw8PTTTAXzwiJ4xJCc3xZtPMcrhIaY!/mnull&bo=9AGHAQAAAAADB1E!&rf=photolist&t=5",
-    "商超":"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcUJRlpciC1OZOuersKgyzSSO2aDYm5agdpbwyfEcglQgMkTXWyVMTvFC44Esh.DKLfbhzN1nBZJMc7tQ5BYtu3o!/b&bo=fgEAAgAAAAADF08!&rf=viewer_4"
+    baidu:"http://map.baidu.com/image/us_mk_icon.png",
+    奥迪:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcc3ZBfHORIzlIhSPF6fqVJQKSGdVE8Lf*8mm8029c*pP0lmdvgI1j7F1X4fzkV8W9pmqk0eauTDe2JlvYUY8kmg!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
+    宝马:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mccbq1uOgyQl2.j3WyQib5o7*PJYW4XC8JhbZsYwD8JKeNbTH9usIXsDQEe27V8QybJ4wR2FGG6uRby0Q1x0O5Cs!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
+    奔驰:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mccbq1uOgyQl2.j3WyQib5o7bfUdwSXeJvHGrU1fIH5gFVDXxH9yTReTTaJ1ki8cAAZGNAoAPbEcZMO1gVAIjCLI!/b&bo=KgAqAAAAAAADFzI!&rf=viewer_4",
+    红旗:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcRpl3EGSgxsrTt3ga5zKZNdk30Lyc1npea849twfT*3qK**Z7T7EvgeZCnotxBYs4zFw2qYaVkVvgG4WHoen63o!/b&bo=EQARAAAAAAADFzI!&rf=viewer_4",
+    红旗1:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/ruAMsa53pVQWN7FLK88i5h0ZoLLscuS8JWHP01OOo1IGVdhJkaYOSR.6FH*OKAyffw5JEiiHzXaFzxXl6hl89vi*NvSrI.H8RyJqmp2B*PE!/mnull&bo=QQBWAAAAAAADBzU!&rf=photolist&t=5",
+    红旗2:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/ruAMsa53pVQWN7FLK88i5jn9p*UJ0lbiCPWGvPmcXlfWLtkDgmhP2NaXY*BG42QSHMHQY1rg98RzwDw8PTTTAXzwiJ4xJCc3xZtPMcrhIaY!/mnull&bo=9AGHAQAAAAADB1E!&rf=photolist&t=5",
+    商超:"http://m.qpic.cn/psc?/V142ZGHC0U4OiR/45NBuzDIW489QBoVep5mcUJRlpciC1OZOuersKgyzSSO2aDYm5agdpbwyfEcglQgMkTXWyVMTvFC44Esh.DKLfbhzN1nBZJMc7tQ5BYtu3o!/b&bo=fgEAAgAAAAADF08!&rf=viewer_4"
     }
 </script>
