@@ -96,7 +96,7 @@
 			position: absolute;
 			display: block;
 			height:40px;
-			width: 350px;
+			width: 200px;
 			bottom: 0px;
             left: 32px;
 			z-index: 10;
@@ -122,23 +122,21 @@
 <body>
     <div id="container"></div>
     <ul class="btn-wrap" style="z-index: 99;">
-        <li class = "btn" onclick = "poiText()">POI文字</li>
-        <li class = "btn" onclick = "poiIcon()">POI_Icon</li>
-        <li class = "btn" onclick = "hongqi_country_display()">红旗</li>
-        <li class = "btn" onclick = "addmarker()">addmarker</li>
-        <li class = "btn" onclick = "addname_hongqi()">红旗店面名称</li>
+        <li class = "btn" onclick = "hongqi_country_display()">红旗4S</li>
+        <li class = "btn" onclick = "addmarker()">添加标注点</li>
         <li class = "btn" onclick = "myDis.open()">测距</li>
-        <li class = "btn" onclick = "set_Tilt()">角度</li>
         <li class = "btn" onclick = "removeOverlay()">全清除</li>
         <li class = "btn" onclick = "removeOverlay1()">清除最后</li>
         <li class = "btn" onclick = "getBoundary()">行政区</li>
-        <li class = "btn" onclick = "local_search()">search</li>
+        <li class = "btn" onclick = "local_search()">搜索</li>
         <li class = "btn" onclick = "satelliteShow()">V3.0</li>
-        <li class = "btn" onclick = "panoramaShow()">panorama</li>
-        <li class = "btn" onclick = "polygon_edit()">polygon_edit</li>
-        <li class = "btn" onclick = "swap_mapstyle()">切换地图</li>
-        <li class = "btn" onclick = "begin_soon()">开始点击</li>
-        <li class = "btn" onclick = "test()">测试</li>
+        <li class = "btn" onclick = "panoramaShow()">全景窗口</li>
+        <li class = "btn" onclick = "swap_mapstyle()">切换底图</li>
+        <li class = "btn" onclick = "duoyuanhua()">红旗多元化</li>
+        <li class = "btn" onclick = "ADDBBA()">奔驰</li>
+        <li class = "btn" onclick = "ADDBBA1()">宝马</li>
+        <li class = "btn" onclick = "ADDBBA2()">奥迪</li>
+        <li class = "btn" onclick = "circle_add()">画圆 ⚪ </li>
         <input class = "btn" type="text" id="input_1" value="">
     </ul>
     <div id="statistic" >
@@ -205,14 +203,184 @@
     var panorama = new BMap.Panorama('statistic'); 
     panorama.setPov({heading: -40, pitch: 6});
 
-    function test(){
+    function duoyuanhua(){
+        var hongqi = new BMapGL.Icon(data_marker_icon["红旗"], new BMapGL.Size(20, 20));
+        var hongqi1 = new BMapGL.Icon(data_marker_icon["红旗1"], new BMapGL.Size(20, 27),{anchor:new BMapGL.Size(10, 27)});
+        var hongqi2 = new BMapGL.Icon(data_marker_icon["红旗2"], new BMapGL.Size(30, 15));
+        var hongqi3 = new BMapGL.Icon(data_marker_icon["商超"], new BMapGL.Size(18, 30), {anchor:new BMapGL.Size(0, 30)});
+        var hongqis = [hongqi, hongqi1, hongqi2, hongqi3]
+            for (var i = 0; i< hongqi_data_zaijian.length; i++ ){
+                let point = new BMapGL.Point(hongqi_data_zaijian[i].lng,hongqi_data_zaijian[i].lat);	
+                let marker= new BMapGL.Marker(point,{icon:hongqis[document.getElementById("input_1").value], enableDragging:true, enableClicking:true,title:hongqi_data_zaijian[i].dealer_abbreviation});
+                marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
+                //marker.setAnimation(BMAP_ANIMATION_DROP);
+                var time;
+                marker.addEventListener("click", function(){
+                var opts = {
+                    position: point, // 指定文本标注所在的地理位置
+                    offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+                };
+                // 创建文本标注对象
+                var label = new BMapGL.Label(marker.getTitle(), opts);
+                // 自定义文本标注样式
+                label.setStyle({
+                    color: 'white',
+                    backgroundColor: 'darkred',
+                    borderRadius: '5px',
+                    borderColor: '#ccc',
+                    padding: '4px',
+                    fontSize: '12px',
+                    height: '20px',                        lineHeight: '20px',
+                    fontFamily: '微软雅黑'
+                });
+                map.addOverlay(label);		
+			})
+            marker.addEventListener("dblclick", function(){
+				var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+				map.addOverlay(circle);			
+			})
+			marker.addEventListener("rightclick", function(e){
+				var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+				circle.enableEditing();
+				map.addOverlay(circle);
+				//map.removeOverlay(marker);
+			})
+			map.addOverlay(marker);			
+			//marker.setAnimation(BMapGL_ANIMATION_DROP);		
+		}
 
-        map.setMapStyleV2();
-        //____________________________________________________________________________
-
-        console.log("test")
     }
 
+    function ADDBBA(){
+        var benchi = new BMapGL.Icon(data_marker_icon["奔驰"], new BMapGL.Size(20, 20));
+        var baoma = new BMapGL.Icon(data_marker_icon["宝马"], new BMapGL.Size(20, 27));
+        var aodi = new BMapGL.Icon(data_marker_icon["奥迪"], new BMapGL.Size(30, 15));
+            for (var i = 0; i< benchi_data.length; i++ ){
+                let point = new BMapGL.Point(benchi_data[i].lng,benchi_data[i].lat);	
+			    let marker= new BMapGL.Marker(point,{icon:benchi, enableDragging:true, enableClicking:true,title:benchi_data[i].dealer_fullName+" | "+benchi_data[i].storeType});
+			    marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
+                //marker.setAnimation(BMAP_ANIMATION_DROP);
+                var time;
+                marker.addEventListener("click", function(){
+                var opts = {
+                    position: point, // 指定文本标注所在的地理位置
+                    offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+                };
+                // 创建文本标注对象
+                var label = new BMapGL.Label(marker.getTitle(), opts);
+                // 自定义文本标注样式
+                label.setStyle({
+                    color: 'white',
+                    backgroundColor: 'darkred',
+                    borderRadius: '5px',
+                    borderColor: '#ccc',
+                    padding: '4px',
+                    fontSize: '12px',
+                    height: '20px',                        lineHeight: '20px',
+                    fontFamily: '微软雅黑'
+                });
+                map.addOverlay(label);		
+                })
+                marker.addEventListener("dblclick", function(){
+                    var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                    map.addOverlay(circle);			
+                })
+                marker.addEventListener("rightclick", function(e){
+                    var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                    circle.enableEditing();
+                    map.addOverlay(circle);
+                    //map.removeOverlay(marker);
+                })
+                map.addOverlay(marker);			
+                //marker.setAnimation(BMapGL_ANIMATION_DROP);		
+            }           
+    }
+
+    function ADDBBA1(){
+        var baoma = new BMapGL.Icon(data_marker_icon["宝马"], new BMapGL.Size(20, 20));
+        for (var i = 0; i< baoma_data.length; i++ ){
+            let point = new BMapGL.Point(baoma_data[i].lng,baoma_data[i].lat);	
+            let marker= new BMapGL.Marker(point,{icon:baoma, enableDragging:true, enableClicking:true,title:baoma_data[i].dealer_fullName+" | "+baoma_data[i].storeType});
+            marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
+            //marker.setAnimation(BMAP_ANIMATION_DROP);
+            var time;
+            marker.addEventListener("click", function(){
+            var opts = {
+                position: point, // 指定文本标注所在的地理位置
+                offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+            };
+            // 创建文本标注对象
+            var label = new BMapGL.Label(marker.getTitle(), opts);
+            // 自定义文本标注样式
+            label.setStyle({
+                color: 'white',
+                backgroundColor: 'darkred',
+                borderRadius: '5px',
+                borderColor: '#ccc',
+                padding: '4px',
+                fontSize: '12px',
+                height: '20px',                        lineHeight: '20px',
+                fontFamily: '微软雅黑'
+            });
+            map.addOverlay(label);		
+            })
+            marker.addEventListener("dblclick", function(){
+                var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                map.addOverlay(circle);			
+            })
+            marker.addEventListener("rightclick", function(e){
+                var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                circle.enableEditing();
+                map.addOverlay(circle);
+                //map.removeOverlay(marker);
+            })
+            map.addOverlay(marker);			
+            //marker.setAnimation(BMapGL_ANIMATION_DROP);		
+        }           
+    }
+
+    function ADDBBA2(){
+        var aodi = new BMapGL.Icon(data_marker_icon["奥迪"], new BMapGL.Size(20, 20));
+        for (var i = 0; i< aodi_data.length; i++ ){
+            let point = new BMapGL.Point(aodi_data[i].lng,aodi_data[i].lat);	
+            let marker= new BMapGL.Marker(point,{icon:aodi, enableDragging:true, enableClicking:true,title:aodi_data[i].dealer_fullName+" | "+aodi_data[i].storeType});
+            marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
+            //marker.setAnimation(BMAP_ANIMATION_DROP);
+            var time;
+            marker.addEventListener("click", function(){
+            var opts = {
+                position: point, // 指定文本标注所在的地理位置
+                offset: new BMapGL.Size(15, -20) // 设置文本偏移量
+            };
+            // 创建文本标注对象
+            var label = new BMapGL.Label(marker.getTitle(), opts);
+            // 自定义文本标注样式
+            label.setStyle({
+                color: 'white',
+                backgroundColor: 'darkred',
+                borderRadius: '5px',
+                borderColor: '#ccc',
+                padding: '4px',
+                fontSize: '12px',
+                height: '20px',                        lineHeight: '20px',
+                fontFamily: '微软雅黑'
+            });
+            map.addOverlay(label);		
+            })
+            marker.addEventListener("dblclick", function(){
+                var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                map.addOverlay(circle);			
+            })
+            marker.addEventListener("rightclick", function(e){
+                var circle = new BMapGL.Circle(point, document.getElementById("input_1").value, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}); 
+                circle.enableEditing();
+                map.addOverlay(circle);
+                //map.removeOverlay(marker);
+            })
+            map.addOverlay(marker);			
+            //marker.setAnimation(BMapGL_ANIMATION_DROP);		
+        }              
+    }
 
 
     //及时点，无底图
@@ -226,22 +394,27 @@
         if(counter_mapstyle == 1){
             map.setMapStyleV2({styleId:'bccda03a97544413459fe3fb0791e84b'});
             counter_mapstyle = 2;
+            console.log(1)
         }
         else if(counter_mapstyle == 2){
             map.setMapStyleV2({styleId:'24f37baa04f273dc4e7eefaf292ca778'});
             counter_mapstyle = 3;
+            console.log(2)
         }
         else if(counter_mapstyle == 3){
             map.setMapStyleV2({styleId:'3c7b52e6db0e7e2d14be86321a75b461'});
             counter_mapstyle = 4;
+            console.log(3)
         }
         else if(counter_mapstyle == 4){
             map.setMapStyleV2({styleId:'a1fd2493e0077d5e2a52d014b1d8e933'});
             counter_mapstyle = 5;
+            console.log(4)
         }
         else{
             map.setMapStyleV2({styleId:''});
             counter_mapstyle = 1;
+            console.log(5)
         }
     }    
 
@@ -271,6 +444,18 @@
         map.addOverlay(polygon);
     }
 
+    function circle_add(){
+        // 绘制面
+        var circle = new BMapGL.Circle(
+            new BMapGL.Point(point_gl_lng, point_gl_lat),document.getElementById("input_1").value,
+            {strokeStyle:"dashed",strokeColor:"blue",fillColor:"lightblue", strokeWeight:2, strokeOpacity:0.5,fillOpacity:0.1}
+        );
+        circle.addEventListener("click", function(){
+           console.log('test')
+        });
+        map.addOverlay(circle);
+    }
+
     function panoramaShow(){
         if (counter_satellite == 0){
             document.getElementById("satellite_show").style.animation= "move_back 0.5s 1";
@@ -279,7 +464,7 @@
                 document.getElementById("statistic").style.display= "block";
                 document.getElementById("statistic").style.animation= "move 0.5s 1";
                 counter_statistic = 0;
-            }, 500);
+            }, 500);	
             counter_satellite = 1;
         }
         else if (counter_statistic) {
@@ -303,11 +488,8 @@
                 document.getElementById("satellite_show").style.display= "block";
                 document.getElementById("satellite_show").style.animation= "move 0.5s 1";
                 counter_satellite = 0;
-            }, 500);            
-            setTimeout(() => {
                 map1.setCenter(new BMap.Point(point_gl_lng, point_gl_lat));
-                map1.setZoom(parseFloat(document.getElementById('zoom_show').innerText));
-            },600);
+            }, 500);	
             counter_statistic = 1;
         }
         else if (counter_satellite) {
@@ -315,10 +497,7 @@
 		    document.getElementById("satellite_show").style.animation= "move 0.5s 1";
             counter_satellite = 0;
             map1.setCenter(new BMap.Point(point_gl_lng, point_gl_lat));
-            setTimeout(() => {
-                map1.setCenter(new BMap.Point(point_gl_lng, point_gl_lat));
-                map1.setZoom(parseFloat(document.getElementById('zoom_show').innerText));
-            },50);
+            console.log(point_gl_lng)
 		}
         else{
             document.getElementById("satellite_show").style.animation= "move_back 0.5s 1";
@@ -328,11 +507,6 @@
             counter_satellite = 1;
 		}   
     }
-
-
-
-
-
 
     function removeOverlay1(){
         map.removeOverlay(map.getOverlays()[map.getOverlays().length-1]);
@@ -419,7 +593,7 @@
         var hongqis = [hongqi, hongqi1, hongqi2]
             for (var i = 0; i< hongqi_data.length; i++ ){
                 let point = new BMapGL.Point(hongqi_data[i].lng,hongqi_data[i].lat);	
-			let marker= new BMapGL.Marker(point,{icon:hongqis[document.getElementById("input_1").value], enableDragging:true, enableClicking:true,title:hongqi_data[i].name});
+			let marker= new BMapGL.Marker(point,{icon:hongqis[document.getElementById("input_1").value], enableDragging:true, enableClicking:true,title:hongqi_data[i].dealer_abbreviation});
 			marker.setZIndex(zIndex= 10)//设置覆盖物的zIndex
             //marker.setAnimation(BMAP_ANIMATION_DROP);
             var time;
@@ -458,6 +632,26 @@
 		}
 	}
 
+    //指定城市地图
+    function appoint_city(){
+        
+
+        var bd = new BMapGL.Boundary();
+        bd.get(document.getElementById("input_1").value, function (rs) {
+            // console.log('外轮廓：', rs.boundaries[0]);
+            // console.log('内镂空：', rs.boundaries[1]);
+            var hole = new BMapGL.Polygon(rs.boundaries, {
+                fillColor: 'blue',
+                fillOpacity: 0.2
+            });
+            map.addOverlay(hole);
+        });
+
+
+
+    }
+
+
 	//添加城市list及竞品展示
 	map.addControl(new BMapGL.CityListControl({
         anchor: BMAP_ANCHOR_TOP_LEFT,
@@ -495,12 +689,23 @@
                     map.addOverlay(circle);
                     //map.removeOverlay(marker); 
                 })
-                //map.addOverlay(marker);//绘制到地图上
+                map.addOverlay(marker);//绘制到地图上
+                console.log(data_classification_by_city[e.city][i])
+                if (data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4] == "奔驰"){
+                    var circle = new BMapGL.Circle(point, 1000, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"blue", strokeWeight:2, strokeOpacity:0,fillOpacity:1});
+                    //map.addOverlay(circle);console.log(1)
+                }else if (data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4] == "宝马"){
+                    var circle = new BMapGL.Circle(point, 1000, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"blue", strokeWeight:2, strokeOpacity:0,fillOpacity:1});
+                    //map.addOverlay(circle);
+                }else if (data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4] == "奥迪"){
+                    var circle = new BMapGL.Circle(point, 1000, {strokeStyle:"dashed",strokeColor:"blue",fillColor:"blue", strokeWeight:2, strokeOpacity:0,fillOpacity:1});
+                    //map.addOverlay(circle);
+                }else{console.log(data_classification_by_city[e.city][i].replace("[","").replace("]","").replace(/"/g,"").split(',')[4])}
+                //data_classification_by_city[e.city]
           
             };
         }
 	}));
-
 
     //添加标注点
     function addmarker(){
@@ -533,6 +738,17 @@
         });
     }
 
+    //添加标注点——小旗
+    function addmarker_xiaoqi(){
+        map.addEventListener('click', function (e) {
+        //alert('点击位置经纬度：' + e.latlng.lng + ',' + e.latlng.lat);
+        var hongqi1 = new BMapGL.Icon(data_marker_icon["红旗1"], new BMapGL.Size(20, 27),{anchor:new BMapGL.Size(10, 27)});
+        var marker_add = new BMapGL.Marker(new BMapGL.Point(e.latlng.lng, e.latlng.lat),{icon:hongqi1, enableDragging:true})
+        map.addOverlay(marker_add);       
+        //map.removeEventListener('click');
+        });
+    }
+
     //显示红旗店面名称
     function addname_hongqi(){
         for (var i = 0; i < hongqi_data.length; i++){
@@ -541,353 +757,726 @@
                 offset: new BMapGL.Size(15, -20) // 设置文本偏移量
             };
             // 创建文本标注对象
-            var label = new BMapGL.Label(hongqi_data[i].name, opts);
+            var label = new BMapGL.Label(hongqi_data[i].dealer_abbreviation, opts);
             // 自定义文本标注样式
             label.setStyle({
                 color: 'white',
                 backgroundColor: 'darkred',
                 borderRadius: '5px',
                 borderColor: '#ccc',
-                padding: '4px',
-                fontSize: '12px',
-                height: '20px',
-                lineHeight: '20px',
+                padding: '2px',
+                fontSize: '8px',
+                height: '10px',
+                lineHeight: '10px',
                 fontFamily: '微软雅黑'
             });
             map.addOverlay(label);
         };
     }
 
-  
-
-   
-
     //红旗数据
     var hongqi_data = [
-        {name:"郑州大展",lng:"113.694621",lat:"34.831094"},
-        {name:"驻马店祥诚",lng:"114.072053",lat:"33.019055"},
-        {name:"山西大昌宏源",lng:"112.554767",lat:"37.813939"},
-        {name:"临汾荣翔",lng:"111.537813",lat:"36.131425"},
-        {name:"北京龙泽",lng:"116.532508",lat:"39.946716"},
-        {name:"保定华达",lng:"115.57329",lat:"38.881718"},
-        {name:"石家庄庞大",lng:"114.520979",lat:"38.008023"},
-        {name:"白城荣耀",lng:"122.836414",lat:"45.581348"},
-        {name:"长春通立",lng:"125.387338",lat:"43.772976"},
-        {name:"怀化旗通",lng:"109.974845",lat:"27.529037"},
-        {name:"长沙旗展",lng:"112.862956",lat:"28.214304"},
-        {name:"赣州凯迪",lng:"114.870258",lat:"25.852676"},
-        {name:"南昌龙和",lng:"115.733869",lat:"28.632"},
-        {name:"湖北长泽",lng:"114.330544",lat:"30.483868"},
-        {name:"武汉东瑞",lng:"114.265133",lat:"30.431288"},
-        {name:"湖北英驰",lng:"112.183861",lat:"32.098799"},
-        {name:"佛山骏乔",lng:"113.097257",lat:"23.066913"},
-        {name:"佛山飞扬",lng:"113.106636749555",lat:"23.0010083551125"},
-        {name:"惠州通利华",lng:"114.466502",lat:"22.985247"},
-        {name:"中山中升",lng:"113.329145",lat:"22.584181"},
-        {name:"鸿粤益嘉",lng:"113.302815",lat:"23.226107"},
-        {name:"广州锦龙",lng:"113.378086",lat:"22.966895"},
-        {name:"蚌埠承业轿车",lng:"117.31607",lat:"32.916395"},
-        {name:"陕西奥诚",lng:"108.803455",lat:"34.292656"},
-        {name:"西安新丰泰",lng:"109.003413",lat:"34.337391"},
-        {name:"兰州金岛",lng:"103.640746",lat:"36.145294"},
-        {name:"西宁金岛",lng:"101.86447",lat:"36.57422"},
-        {name:"银川大世界",lng:"106.28826",lat:"38.5873"},
-        {name:"重庆璐菲",lng:"106.454756",lat:"29.506113"},
-        {name:"重庆万家红枫",lng:"106.550668",lat:"29.455406"},
-        {name:"巴中先锋恒远",lng:"106.786345",lat:"31.849142"},
-        {name:"成都新元素",lng:"104.117265",lat:"30.598953"},
-        {name:"达州天裕",lng:"107.512611",lat:"31.175827"},
-        {name:"遂宁清巍瑞祥",lng:"105.573057",lat:"30.46291"},
-        {name:"宜宾吉茂",lng:"104.669536",lat:"28.801851"},
-        {name:"贵州大雍峻辰",lng:"106.752707",lat:"26.406625"},
-        {name:"昆明海伟宏亦",lng:"102.631593",lat:"24.999048"},
-        {name:"上海东昌宏旗",lng:"121.451639",lat:"31.330911"},
-        {name:"上海旗泽",lng:"121.461483",lat:"31.108518"},
-        {name:"济南泊思",lng:"116.964493",lat:"36.673228"},
-        {name:"济宁天禧",lng:"116.554152",lat:"35.433178"},
-        {name:"临沂美华",lng:"118.309598",lat:"35.021724"},
-        {name:"烟台鸿旗",lng:"121.371261",lat:"37.497026"},
-        {name:"常州美奇罗",lng:"119.990499",lat:"31.845454"},
-        {name:"常州外汽红豪",lng:"119.970229",lat:"31.700177"},
-        {name:"南京大有国威",lng:"118.663898",lat:"31.94884"},
-        {name:"南通百恒",lng:"120.818803",lat:"32.037852"},
-        {name:"昆山联合",lng:"120.948804",lat:"31.348907"},
-        {name:"扬州广成扬旗",lng:"119.393809",lat:"32.454591"},
-        {name:"义乌正通",lng:"120.052678",lat:"29.373379"},
-        {name:"宁波鑫之旗",lng:"121.461217",lat:"29.84111"},
-        {name:"福建赢宸",lng:"118.369486",lat:"27.061136"},
-        {name:"宜昌华健晟旗",lng:"111.434951",lat:"30.552078"},
-        {name:"东莞德现",lng:"113.855094",lat:"23.012883"},
-        {name:"重庆九禾缘",lng:"108.413204",lat:"30.759732"},
-        {name:"南充明云",lng:"106.181099",lat:"30.775045"},
-        {name:"云南宏通达",lng:"102.811939",lat:"24.971299"},
-        {name:"福建华奥",lng:"119.29852",lat:"26.001217"},
-        {name:"许昌恒旭",lng:"113.803868",lat:"34.059448"},
-        {name:"乐山大众",lng:"103.737681",lat:"29.601383"},
-        {name:"运城大昌宏源",lng:"111.037907",lat:"35.114416"},
-        {name:"商丘恒美",lng:"115.706387",lat:"34.396834"},
-        {name:"安徽博融众旗",lng:"117.450783",lat:"31.828615"},
-        {name:"绵阳兴艾潇",lng:"104.624529",lat:"31.471486"},
-        {name:"绍兴汇金",lng:"120.613819",lat:"30.093913"},
-        {name:"长治大昌",lng:"113.118655",lat:"36.238366"},
-        {name:"宝鸡威凯",lng:"107.366185",lat:"34.352467"},
-        {name:"邢台邦华",lng:"114.562249",lat:"37.123094"},
-        {name:"浙江裕旗",lng:"119.99172",lat:"30.2865"},
-        {name:"包头宏腾",lng:"109.954872",lat:"40.657613"},
-        {name:"内蒙古思旗",lng:"111.817376",lat:"40.874765"},
-        {name:"湖南兰天天旗",lng:"112.793193",lat:"28.250724"},
-        {name:"大连通洲",lng:"121.846101",lat:"39.052414"},
-        {name:"聊城远达",lng:"116.03923",lat:"36.486042"},
-        {name:"淄博恒吉祥",lng:"118.079341",lat:"36.853347"},
-        {name:"衡阳恒宇",lng:"112.576846",lat:"26.875717"},
-        {name:"兴安盟华盛",lng:"121.989949",lat:"46.073819"},
-        {name:"辽阳红兴",lng:"123.168917",lat:"41.255523"},
-        {name:"盐城洪兆连",lng:"120.095596",lat:"33.459818"},
-        {name:"北京龙泽百旺",lng:"116.186826",lat:"39.924119"},
-        {name:"遵义星尊程",lng:"106.882657",lat:"27.615981"},
-        {name:"宁波中基明瑞",lng:"121.59957",lat:"29.821305"},
-        {name:"秦皇岛瑞通嘉禾",lng:"119.555004",lat:"39.977889"},
-        {name:"江苏腾起",lng:"119.124304",lat:"33.621338"},
-        {name:"泉州同行",lng:"118.644318",lat:"24.925922"},
-        {name:"新疆天汇华辉",lng:"87.606674",lat:"43.817505"},
-        {name:"东莞鸿粤益嘉",lng:"113.712445",lat:"22.984447"},
-        {name:"广西弘博",lng:"108.320797",lat:"22.784708"},
-        {name:"天津奥吉通红韵",lng:"117.278518",lat:"39.004005"},
-        {name:"海南优之杰",lng:"110.325834",lat:"20.001792"},
-        {name:"河南圆诺",lng:"114.444308",lat:"34.803517"},
-        {name:"安庆天位",lng:"117.067133",lat:"30.574981"},
-        {name:"济南快爱特",lng:"117.153834",lat:"36.717629"},
-        {name:"天津汇裕永达",lng:"117.381891",lat:"39.166221"},
-        {name:"广西钜荣",lng:"108.393347",lat:"22.710541"},
-        {name:"成都建国",lng:"104.053967",lat:"30.609159"},
-        {name:"大同大昌宏源",lng:"113.263031",lat:"40.045369"},
-        {name:"日照晟瑞",lng:"119.445169",lat:"35.39684"},
-        {name:"北京嘉程泓旗",lng:"116.111126",lat:"39.729066"},
-        {name:"杭州杭旗",lng:"120.128455",lat:"30.328681"},
-        {name:"渭南广行",lng:"109.471309",lat:"34.585927"},
-        {name:"菏泽兴邦",lng:"115.596626",lat:"35.120345"},
-        {name:"河北华美",lng:"114.395128",lat:"38.083738"},
-        {name:"大理国源",lng:"100.271017",lat:"25.601171"},
-        {name:"北京祥龙博瑞",lng:"116.371335",lat:"40.019322"},
-        {name:"黔西南星尊程领航",lng:"104.853886",lat:"25.128091"},
-        {name:"杭州广旗",lng:"120.299461",lat:"30.209315"},
-        {name:"温州宝旗",lng:"120.751287",lat:"27.986048"},
-        {name:"吉林省神州",lng:"125.262203",lat:"43.823371"},
-        {name:"无锡红博",lng:"120.336121",lat:"31.530134"},
-        {name:"苏州天利和实业",lng:"120.140213185873",lat:"31.5673591843051"},
-        {name:"​德阳冠仑",lng:"104.393595",lat:"31.083046"},
-        {name:"长春金山",lng:"125.212734",lat:"43.833426"},
-        {name:"厦门亿海红祺",lng:"118.134218",lat:"24.531586"},
-        {name:"自贡新成红兴",lng:"104.739476",lat:"29.335893"},
-        {name:"广元峰帆商贸",lng:"105.731184",lat:"32.416469"},
-        {name:"信阳天泓",lng:"114.170188",lat:"32.128119"},
-        {name:"佛山挥扬",lng:"113.226136",lat:"22.879615"},
-        {name:"郑州吉展",lng:"113.494773",lat:"34.758763"},
-        {name:"台州中通旗进",lng:"121.390464",lat:"28.509308"},
-        {name:"德州润吉",lng:"116.38922",lat:"37.464736"},
-        {name:"吉安凯迪",lng:"114.987309",lat:"27.16557"},
-        {name:"曲靖开源",lng:"103.755382",lat:"25.533179"},
-        {name:"青岛泰岳宏旗",lng:"120.436759",lat:"36.20739"},
-        {name:"沧州华泽",lng:"116.924451",lat:"38.279493"},
-        {name:"重庆两江璐菲",lng:"106.539294",lat:"29.642847"},
-        {name:"洛阳随诺",lng:"112.474769",lat:"34.62791"},
-        {name:"六安之道",lng:"116.624802",lat:"31.766539"},
-        {name:"衢州君悦宏旗",lng:"118.977011",lat:"28.980568"},
-        {name:"铜仁星尊程鑫航",lng:"109.246881",lat:"27.749078"},
-        {name:"晋城中一",lng:"112.868195",lat:"35.487218"},
-        {name:"南京大道",lng:"118.882454",lat:"31.985527"},
-        {name:"阳江鑫通达",lng:"111.983511",lat:"21.893976"},
-        {name:"郑州泰岳宏旗",lng:"113.763459",lat:"34.739947"},
-        {name:"濮阳德源",lng:"115.125646",lat:"35.808221"},
-        {name:"珠海中升",lng:"113.502949",lat:"22.294067"},
-        {name:"南阳宛骏",lng:"112.518335",lat:"33.022279"},
-        {name:"澳门",lng:"113.550489",lat:"22.21354"},
-        {name:"潍坊广潍旗胜",lng:"119.138134",lat:"36.648785"},
-        {name:"长沙美捷",lng:"113.0906",lat:"28.209358"},
-        {name:"北京泰岳宏旗",lng:"116.57339",lat:"40.02133"},
-        {name:"桂林弘帆桂仕",lng:"110.314664",lat:"25.359681"},
-        {name:"阜阳博融亚之旗",lng:"115.8692",lat:"32.842487"},
-        {name:"成都东创",lng:"104.120514",lat:"30.483515"},
-        {name:"新乡盛世",lng:"114.00877",lat:"35.304481"},
-        {name:"南通百弘",lng:"120.899417480005",lat:"31.9975584580951"},
-        {name:"金华裕旗",lng:"119.694574",lat:"29.149209"},
-        {name:"东营鑫红",lng:"118.448047",lat:"37.483702"},
-        {name:"青岛欣盛",lng:"120.395342",lat:"36.131166"},
-        {name:"汉中天汉旗胜",lng:"107.116567",lat:"33.084157"},
-        {name:"漯河和荣",lng:"113.999021",lat:"33.557018"},
-        {name:"瑞安宝合",lng:"120.68204",lat:"27.83423"},
-        {name:"贵州安晟",lng:"105.909445",lat:"26.232193"},
-        {name:"潍坊泰岳宏旗",lng:"119.19296",lat:"36.752058"},
-        {name:"滨州利华晟旗悦",lng:"117.999621043765",lat:"37.4588560592502"},
-        {name:"广东中红实业",lng:"114.695078",lat:"23.704903"},
-        {name:"安阳世祥",lng:"114.351817",lat:"36.07397"},
-        {name:"晋江同行",lng:"118.572177",lat:"24.775972"},
-        {name:"贵阳冉丰",lng:"106.635727",lat:"26.59961"},
-        {name:"泸州明云华盛",lng:"105.41338",lat:"28.830855"},
-        {name:"红河海伟宏亦",lng:"103.371075",lat:"23.390088"},
-        {name:"湖州湖旗",lng:"120.161763",lat:"30.892962"},
-        {name:"嘉兴禾旗",lng:"120.730555",lat:"30.736285"},
-        {name:"浙江裕都",lng:"120.596617826499",lat:"30.6238400245221"},
-        {name:"泰州海沃",lng:"119.908353",lat:"32.424264"},
-        {name:"天津永濠",lng:"117.085892",lat:"39.121953"},
-        {name:"上海绅亚",lng:"121.336121",lat:"31.173178"},
-        {name:"广东容大星旗",lng:"116.421688",lat:"23.578499"},
-        {name:"娄底宝盛",lng:"111.973274",lat:"27.701999"},
-        {name:"济南民福",lng:"117.734741",lat:"36.203327"},
-        {name:"泰安利华晟旗悦",lng:"117.038993",lat:"36.159037"},
-        {name:"周口昱旗",lng:"114.693669",lat:"33.655295"},
-        {name:"抚州龙旗",lng:"116.337382",lat:"27.960012"},
-        {name:"邵阳旗乐",lng:"111.56464",lat:"27.262344"},
-        {name:"玉溪国臻",lng:"102.551125",lat:"24.391509"},
-        {name:"苏州华朔",lng:"120.551984",lat:"31.26063"},
-        {name:"孝感祥沃",lng:"113.976832",lat:"30.910956"},
-        {name:"西昌璞瑞",lng:"102.203182",lat:"27.960004"},
-        {name:"北京中润发",lng:"116.323313",lat:"39.874017"},
-        {name:"唐山岳泰宏旗",lng:"118.263999",lat:"39.632918"},
-        {name:"凯里凯通",lng:"118.263999",lat:"39.632918"},
-        {name:"衡水华奕",lng:"115.705877",lat:"37.780997"},
-        {name:"常德时茂",lng:"111.729725",lat:"29.007804"},
-        {name:"十堰亨运红晟",lng:"110.852229",lat:"32.611147"},
-        {name:"贵州毕节丽安",lng:"105.454464",lat:"27.272796"},
-        {name:"南昌美乘",lng:"115.928284",lat:"28.701527"},
-        {name:"鄂尔多斯宏旗",lng:"110.107785",lat:"39.792128"},
-        {name:"上海岳宏泰",lng:"121.563597",lat:"31.163534"},
-        {name:"福州华奥鸿旗",lng:"119.387839",lat:"25.917067"},
-        {name:"普洱海伟宏亦",lng:"100.981496",lat:"22.805141"},
-        {name:"牡丹江中信恒安",lng:"129.686375",lat:"44.630519"},
-        {name:"株洲宏旗",lng:"113.161756",lat:"27.868675"},
-        {name:"西咸新区骏益",lng:"113.161756",lat:"27.868675"},
-        {name:"九江华宏昇",lng:"116.106284",lat:"29.743648"},
-        {name:"丽水君悦宏旗",lng:"119.856473",lat:"28.413958"},
-        {name:"黄冈旗胜",lng:"114.974859",lat:"30.449744"},
-        {name:"漳州宏旗",lng:"117.724165",lat:"24.52978"},
-        {name:"马鞍山金福联",lng:"118.505084",lat:"31.646072"},
-        {name:"诸暨悦旗",lng:"120.19939",lat:"29.74865"},
-        {name:"西藏泰立",lng:"91.035954",lat:"29.65091"},
-        {name:"四平通立",lng:"124.457894",lat:"43.143083"},
-        {name:"黔南州大雍汇盛",lng:"107.46945",lat:"26.315742"},
-        {name:"广安祥龙车业",lng:"106.702778",lat:"30.513479"},
-        {name:"通辽大鹏泰达",lng:"122.227397",lat:"43.656373"},
-        {name:"邯郸鸿博",lng:"114.475706",lat:"36.654693"},
-        {name:"肇庆诚利",lng:"112.501586",lat:"23.112805"},
-        {name:"亳州远景特润",lng:"115.767639",lat:"33.837254"},
-        {name:"四川融裕",lng:"103.800639",lat:"30.079785"},
-        {name:"镇江利正",lng:"119.5217",lat:"32.18459"},
-        {name:"承德天美",lng:"117.82847",lat:"41.021848"},
-        {name:"星尊程悦航",lng:"104.906549",lat:"26.548686"},
-        {name:"赤峰天永",lng:"118.921483",lat:"42.338333"},
-        {name:"湛江宝旗",lng:"110.385775",lat:"21.301709"},
-        {name:"郴州恒晨",lng:"113.002887",lat:"25.753647"},
-        {name:"荆州旗阳",lng:"112.212464",lat:"30.389206"},
-        {name:"江门裕立",lng:"113.082832",lat:"22.559548"},
-        {name:"岳阳广宸",lng:"113.177529",lat:"29.428161"},
-        {name:"广东广物鸿福",lng:"113.196954",lat:"23.072205"},
-        {name:"齐齐哈尔粤华",lng:"123.93966",lat:"47.312308"},
-        {name:"平顶山盛大",lng:"113.494135",lat:"33.741732"},
-        {name:"昭通国源",lng:"103.789584",lat:"27.38877"},
-        {name:"辽宁神州",lng:"123.363357",lat:"41.820795"},
-        {name:"益阳宏旗",lng:"112.398011",lat:"28.577559"},
-        {name:"焦作天宏",lng:"113.268818",lat:"35.15789"},
-        {name:"连云港海旗",lng:"119.196077",lat:"34.646751"},
-        {name:"西双版纳骏杰",lng:"100.7607",lat:"21.992564"},
-        {name:"宿州韵昌",lng:"116.976705",lat:"33.598482"},
-        {name:"山西大昌福源",lng:"112.560106",lat:"37.788618"},
-        {name:"徐州世纪恒望",lng:"117.231875",lat:"34.209854"},
-        {name:"韶关荣耀",lng:"113.587651",lat:"24.74414"},
-        {name:"深圳通利华实业",lng:"114.229897",lat:"22.673173"},
-        {name:"华之诚万家",lng:"126.557874",lat:"45.710433"},
-        {name:"威海鸿运",lng:"122.141562",lat:"37.37188"},
-        {name:"滁州钰祥",lng:"118.352488",lat:"32.273406"},
-        {name:"湘西旗胜",lng:"109.68167",lat:"28.232844"},
-        {name:"通化汇升",lng:"125.9247",lat:"41.780037"},
-        {name:"龙岩亿海冠旗",lng:"116.960716",lat:"25.106733"},
-        {name:"文山鑫桥",lng:"104.286631",lat:"23.328988"},
-        {name:"楚雄安晟",lng:"101.496412",lat:"25.070972"},
-        {name:"莆田星奥",lng:"119.04766",lat:"25.473232"},
-        {name:"深圳锦红",lng:"113.849731",lat:"22.613191"},
-        {name:"枣庄旗尚",lng:"117.438745",lat:"34.827749"},
-        {name:"河北华晟",lng:"114.553253",lat:"38.076774"},
-        {name:"荆门英驰",lng:"112.243711",lat:"31.047974"},
-        {name:"张家口龙瀚",lng:"114.929774",lat:"40.704432"},
-        {name:"榆林恒盛德岳",lng:"109.87146",lat:"38.339861"},
-        {name:"大连汽贸华宇",lng:"121.582797",lat:"38.971552"},
-        {name:"成都岳宏泰",lng:"103.960564",lat:"30.604977"},
-        {name:"武汉泰岳宏旗",lng:"114.323717",lat:"30.713746"},
-        {name:"黄石新兴振宇",lng:"115.02894",lat:"30.141515"},
-        {name:"湖北骏翔",lng:"113.44238",lat:"31.709867"},
-        {name:"景德镇景旗",lng:"117.162687",lat:"29.318011"},
-        {name:"恩施英驰",lng:"109.460527",lat:"30.287826"},
-        {name:"南京天沃",lng:"118.802683",lat:"32.003028"},
-        {name:"舟山旗翔",lng:"122.145842",lat:"30.001092"},
-        {name:"广东广物鸿福茂名分公司",lng:"110.967385",lat:"21.619226"},
-        {name:"汕头众驰",lng:"116.738771",lat:"23.391749"},
-        {name:"鞍山天美",lng:"122.955192",lat:"41.164344"},
-        {name:"台州星旗",lng:"121.390148",lat:"28.559545"},
-        {name:"锦州新东方",lng:"121.111329",lat:"41.046977"},
-        {name:"合肥万帮之星",lng:"117.362834",lat:"31.803985"},
-        {name:"沈阳汇旗通",lng:"123.53726",lat:"41.818227"},
-        {name:"淮南盛兆",lng:"117.223075",lat:"31.914905"},
-        {name:"佳木斯安盈",lng:"130.233555",lat:"46.799698"},
-        {name:"辽宁大地",lng:"117.38391",lat:"31.946316"},
-        {name:"清远广汇利",lng:"113.062513",lat:"23.667084"},
-        {name:"大庆世纪恒达",lng:"124.867665",lat:"46.680804"},
-        {name:"资阳清巍茂美",lng:"104.669782",lat:"30.112139"},
-        {name:"松原征途中和",lng:"124.86292",lat:"45.119694"},
-        {name:"广州锦耀",lng:"113.420604",lat:"23.139992"},
-        {name:"忻州华明",lng:"112.74328",lat:"38.461767"},
-        {name:"内江利恒孚",lng:"105.014563",lat:"29.578785"},
-        {name:"宣城天位",lng:"118.73507",lat:"30.945302"},
-        {name:"沈阳神州川达",lng:"123.289296",lat:"41.799848"},
-        {name:"深圳广旗",lng:"114.071956",lat:"22.679903"},
-        {name:"永州达美",lng:"111.638807",lat:"26.299146"},
-        {name:"保山上通",lng:"99.178277",lat:"25.110076"},
-        {name:"咸宁东旗",lng:"114.249087",lat:"29.881928"},
-        {name:"宿迁润旗",lng:"118.240047",lat:"33.937515"},
-        {name:"淮北吉昌",lng:"116.801628",lat:"33.933392"},
-        {name:"池州鑫瑞",lng:"117.525344",lat:"30.680218"},
-        {name:"新疆晨运",lng:"86.218229",lat:"41.728338"},
-        {name:"延吉神州嘉航",lng:"129.577895",lat:"42.916983"},
-        {name:"阳泉鼎晟",lng:"113.57566",lat:"37.919471"},
-        {name:"伊犁冠邦",lng:"81.254623",lat:"43.972237"},
-        {name:"钦州益辰",lng:"108.653271",lat:"21.96564"},
-        {name:"吉林神州",lng:"126.487032",lat:"43.875559"},
-        {name:"德宏海伟宏亦",lng:"98.607453",lat:"24.455853"},
-        {name:"三门峡和骏",lng:"111.176768",lat:"34.802469"},
-        {name:"广西宝旗",lng:"109.372466",lat:"24.313295"},
-        {name:"朝阳神州川达",lng:"120.386748",lat:"41.564116"},
-        {name:"三明旗展",lng:"117.655377",lat:"26.302783"},
-        {name:"营口国之信",lng:"122.386439",lat:"40.686384"},
-        {name:"萍乡兰天嘉华",lng:"117.16983",lat:"32.487007"},
-        {name:"呼伦贝尔大鹏睿达",lng:"119.77221",lat:"49.217977"},
-        {name:"鹰潭凯迪",lng:"117.215729",lat:"31.797755"},
-        {name:"广东腾辉鸿旗",lng:"116.081823",lat:"24.294777"},
-        {name:"万家祥和",lng:"126.753484",lat:"45.78043"},
-        {name:"百色健稳科技",lng:"106.6744",lat:"23.862061"},
-        {name:"吕梁大昌",lng:"111.10353",lat:"37.506615"},
-        {name:"昌吉亚中机电",lng:"87.297931",lat:"44.019896"},
-        {name:"白山宝信",lng:"126.443612",lat:"41.963985"},
-        {name:"鹤壁鹤天",lng:"114.316166",lat:"35.778112"},
-        {name:"攀枝花驭马车业",lng:"101.72627",lat:"26.533004"},
-        {name:"上饶君悦宏旗",lng:"117.944537",lat:"28.460547"},
-        {name:"苏州和旗",lng:"120.67509",lat:"31.238562"},
-        {name:"湘潭宏旗",lng:"117.183611",lat:"31.859204"},
-        {name:"庆阳金岛旗胜",lng:"107.635543",lat:"35.726457"},
-        {name:"雅安国创",lng:"117.265504",lat:"31.722993"},
-        {name:"黄山旗胜",lng:"118.30476",lat:"29.728488"},
-        {name:"宜春华宏昇",lng:"114.3924",lat:"27.884277"},
-        {name:"深圳锦龙",lng:"113.914962",lat:"22.480628"},
-        {name:"泰州金迪CJ",lng:"120.55856",lat:"31.327148"},
-        {name:"泰岳CJ",lng:"108.852545",lat:"34.318207"},
-        {name:"泰岳CJ",lng:"121.279025",lat:"31.008669"},
-        {name:"上海联兴CJ",lng:"121.125595",lat:"31.190735"},
-        {name:"奥吉通CJ",lng:"117.268032",lat:"31.923569"},
-        {name:"广成CJ",lng:"120.073566",lat:"30.251167"},
-        {name:"通利华CJ",lng:"113.898097",lat:"22.74662"},
-        {name:"温岭金奥达CJ",lng:"114.410972",lat:"22.759554"},
-        {name:"广州南菱CJ",lng:"113.223242",lat:"23.438815"},
-        {name:"广东保利CJ",lng:"113.317071",lat:"23.082874"}
+      
+        {province:"河南",city:"郑州",city_level:"一线城市",dealer_abbreviation:"郑州大展",dealer_fullName:"郑州大展红旗汽车销售有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"郑州市金水区中州大道与天伦路交汇处西500米路南",lng:"113.693967",lat:"34.831149"},
+        {province:"河南",city:"驻马店",city_level:"三线城市",dealer_abbreviation:"驻马店祥诚",dealer_fullName:"驻马店祥诚汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"驻马店市驿城区开源大道与驿城大道交叉口金龙科技园西门院内",lng:"114.072053",lat:"33.019055"},
+        {province:"山西",city:"太原",city_level:"二线城市",dealer_abbreviation:"山西大昌宏源",dealer_fullName:"山西大昌宏源汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"山西省太原市学府西街9号2#展厅",lng:"112.554767",lat:"37.813939"},
+        {province:"山西",city:"临汾",city_level:"四线城市",dealer_abbreviation:"临汾荣翔",dealer_fullName:"临汾荣翔汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"临汾市尧都区屯里镇屯里村口",lng:"111.537813",lat:"36.131425"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京龙泽",dealer_fullName:"北京龙泽红旗汽车销售有限公司",openingTime:"2018.02.28",storeType:"改建A",address:"北京市朝阳区姚家园东方基业汽车城甲一号",lng:"116.532508",lat:"39.946716"},
+        {province:"河北",city:"保定",city_level:"二线城市",dealer_abbreviation:"保定华达",dealer_fullName:"保定市华达汽车销售服务有限公司",openingTime:"2018.02.28",storeType:"改建B1",address:"河北省保定市七一东路2456号",lng:"115.57329",lat:"38.881718"},
+        {province:"河北",city:"石家庄",city_level:"二线城市",dealer_abbreviation:"石家庄庞大华旗",dealer_fullName:"石家庄庞大华旗汽车销售有限公司",openingTime:"2018.03.31",storeType:"新建B1",address:"石家庄市裕华区南二环东路3号副1号",lng:"114.520979",lat:"38.008023"},
+        {province:"吉林",city:"白城",city_level:"五线城市",dealer_abbreviation:"白城荣耀",dealer_fullName:"白城市荣耀红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"白城市经济开发区洮白公路1010号",lng:"122.836414",lat:"45.581348"},
+        {province:"吉林",city:"长春",city_level:"二线城市",dealer_abbreviation:"长春通立",dealer_fullName:"长春通立红旗汽车销售服务有限公司",openingTime:"2018.01.31",storeType:"新建A",address:"净月高新技术产业开发区生态大街7588号",lng:"125.387338",lat:"43.772976"},
+        {province:"湖南",city:"怀化",city_level:"四线城市",dealer_abbreviation:"怀化旗通",dealer_fullName:"怀化市旗通汽车贸易有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"怀化市沿河路58号",lng:"109.974845",lat:"27.529037"},
+        {province:"湖南",city:"长沙",city_level:"一线城市",dealer_abbreviation:"长沙旗展",dealer_fullName:"长沙旗展汽车销售有限公司",openingTime:"2018.02.28",storeType:"改建B3",address:"长沙市高新区麓谷汽车世界嘉运路69号红旗体验中心",lng:"112.862956",lat:"28.214304"},
+        {province:"江西",city:"赣州",city_level:"三线城市",dealer_abbreviation:"赣州凯迪",dealer_fullName:"赣州市凯迪汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"江西省赣州市经开区迎宾大道西段南侧红旗体验中心",lng:"114.870258",lat:"25.852676"},
+        {province:"江西",city:"南昌",city_level:"二线城市",dealer_abbreviation:"南昌龙和",dealer_fullName:"南昌龙和汽车销售有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"南昌新建区望城新区武功山大道4109号（恒望汽车城）",lng:"115.733869",lat:"28.632"},
+        {province:"湖北",city:"武汉",city_level:"一线城市",dealer_abbreviation:"湖北长泽",dealer_fullName:"湖北长泽汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"湖北省武汉市洪山区野芷湖西路10号（保利心语6期）",lng:"114.330544",lat:"30.483868"},
+        {province:"湖北",city:"武汉",city_level:"一线城市",dealer_abbreviation:"武汉东瑞",dealer_fullName:"武汉市东瑞汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"湖北省武汉市洪山区白沙大道9号爱家名校华城对面",lng:"114.265133",lat:"30.431288"},
+        {province:"湖北",city:"襄阳",city_level:"三线城市",dealer_abbreviation:"湖北英驰",dealer_fullName:"湖北英驰汽车集团有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"湖北省襄阳市襄州区钻石大道49号",lng:"112.183861",lat:"32.098799"},
+        {province:"广东",city:"佛山",city_level:"一线城市",dealer_abbreviation:"佛山南海罗村骏耀",dealer_fullName:"佛山市南海区罗村骏耀汽车销售服务有限公司​​",openingTime:"2018.03.31",storeType:"改建B1",address:"佛山市南海区罗村镇联星村上二经济合作社“新街头”尖沙咀酒店旁",lng:"113.097257",lat:"23.066913"},
+        {province:"广东",city:"惠州",city_level:"二线城市",dealer_abbreviation:"惠州通利华",dealer_fullName:"惠州市通利华实业有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"广东省惠州市惠城区三栋数码工业园惠南汽车城二期D2位",lng:"114.466502",lat:"22.985247"},
+        {province:"广东",city:"中山",city_level:"二线城市",dealer_abbreviation:"中山中升",dealer_fullName:"中山市中升汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"广东省中山市东升镇坦背东二马路162号",lng:"113.329145",lat:"22.584181"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广东鸿粤益嘉",dealer_fullName:"广东鸿粤益嘉汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"广东省广州市白云区白云大道北859号",lng:"113.302815",lat:"23.226107"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广州锦龙",dealer_fullName:"广州锦龙红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"广州市番禺区东环街大北路552号锦龙名车城2层",lng:"113.377497",lat:"22.966547"},
+        {province:"安徽",city:"蚌埠",city_level:"三线城市",dealer_abbreviation:"蚌埠承业轿车",dealer_fullName:"蚌埠市承业轿车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"蚌埠市高新区燕山路2211号",lng:"117.31607",lat:"32.916395"},
+        {province:"安徽",city:"合肥",city_level:"一线城市",dealer_abbreviation:"合肥万帮之星",dealer_fullName:"合肥万帮之星汽车销售服务有限公司",openingTime:"2020.08.31",storeType:"改建A",address:"安徽省合肥市包河区长春街606号",lng:"117.352939",lat:"31.804038"},
+        {province:"陕西",city:"西安",city_level:"一线城市",dealer_abbreviation:"陕西奥诚",dealer_fullName:"陕西奥诚红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建A",address:"西安市未央区天台八路西段2公里",lng:"108.803455",lat:"34.292656"},
+        {province:"陕西",city:"西安",city_level:"一线城市",dealer_abbreviation:"西安新丰泰",dealer_fullName:"西安新丰泰红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"西安市浐灞生态区欧亚一路1688号",lng:"109.003413",lat:"34.337391"},
+        {province:"甘肃",city:"兰州",city_level:"二线城市",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"2018.02.28",storeType:"新建B3",address:"兰州市安宁区北滨河西路88号安宁汽车城",lng:"103.640746",lat:"36.145294"},
+        {province:"青海",city:"西宁",city_level:"四线城市",dealer_abbreviation:"西宁金岛",dealer_fullName:"西宁金岛红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"西宁市经济技术开发区昆仑东路6号金岛汽车城",lng:"101.86447",lat:"36.57422"},
+        {province:"宁夏",city:"银川",city_level:"三线城市",dealer_abbreviation:"银川大世界",dealer_fullName:"银川大世界红旗汽车销售有限公司",openingTime:"2018.03.31",storeType:"新建A",address:"银川市正源北街北绕城旁园艺路向东600米",lng:"106.28826",lat:"38.5873"},
+        {province:"重庆",city:"重庆",city_level:"一线城市",dealer_abbreviation:"重庆璐菲",dealer_fullName:"重庆璐菲汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"重庆市九龙坡区创业大道1号",lng:"106.454756",lat:"29.506113"},
+        {province:"重庆",city:"重庆",city_level:"一线城市",dealer_abbreviation:"重庆万家红枫",dealer_fullName:"重庆万家红枫汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建A",address:"重庆市巴南区龙洲大道1865号",lng:"106.550668",lat:"29.455406"},
+        {province:"四川",city:"巴中",city_level:"五线城市",dealer_abbreviation:"巴中先锋恒远",dealer_fullName:"巴中先锋恒远汽车服务有限公司",openingTime:"2018.03.31",storeType:"新建C1",address:"四川省巴中市西部国际商贸城秦巴大道杨家沟段先锋汽车产业园",lng:"106.786345",lat:"31.849142"},
+        {province:"四川",city:"成都",city_level:"一线城市",dealer_abbreviation:"成都新元素",dealer_fullName:"成都新元素红旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"新建A",address:"成都市锦江区皇经楼路259号",lng:"104.117265",lat:"30.598953"},
+        {province:"四川",city:"达州",city_level:"四线城市",dealer_abbreviation:"达州天裕",dealer_fullName:"达州天裕汽车服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"达州市达川区翠屏街道办事处杨柳路13号",lng:"107.512611",lat:"31.175827"},
+        {province:"四川",city:"遂宁",city_level:"五线城市",dealer_abbreviation:"遂宁清巍瑞祥",dealer_fullName:"遂宁清巍瑞祥汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建C3",address:"遂宁市玫瑰大道西侧，遂渝高速出口南侧",lng:"105.573057",lat:"30.46291"},
+        {province:"四川",city:"宜宾",city_level:"四线城市",dealer_abbreviation:"宜宾吉茂",dealer_fullName:"宜宾吉茂汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建A",address:"宜宾市临港经济开发区飞云路北段安吉汽车城",lng:"104.669536",lat:"28.801851"},
+        {province:"贵州",city:"贵阳",city_level:"二线城市",dealer_abbreviation:"贵州大雍峻辰",dealer_fullName:"贵州大雍峻辰汽车销售有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"贵阳市花溪区红星路十和田精品汽车库",lng:"106.752707",lat:"26.406625"},
+        {province:"云南",city:"昆明",city_level:"二线城市",dealer_abbreviation:"昆明海伟宏亦",dealer_fullName:"昆明海伟宏亦汽车销售有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"云南省昆明市西山区碧鸡路碧鸡博览园内",lng:"102.631593",lat:"24.999048"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"上海东昌宏旗",dealer_fullName:"上海东昌宏旗汽车服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"上海市宝山区共和新路5179号（宝山万达旁）",lng:"121.451639",lat:"31.330911"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"上海旗泽",dealer_fullName:"上海旗泽汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"上海市徐汇区龙吴路2996号",lng:"121.461483",lat:"31.108518"},
+        {province:"山东",city:"济南",city_level:"二线城市",dealer_abbreviation:"济南泊思",dealer_fullName:"济南泊思汽车服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"济南市槐荫区张庄路38号（广友茶城东临）",lng:"116.964493",lat:"36.673228"},
+        {province:"山东",city:"济宁",city_level:"三线城市",dealer_abbreviation:"济宁天禧",dealer_fullName:"济宁天禧汽车贸易有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"济宁市105国道金宇汽配城对过 ",lng:"116.554152",lat:"35.433178"},
+        {province:"山东",city:"临沂",city_level:"三线城市",dealer_abbreviation:"临沂美华",dealer_fullName:"临沂美华汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"山东省临沂市罗庄区蒙山大道与沂河路交汇向西2公里路南（远通汽车超市院内）",lng:"118.309598",lat:"35.021724"},
+        {province:"山东",city:"烟台",city_level:"二线城市",dealer_abbreviation:"烟台鸿旗",dealer_fullName:"烟台鸿旗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"山东省烟台市芝罘区机场路158号",lng:"121.371261",lat:"37.497026"},
+        {province:"江苏",city:"常州",city_level:"二线城市",dealer_abbreviation:"常州美奇罗",dealer_fullName:"常州美奇罗汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"常州市新北区庐山路198号",lng:"119.990499",lat:"31.845454"},
+        {province:"江苏",city:"常州",city_level:"二线城市",dealer_abbreviation:"常州外汽",dealer_fullName:"常州外汽红豪汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"常州市武进区湖塘镇武进汽车城c区5号",lng:"119.970229",lat:"31.700177"},
+        {province:"江苏",city:"南京",city_level:"一线城市",dealer_abbreviation:"南京大有国威",dealer_fullName:"南京大有国威汽车服务有限公司",openingTime:"2018.03.31",storeType:"改建A",address:"江苏省南京市雨花台区板桥汽车园雨瑞路6号",lng:"118.663898",lat:"31.94884"},
+        {province:"江苏",city:"南通",city_level:"二线城市",dealer_abbreviation:"南通百恒",dealer_fullName:"南通百恒汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B2",address:"南通市港闸区城港路85号（港闸区管委会对面）",lng:"120.818803",lat:"32.037852"},
+        {province:"江苏",city:"苏州",city_level:"一线城市",dealer_abbreviation:"昆山联合",dealer_fullName:"昆山联合红旗汽车销售有限公司",openingTime:"2018.03.31",storeType:"改建B3",address:"江苏省昆山市宝益路101号312国道旁",lng:"120.948804",lat:"31.348907"},
+        {province:"江苏",city:"扬州",city_level:"三线城市",dealer_abbreviation:"扬州广成扬旗",dealer_fullName:"扬州广成扬旗汽车有限公司",openingTime:"2018.03.31",storeType:"改建A",address:"江苏省扬州市邗江区扬子江北路西北绕城公路交叉口东南角",lng:"119.393809",lat:"32.454591"},
+        {province:"浙江",city:"宁波",city_level:"二线城市",dealer_abbreviation:"宁波鑫之旗",dealer_fullName:"宁波鑫之旗汽车有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"浙江省宁波市海曙区鄞县大道古林段777号",lng:"121.461587",lat:"29.8408"},
+        {province:"福建",city:"南平",city_level:"四线城市",dealer_abbreviation:"福建赢宸",dealer_fullName:"福建赢宸汽车销售服务有限公司",openingTime:"2018.03.31",storeType:"改建B1",address:"福建省建瓯市东安路15号(建瓯高速出口)",lng:"118.369486",lat:"27.061136"},
+        {province:"湖北",city:"宜昌",city_level:"三线城市",dealer_abbreviation:"宜昌华健晟旗",dealer_fullName:"宜昌市华健晟旗汽车销售服务有限责任公司",openingTime:"2018.04.30",storeType:"改建B1",address:"宜昌市猇亭区猇亭大道179号",lng:"111.433304",lat:"30.553347"},
+        {province:"广东",city:"东莞",city_level:"一线城市",dealer_abbreviation:"东莞德现",dealer_fullName:"东莞德现汽车销售服务有限公司",openingTime:"2018.04.30",storeType:"改建B2",address:"广东省东莞市寮步镇国际汽车城寮城中路C-02-01B",lng:"113.855094",lat:"23.012883"},
+        {province:"重庆",city:"重庆",city_level:"一线城市",dealer_abbreviation:"重庆九禾缘",dealer_fullName:"重庆九禾缘汽车销售服务有限公司",openingTime:"2018.04.30",storeType:"改建A",address:"重庆市万州区龙都大道390号1号楼",lng:"108.413204",lat:"30.759732"},
+        {province:"四川",city:"南充",city_level:"三线城市",dealer_abbreviation:"南充明云日月",dealer_fullName:"南充明云日月宏新车业有限公司",openingTime:"2018.04.30",storeType:"新建A",address:"南充市高坪区东顺路三段",lng:"106.181099",lat:"30.775045"},
+        {province:"云南",city:"昆明",city_level:"二线城市",dealer_abbreviation:"云南宏通达",dealer_fullName:"云南宏通达汽车销售服务有限公司",openingTime:"2018.04.25",storeType:"改建A",address:"昆明市经济技术开发区国际汽车城博望路F04号地块",lng:"102.811939",lat:"24.971299"},
+        {province:"福建",city:"福州",city_level:"二线城市",dealer_abbreviation:"福建华奥",dealer_fullName:"福建华奥红旗汽车销售有限公司",openingTime:"2018.04.28",storeType:"改建B1",address:"福建省福州市仓山区天水路1号",lng:"119.29852",lat:"26.001217"},
+        {province:"河南",city:"许昌",city_level:"四线城市",dealer_abbreviation:"许昌恒旭",dealer_fullName:"许昌市恒旭汽车销售服务有限公司",openingTime:"2018.05.20",storeType:"改建B3",address:"许昌市延安路与陈庄街交叉口魏都汽贸城",lng:"113.803868",lat:"34.059448"},
+        {province:"四川",city:"乐山",city_level:"四线城市",dealer_abbreviation:"乐山大众",dealer_fullName:"乐山市大众汽车贸易（集团）有限公司",openingTime:"2018.05.27",storeType:"改建B2",address:"乐山市市中区柏杨西路615号",lng:"103.737681",lat:"29.601383"},
+        {province:"山西",city:"运城",city_level:"四线城市",dealer_abbreviation:"运城大昌宏源",dealer_fullName:"运城大昌宏源汽车销售服务有限公司",openingTime:"2018.05.27",storeType:"新建B2",address:"山西省运城市空港开发区关公街22号",lng:"111.037907",lat:"35.114416"},
+        {province:"河南",city:"商丘",city_level:"三线城市",dealer_abbreviation:"商丘恒美",dealer_fullName:"商丘市恒美汽车销售服务有限公司",openingTime:"2018.06.19",storeType:"改建B1",address:"商丘市富商大道与车城路交叉口",lng:"115.706387",lat:"34.396834"},
+        {province:"安徽",city:"合肥",city_level:"一线城市",dealer_abbreviation:"安徽博融众旗",dealer_fullName:"安徽博融众旗汽车销售服务有限公司",openingTime:"2018.06.28",storeType:"新建B1",address:"合肥市肥东县新合马路与东华路交汇",lng:"117.450783",lat:"31.828615"},
+        {province:"四川",city:"绵阳",city_level:"三线城市",dealer_abbreviation:"绵阳兴艾潇",dealer_fullName:"绵阳兴艾潇商贸有限公司",openingTime:"2018.06.28",storeType:"新建A",address:"绵阳市永兴镇辽宁大道西侧B-16号",lng:"104.624529",lat:"31.471486"},
+        {province:"浙江",city:"绍兴",city_level:"二线城市",dealer_abbreviation:"绍兴汇金",dealer_fullName:"绍兴市汇金汽车销售服务有限公司",openingTime:"2018.06.28",storeType:"改建B1",address:"浙江省绍兴市袍江中兴大道与三二九国道东北角（原标致店）",lng:"120.613819",lat:"30.093913"},
+        {province:"山西",city:"长治",city_level:"四线城市",dealer_abbreviation:"长治大昌",dealer_fullName:"长治市大昌汽车销售服务有限公司",openingTime:"2018.06.28",storeType:"新建B3",address:"山西省长治市北环西街华信汽贸园内",lng:"113.118655",lat:"36.238366"},
+        {province:"陕西",city:"宝鸡",city_level:"四线城市",dealer_abbreviation:"宝鸡威凯",dealer_fullName:"宝鸡威凯红旗汽车销售服务有限公司",openingTime:"2018.06.30",storeType:"新建B2",address:"宝鸡市陈仓物流园区汽博园内",lng:"107.366185",lat:"34.352467"},
+        {province:"河北",city:"邢台",city_level:"三线城市",dealer_abbreviation:"邢台邦华",dealer_fullName:"邢台邦华汽车销售服务有限公司",openingTime:"2018.06.30",storeType:"改建B2",address:"邢台市龙岗东大街邢台汽车城园区",lng:"114.562249",lat:"37.123094"},
+        {province:"浙江",city:"杭州",city_level:"一线城市",dealer_abbreviation:"浙江裕旗",dealer_fullName:"浙江裕旗汽车有限公司",openingTime:"2018.06.30",storeType:"改建B1",address:"浙江省杭州市余杭区仓前街道余杭塘路2620号",lng:"119.99172",lat:"30.2865"},
+        {province:"内蒙古",city:"包头",city_level:"四线城市",dealer_abbreviation:"包头宏腾",dealer_fullName:"包头市宏腾汽车销售服务有限公司",openingTime:"2018.07.27",storeType:"改建A",address:"包头市110国道与清源道交汇处",lng:"109.954872",lat:"40.657613"},
+        {province:"内蒙古",city:"呼和浩特",city_level:"三线城市",dealer_abbreviation:"内蒙古思旗",dealer_fullName:"内蒙古思旗汽车销售有限责任公司",openingTime:"2018.07.31",storeType:"改建B2",address:"内蒙古自治区呼和浩特市赛罕区巴彦镇利丰技术服务园A座",lng:"111.817376",lat:"40.874765"},
+        {province:"湖南",city:"长沙",city_level:"一线城市",dealer_abbreviation:"湖南兰天天旗",dealer_fullName:"湖南兰天天旗汽车销售有限公司",openingTime:"2018.07.31",storeType:"新建A",address:"湖南长沙岳麓西大道3599号（河西汽车城）",lng:"112.793193",lat:"28.250724"},
+        {province:"辽宁",city:"大连",city_level:"二线城市",dealer_abbreviation:"大连通洲",dealer_fullName:"大连通洲汽车销售有限公司",openingTime:"2018.08.14",storeType:"新建A",address:"大连市保税区护港北一路与盛港路交汇",lng:"121.846101",lat:"39.052414"},
+        {province:"山东",city:"聊城",city_level:"四线城市",dealer_abbreviation:"聊城远达",dealer_fullName:"聊城远达汽车销售服务有限公司",openingTime:"2018.08.29",storeType:"新建B2",address:"聊城市光岳北路江北汽车城",lng:"116.03923",lat:"36.486042"},
+        {province:"山东",city:"淄博",city_level:"三线城市",dealer_abbreviation:"淄博恒吉祥",dealer_fullName:"淄博恒吉祥汽车贸易有限公司",openingTime:"2018.08.29",storeType:"改建B3",address:"淄博市金晶大道与鲁泰大道交叉路口西北角",lng:"118.079341",lat:"36.853347"},
+        {province:"湖南",city:"衡阳",city_level:"三线城市",dealer_abbreviation:"衡阳恒宇",dealer_fullName:"衡阳市恒宇汽车销售服务有限公司",openingTime:"2018.08.29",storeType:"新建B3",address:"湖南省衡阳市蒸湘区西外环路杨柳汽贸城",lng:"112.576846",lat:"26.875717"},
+        {province:"内蒙古",city:"兴安盟",city_level:"五线城市",dealer_abbreviation:"兴安盟华盛",dealer_fullName:"兴安盟华盛汽车销售服务有限公司",openingTime:"2018.08.30",storeType:"新建B1",address:"内蒙古兴安盟科右前旗工业园区天骄路鑫华玉集团院内",lng:"121.989949",lat:"46.073819"},
+        {province:"辽宁",city:"辽阳",city_level:"五线城市",dealer_abbreviation:"辽阳红兴",dealer_fullName:"辽阳红兴汽车销售服务有限公司",openingTime:"2018.09.25",storeType:"改建B3",address:"辽阳巿白塔区八一街8-5号",lng:"123.168917",lat:"41.255523"},
+        {province:"江苏",city:"盐城",city_level:"三线城市",dealer_abbreviation:"盐城洪兆连",dealer_fullName:"盐城市洪兆连车业有限公司 ",openingTime:"2018.09.26",storeType:"改建B1",address:"盐城市开放大道668号",lng:"120.095741",lat:"33.459927"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京龙泽百旺",dealer_fullName:"北京龙泽百旺销售服务有限公司",openingTime:"2018.09.27",storeType:"改建A",address:"北京市石景山区古城大街国际汽车园f-15号",lng:"116.186826",lat:"39.924119"},
+        {province:"贵州",city:"遵义",city_level:"三线城市",dealer_abbreviation:"遵义星尊程",dealer_fullName:"遵义市星尊程汽车销售服务有限公司",openingTime:"2018.09.27",storeType:"改建A",address:"贵州省遵义市播州区遵南大道黔北国际汽车博览中心25号",lng:"106.882657",lat:"27.615981"},
+        {province:"浙江",city:"宁波",city_level:"二线城市",dealer_abbreviation:"宁波中基明瑞",dealer_fullName:"宁波中基明瑞汽车销售服务有限公司",openingTime:"2018.09.27",storeType:"改建B3",address:"浙江省宁波市鄞州区下应北路700-1号",lng:"121.59985",lat:"29.821887"},
+        {province:"河北",city:"秦皇岛",city_level:"三线城市",dealer_abbreviation:"秦皇岛瑞通嘉禾",dealer_fullName:"秦皇岛瑞通嘉禾汽车销售服务有限公司",openingTime:"2018.09.27",storeType:"改建B1",address:"秦皇岛市京沈高速北出口瑞通汽车园内",lng:"119.555282",lat:"39.976963"},
+        {province:"江苏",city:"淮安",city_level:"三线城市",dealer_abbreviation:"江苏腾起",dealer_fullName:"江苏腾起汽车销售服务有限公司",openingTime:"2018.09.28",storeType:"改建B1",address:"淮安市清河新区水渡口大道129号",lng:"119.124304",lat:"33.621338"},
+        {province:"福建",city:"泉州",city_level:"二线城市",dealer_abbreviation:"泉州同行",dealer_fullName:"泉州市同行汽车销售有限公司",openingTime:"2018.09.28",storeType:"改建B3",address:"福建省泉州市丰泽区城东街道城华南路110号",lng:"118.644318",lat:"24.925922"},
+        {province:"新疆",city:"乌鲁木齐",city_level:"三线城市",dealer_abbreviation:"新疆天汇华辉",dealer_fullName:"新疆天汇华辉汽车销售服务有限公司",openingTime:"2018.09.29",storeType:"改建B1",address:"乌鲁木齐市河滩北路34号",lng:"87.606674",lat:"43.817505"},
+        {province:"广东",city:"东莞",city_level:"一线城市",dealer_abbreviation:"东莞鸿粤益嘉",dealer_fullName:"东莞鸿粤益嘉汽车销售服务有限公司",openingTime:"2018.09.29",storeType:"改建C2",address:"东莞市南城区石鼓盛嘉汽车城1号",lng:"113.712445",lat:"22.984447"},
+        {province:"广西",city:"南宁",city_level:"二线城市",dealer_abbreviation:"广西弘博",dealer_fullName:"广西弘博汽车销售服务有限公司",openingTime:"2018.09.30",storeType:"改建B2",address:"广西省南宁市江南区白沙大道52号",lng:"108.320797",lat:"22.784708"},
+        {province:"天津",city:"天津",city_level:"一线城市",dealer_abbreviation:"天津奥吉通红韵",dealer_fullName:"天津奥吉通红韵汽车销售有限公司",openingTime:"2018.09.30",storeType:"新建B2",address:"天津市西青区大寺镇兴业道北侧",lng:"117.278384",lat:"39.001212"},
+        {province:"辽宁",city:"沈阳",city_level:"一线城市",dealer_abbreviation:"沈阳汇旗通",dealer_fullName:"沈阳汇旗通汽车销售服务有限公司",openingTime:"2018.09.30",storeType:"改建B2",address:"沈阳市沈河区东陵路21号",lng:"123.53726",lat:"41.818227"},
+        {province:"海南",city:"海口",city_level:"三线城市",dealer_abbreviation:"海南优之杰商",dealer_fullName:"海南优之杰商贸有限公司",openingTime:"2018.09.30",storeType:"新建B1",address:"海口市南海大道63号",lng:"110.325834",lat:"20.001792"},
+        {province:"河南",city:"开封",city_level:"四线城市",dealer_abbreviation:"河南圆诺",dealer_fullName:"河南圆诺汽车销售有限公司",openingTime:"2018.09.29",storeType:"新建B1",address:"河南省开封市汴东产业集聚区宏达大道东侧、昌盛路北侧",lng:"114.444308",lat:"34.803517"},
+        {province:"安徽",city:"安庆",city_level:"三线城市",dealer_abbreviation:"安庆天位",dealer_fullName:"安庆市天位汽车销售服务有限公司",openingTime:"2018.09.30",storeType:"改建B2",address:"安庆市英德利国际汽车城",lng:"117.067133",lat:"30.574981"},
+        {province:"山东",city:"济南",city_level:"二线城市",dealer_abbreviation:"济南快爱特",dealer_fullName:"济南快爱特有限公司",openingTime:"2018.10.30",storeType:"改建A",address:"济南市历城区凤凰路（原铁骑路14号）",lng:"117.153834",lat:"36.717629"},
+        {province:"天津",city:"天津",city_level:"一线城市",dealer_abbreviation:"天津汇裕永达",dealer_fullName:"天津汇裕永达汽车贸易有限公司",openingTime:"2018.11.25",storeType:"改建A",address:"天津市津汉公路空港物流加工区汽车园中路35号",lng:"117.381891",lat:"39.166221"},
+        {province:"广西",city:"南宁",city_level:"二线城市",dealer_abbreviation:"广西钜荣",dealer_fullName:"广西钜荣红旗汽车销售服务有限公司",openingTime:"2018.11.30",storeType:"新建B3",address:"南宁市平乐大道49号钜荣汽车园内5号展厅",lng:"108.393347",lat:"22.710541"},
+        {province:"四川",city:"成都",city_level:"一线城市",dealer_abbreviation:"成都建国",dealer_fullName:"成都建国汽车贸易有限公司",openingTime:"2018.12.03",storeType:"改建B3",address:"成都市高新区火车南站西路799号",lng:"104.053967",lat:"30.609159"},
+        {province:"山西",city:"大同",city_level:"四线城市",dealer_abbreviation:"大同大昌宏源",dealer_fullName:"大同大昌宏源汽车销售服务有限公司",openingTime:"2018.12.20",storeType:"改建B3",address:"山西省大同市庞大汽车文化园林内",lng:"113.263031",lat:"40.045369"},
+        {province:"山东",city:"日照",city_level:"四线城市",dealer_abbreviation:"日照晟瑞",dealer_fullName:"日照晟瑞汽车销售服务有限公司",openingTime:"2018.12.20",storeType:"改建B1",address:"日照经济技术开发区汽贸城大同路与绍兴路交汇处（大同路北，绍兴路西）",lng:"119.445169",lat:"35.39684"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京嘉程泓旗",dealer_fullName:"北京嘉程泓旗汽车销售服务有限公司",openingTime:"2018.12.22",storeType:"新建B1",address:"北京房山区阎村镇前沿村村委会南88米（澎湃汽车城内）",lng:"116.111126",lat:"39.729066"},
+        {province:"浙江",city:"杭州",city_level:"一线城市",dealer_abbreviation:"杭州杭旗",dealer_fullName:"杭州杭旗汽车有限公司",openingTime:"2018.12.22",storeType:"改建A",address:"杭州市拱墅区杭行路202号",lng:"120.128455",lat:"30.328681"},
+        {province:"陕西",city:"渭南",city_level:"四线城市",dealer_abbreviation:"渭南广行",dealer_fullName:"渭南广行汽车销售服务有限公司",openingTime:"2018.12.24",storeType:"新建B3",address:"陕西省渭南市经开区创业大道东侧渭南申华汽车博展园",lng:"109.471309",lat:"34.585927"},
+        {province:"山东",city:"菏泽",city_level:"三线城市",dealer_abbreviation:"菏泽兴邦",dealer_fullName:"菏泽兴邦汽车销售服务有限公司",openingTime:"2018.12.26",storeType:"改建B1",address:"山东省菏泽市定陶区范阳路汽车小镇园区一路南侧",lng:"115.596626",lat:"35.120345"},
+        {province:"河北",city:"石家庄",city_level:"二线城市",dealer_abbreviation:"河北华美",dealer_fullName:"河北华美汽车销售服务有限公司",openingTime:"2019.3.14",storeType:"新建B1",address:"河北省石家庄市新华区石获北路与古城西路交汇处河北康恒国际汽车园区A区8号",lng:"114.395128",lat:"38.083738"},
+        {province:"云南",city:"大理",city_level:"四线城市",dealer_abbreviation:"大理国源",dealer_fullName:"大理国源汽车销售服务有限公司",openingTime:"2019.4.25",storeType:"改建C2",address:"大理市下关镇泛亚汽车城南侧",lng:"100.271017",lat:"25.601171"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京祥龙博瑞",dealer_fullName:"北京祥龙博瑞汽车服务（集团）有限公司一分公司",openingTime:"2019.4.28",storeType:"改建B3",address:"北京市德外双泉堡花虎沟2号",lng:"116.371335",lat:"40.019322"},
+        {province:"贵州",city:"黔西南",city_level:"五线城市",dealer_abbreviation:"黔西南州星尊程领航",dealer_fullName:"黔西南州星尊程领航汽车销售服务有限公司",openingTime:"2019.5.31",storeType:"改建C2",address:"兴义市木贾街道东贡社区坡贡组",lng:"104.853886",lat:"25.128091"},
+        {province:"浙江",city:"杭州",city_level:"一线城市",dealer_abbreviation:"杭州广旗",dealer_fullName:"杭州广旗汽车有限公司",openingTime:"2019.6.10",storeType:"改建B1",address:"杭州市萧山区新世纪市场园区旺园路279号",lng:"120.299486",lat:"30.209077"},
+        {province:"浙江",city:"温州",city_level:"二线城市",dealer_abbreviation:"温州宝旗",dealer_fullName:"温州宝旗汽车服务有限公司",openingTime:"2019.6.18",storeType:"改建B3",address:"温州市机场大道衢江路208号",lng:"120.751287",lat:"27.986048"},
+        {province:"吉林",city:"长春",city_level:"二线城市",dealer_abbreviation:"吉林神州",dealer_fullName:"吉林省神州红旗汽车销售服务有限公司",openingTime:"2019.6.19",storeType:"改建A",address:"长春市硅谷大街与佳园路交汇，硅谷大街3500号",lng:"125.262203",lat:"43.823371"},
+        {province:"江苏",city:"无锡",city_level:"二线城市",dealer_abbreviation:"无锡红博",dealer_fullName:"无锡红博汽车销售有限公司",openingTime:"2019.6.19",storeType:"新建B2",address:"无锡市梁溪区梁东路1-1号",lng:"120.336121",lat:"31.530134"},
+        {province:"四川",city:"德阳",city_level:"四线城市",dealer_abbreviation:"​德阳冠仑",dealer_fullName:"​德阳冠仑汽车服务有限公司",openingTime:"2019.6.19",storeType:"改建B3",address:"德阳市旌阳区泰山南路三段299号",lng:"104.393595",lat:"31.083046"},
+        {province:"吉林",city:"长春",city_level:"二线城市",dealer_abbreviation:"长春金山",dealer_fullName:"长春金山红旗汽车销售服务有限公司",openingTime:"2019.6.21",storeType:"改建A",address:"长春市长沈路3285号",lng:"125.212734",lat:"43.833426"},
+        {province:"福建",city:"厦门",city_level:"二线城市",dealer_abbreviation:"厦门亿海红祺",dealer_fullName:"厦门亿海红祺汽车服务有限公司",openingTime:"2019.6.25",storeType:"改建B3",address:"中国（福建）自有贸易试验区厦门片区翔远一路25号",lng:"118.134218",lat:"24.531586"},
+        {province:"四川",city:"自贡",city_level:"五线城市",dealer_abbreviation:"自贡新成红兴",dealer_fullName:"自贡新成红兴汽车销售服务有限责任公司",openingTime:"2019.6.25",storeType:"改建C2",address:"四川省自贡市大安区马吃水盐都大道126号新成车业",lng:"104.739476",lat:"29.335893"},
+        {province:"四川",city:"广元",city_level:"五线城市",dealer_abbreviation:"广元峰帆",dealer_fullName:"广元市峰帆汽车商贸有限公司",openingTime:"2019.6.26",storeType:"新建B3",address:"四川省广元市利州区盘龙镇川北国际汽车城",lng:"105.731184",lat:"32.416469"},
+        {province:"河南",city:"信阳",city_level:"三线城市",dealer_abbreviation:"信阳天泓",dealer_fullName:"信阳天泓汽车销售服务有限公司",openingTime:"2019.6.27",storeType:"改建B2",address:"信阳市平东路与南京大道交汇",lng:"114.170188",lat:"32.128119"},
+        {province:"广东",city:"佛山",city_level:"一线城市",dealer_abbreviation:"佛山挥扬",dealer_fullName:"佛山挥扬汽车销售服务有限公司",openingTime:"2019.6.27",storeType:"改建B3",address:"广东省佛山市顺德区广珠公路伦教路段周生生大楼往广州方向200米",lng:"113.226136",lat:"22.879615"},
+        {province:"河南",city:"郑州",city_level:"一线城市",dealer_abbreviation:"郑州吉展",dealer_fullName:"郑州吉展汽车销售服务有限公司",openingTime:"2019.6.28",storeType:"改建B1",address:"郑州市中原区郑上路与杭州路交叉口大中原汽车城C区06号西侧",lng:"113.494773",lat:"34.758763"},
+        {province:"浙江",city:"台州",city_level:"二线城市",dealer_abbreviation:"台州中通旗进",dealer_fullName:"台州中通旗进汽车销售服务有限公司",openingTime:"2019.7.16",storeType:"新建B1",address:"浙江省台州市温岭市泽国镇景观花苑南侧",lng:"121.390464",lat:"28.509308"},
+        {province:"山东",city:"德州",city_level:"四线城市",dealer_abbreviation:"德州润吉",dealer_fullName:"德州润吉汽车销售服务有限公司",openingTime:"2019.7.16",storeType:"改建B3",address:"德州市经济开发区晶华大道3109号",lng:"116.38922",lat:"37.464736"},
+        {province:"江西",city:"吉安",city_level:"四线城市",dealer_abbreviation:"吉安凯迪",dealer_fullName:"吉安市凯迪汽车销售服务有限公司",openingTime:"2019.7.16",storeType:"改建B1",address:"吉安市吉州区长塘镇吉安北大道",lng:"114.987309",lat:"27.16557"},
+        {province:"云南",city:"曲靖",city_level:"四线城市",dealer_abbreviation:"曲靖开源",dealer_fullName:"曲靖开源汽车销售服务有限公司",openingTime:"2019.7.16",storeType:"改建B3",address:"曲靖市麒麟区西城街道高家屯社区靖阳路与教苑路西侧",lng:"103.755382",lat:"25.533179"},
+        {province:"山东",city:"青岛",city_level:"一线城市",dealer_abbreviation:"青岛泰岳宏旗",dealer_fullName:"青岛泰岳宏旗汽车销售服务有限公司",openingTime:"2019.7.16",storeType:"改建B1",address:"青岛市黑龙江路3178号",lng:"120.436759",lat:"36.20739"},
+        {province:"河北",city:"沧州",city_level:"三线城市",dealer_abbreviation:"沧州华泽",dealer_fullName:"沧州市华泽汽车贸易有限公司",openingTime:"2019.7.26",storeType:"改建B2",address:"河北省沧州市开发区石港路29号",lng:"116.924451",lat:"38.279493"},
+        {province:"重庆",city:"重庆",city_level:"一线城市",dealer_abbreviation:"重庆两江璐菲",dealer_fullName:"重庆两江璐菲汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建A",address:"重庆市北部新区金开大道15号附5号（经开园金渝大道商圈西边缘）",lng:"106.539294",lat:"29.642847"},
+        {province:"河南",city:"洛阳",city_level:"三线城市",dealer_abbreviation:"洛阳随诺",dealer_fullName:"洛阳随诺汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建B1",address:"洛阳市洛龙区政和路3号",lng:"112.474769",lat:"34.62791"},
+        {province:"安徽",city:"六安",city_level:"三线城市",dealer_abbreviation:"六安之道",dealer_fullName:"六安之道汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建A",address:"安徽省六安市金安区承接产业转移集中示范区南京路",lng:"116.624802",lat:"31.766539"},
+        {province:"浙江",city:"衢州",city_level:"四线城市",dealer_abbreviation:"衢州君悦宏旗",dealer_fullName:"衢州君悦宏旗汽车有限公司",openingTime:"2019.7.26",storeType:"改建C1",address:"衢江区振兴东路699号",lng:"118.977011",lat:"28.980568"},
+        {province:"贵州",city:"铜仁",city_level:"四线城市",dealer_abbreviation:"贵州铜仁星尊程鑫航",dealer_fullName:"贵州铜仁市星尊程鑫航汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建B2",address:"贵州省铜仁市碧江区武陵山国际汽车城汽车超市A区1楼",lng:"109.246881",lat:"27.749078"},
+        {province:"山西",city:"晋城",city_level:"五线城市",dealer_abbreviation:"晋城中一",dealer_fullName:"晋城中一汽车有限公司",openingTime:"2019.7.26",storeType:"改建B3",address:"山西省晋城市城区太行南路982号",lng:"112.868195",lat:"35.487218"},
+        {province:"江苏",city:"南京",city_level:"一线城市",dealer_abbreviation:"南京大道",dealer_fullName:"南京大道汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建A",address:"南京市江宁区东山街道润麟路1号",lng:"118.882454",lat:"31.985527"},
+        {province:"广东",city:"阳江",city_level:"四线城市",dealer_abbreviation:"阳江鑫通达",dealer_fullName:"阳江市鑫通达汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建C2",address:"阳江市江城区南排留用地康泰路8号",lng:"111.983511",lat:"21.893976"},
+        {province:"河南",city:"郑州",city_level:"一线城市",dealer_abbreviation:"郑州泰岳宏旗",dealer_fullName:"郑州泰岳宏旗汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建A",address:"郑州市经开区经北六路与第五大街交叉口向东200米路北",lng:"113.763459",lat:"34.739947"},
+        {province:"河南",city:"濮阳",city_level:"四线城市",dealer_abbreviation:"濮阳德源",dealer_fullName:"濮阳市德源汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建C1",address:"濮阳市106国道濮阳北高速路口南500米路东（德众汽车产业园）",lng:"115.125646",lat:"35.808221"},
+        {province:"广东",city:"珠海",city_level:"二线城市",dealer_abbreviation:"珠海中升",dealer_fullName:"珠海市中升汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建B2",address:"珠海市香洲区前山上冲国际名城",lng:"113.502949",lat:"22.294067"},
+        {province:"河南",city:"南阳",city_level:"三线城市",dealer_abbreviation:"南阳宛骏",dealer_fullName:"南阳宛骏汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建B2",address:"南阳市卧龙区光武西路与百里奚路交汇处西300米",lng:"112.518335",lat:"33.022279"},
+        {province:"澳门",city:"澳门",city_level:"-",dealer_abbreviation:"澳门",dealer_fullName:"澳门红旗汽车有限公司",openingTime:"2019.7.26",storeType:"——",address:"澳门青州河边马路之珠港澳跨界工业区澳门园区C",lng:"113.550489",lat:"22.21354"},
+        {province:"山东",city:"潍坊",city_level:"三线城市",dealer_abbreviation:"潍坊广潍旗胜",dealer_fullName:"潍坊广潍旗胜汽车销售服务有限公司",openingTime:"2019.7.26",storeType:"改建B2",address:"潍坊市奎文区潍州路369号",lng:"119.138134",lat:"36.648785"},
+        {province:"湖南",city:"长沙",city_level:"一线城市",dealer_abbreviation:"长沙美捷",dealer_fullName:"长沙美捷汽车贸易有限公司",openingTime:"2019.8.26",storeType:"改建B1",address:"湖南省长沙市芙蓉区远大二路702号",lng:"113.0906",lat:"28.209358"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京泰岳宏旗",dealer_fullName:"北京泰岳宏旗汽车销售服务有限公司",openingTime:"2019.8.26",storeType:"改建B1",address:"北京市朝阳区金盏乡金港汽车公园金港红旗路1号",lng:"116.57339",lat:"40.02133"},
+        {province:"广西",city:"桂林",city_level:"三线城市",dealer_abbreviation:"桂林弘帆桂仕",dealer_fullName:"桂林弘帆桂仕汽车销售服务有限公司",openingTime:"2019.8.26",storeType:"改建B3",address:"广西桂林市八里街经济技术开发区29-2号",lng:"110.314664",lat:"25.359681"},
+        {province:"安徽",city:"阜阳",city_level:"三线城市",dealer_abbreviation:"阜阳博融亚之旗",dealer_fullName:"阜阳博融亚之旗汽车销售服务有限公司",openingTime:"2019.8.26",storeType:"新建A",address:"安徽省阜阳市经济开发区卫武路553号",lng:"115.8692",lat:"32.842487"},
+        {province:"四川",city:"成都",city_level:"一线城市",dealer_abbreviation:"成都东创国城",dealer_fullName:"成都东创国城实业有限公司",openingTime:"2019.8.26",storeType:"改建B3",address:"四川省成都市天府新区麓山大道二段",lng:"104.120514",lat:"30.483515"},
+        {province:"河南",city:"新乡",city_level:"三线城市",dealer_abbreviation:"新乡盛世",dealer_fullName:"新乡市盛世汽车销售服务有限公司",openingTime:"2019.9.11",storeType:"新建B3",address:"新东产业集聚区新长北线以北，新规划新正街以东“东安汽车园”",lng:"114.00877",lat:"35.304481"},
+        {province:"江苏",city:"南通",city_level:"二线城市",dealer_abbreviation:"南通百弘",dealer_fullName:"南通百弘汽车销售服务有限公司",openingTime:"2019.9.11",storeType:"改建B1",address:"江苏省南通市崇川区通启路8号",lng:"120.899417480005",lat:"31.9975584580951"},
+        {province:"浙江",city:"金华",city_level:"二线城市",dealer_abbreviation:"金华裕旗",dealer_fullName:"浙江金华裕旗汽车有限公司",openingTime:"2019.9.11",storeType:"改建B3",address:"金华市金东区横二路与纵二路交叉口西北50米",lng:"119.694574",lat:"29.149209"},
+        {province:"山东",city:"东营",city_level:"四线城市",dealer_abbreviation:"东营鑫红",dealer_fullName:"东营鑫红汽车销售服务有限公司",openingTime:"2019.09.26",storeType:"新建B1",address:"东营市垦利区郝家镇北二路16号",lng:"118.448047",lat:"37.483702"},
+        {province:"山东",city:"青岛",city_level:"一线城市",dealer_abbreviation:"青岛欣盛",dealer_fullName:"青岛欣盛汽车销售有限公司",openingTime:"2019.09.16",storeType:"改建B3",address:"青岛市市北区重庆南路186号",lng:"120.395342",lat:"36.131166"},
+        {province:"陕西",city:"汉中",city_level:"五线城市",dealer_abbreviation:"汉中天汉旗胜",dealer_fullName:"汉中天汉旗胜汽车销售服务有限责任公司",openingTime:"2019.09.28",storeType:"改建B1",address:"陕西省汉中市汉台区铺镇西汉高速公路引导南侧汉中天汉智慧车城内",lng:"107.116163",lat:"33.083408"},
+        {province:"河南",city:"漯河",city_level:"四线城市",dealer_abbreviation:"漯河和荣",dealer_fullName:"漯河市和荣汽车销售服务有限公司",openingTime:"2019.09.20",storeType:"改建C1",address:"漯河市源汇区漯舞路口亿通汽车城内桂江路",lng:"113.999021",lat:"33.557018"},
+        {province:"浙江",city:"温州",city_level:"二线城市",dealer_abbreviation:"瑞安宝合",dealer_fullName:"瑞安市宝合汽车销售有限公司",openingTime:"2019.09.17",storeType:"改建B2",address:"瑞安市塘下镇肇平垟南路222号",lng:"120.68204",lat:"27.83423"},
+        {province:"贵州",city:"安顺",city_level:"五线城市",dealer_abbreviation:"贵州安晟",dealer_fullName:"贵州安晟汽车销售服务有限公司",openingTime:"2019.09.27",storeType:"改建B1",address:"贵州省安顺市开发区王庄村委会旁",lng:"105.909445",lat:"26.232193"},
+        {province:"山东",city:"潍坊",city_level:"三线城市",dealer_abbreviation:"潍坊泰岳宏旗",dealer_fullName:"潍坊泰岳宏旗汽车销售服务有限公司",openingTime:"2019.09.27",storeType:"改建B3",address:"潍坊市寒亭区海龙路4870号",lng:"119.19296",lat:"36.752058"},
+        {province:"山东",city:"滨州",city_level:"四线城市",dealer_abbreviation:"滨州利华晟旗悦",dealer_fullName:"滨州利华晟旗悦汽车销售服务有限公司",openingTime:"2019.09.23",storeType:"改建B2",address:"滨州市滨城区渤海五路张富路",lng:"117.999621043765",lat:"37.4588560592502"},
+        {province:"广东",city:"河源",city_level:"四线城市",dealer_abbreviation:"广东中红",dealer_fullName:"广东中红汽车实业有限公司",openingTime:"2019.09.27",storeType:"改建B2",address:"广东省河源市源城区205国道桂山路口",lng:"114.695078",lat:"23.704903"},
+        {province:"河南",city:"安阳",city_level:"四线城市",dealer_abbreviation:"安阳世祥",dealer_fullName:"安阳世祥汽车销售服务有限公司",openingTime:"2019.09.24",storeType:"改建A",address:"安阳市文昌大道与彰德路交叉口南200米路西",lng:"114.351817",lat:"36.07397"},
+        {province:"福建",city:"泉州",city_level:"二线城市",dealer_abbreviation:"晋江同行",dealer_fullName:"晋江市同行汽车销售有限公司",openingTime:"2019.09.28",storeType:"改建B3",address:"福建省泉州市晋江市罗山街道和平南路171号豪信汽车城3期A区2号",lng:"118.572177",lat:"24.775972"},
+        {province:"贵州",city:"贵阳",city_level:"二线城市",dealer_abbreviation:"贵阳冉丰",dealer_fullName:"贵阳冉丰汽车服务有限公司",openingTime:"2019.09.27",storeType:"改建B1",address:"贵阳市观山湖区百花大道与远通路交叉口",lng:"106.635727",lat:"26.59961"},
+        {province:"四川",city:"泸州",city_level:"四线城市",dealer_abbreviation:"泸州明云华盛",dealer_fullName:"泸州明云华盛汽车销售服务有限公司",openingTime:"2019.09.30",storeType:"新建B3",address:"泸州市纳溪区蓝安路3段13号",lng:"105.41338",lat:"28.830855"},
+        {province:"云南",city:"红河",city_level:"四线城市",dealer_abbreviation:"红河海伟宏亦",dealer_fullName:"云南红河海伟宏亦汽车销售有限公司",openingTime:"2019.09.30",storeType:"改建B3",address:"红河哈尼族彝族自治州蒙自市天马路(市人民医院斜对面)振兴路交汇处",lng:"103.371075",lat:"23.390088"},
+        {province:"浙江",city:"湖州",city_level:"三线城市",dealer_abbreviation:"湖州湖旗",dealer_fullName:"湖州湖旗汽车有限公司",openingTime:"2019.10.04",storeType:"改建B2",address:"浙江省湖州市蜀山路3003号",lng:"120.162039",lat:"30.893405"},
+        {province:"浙江",city:"嘉兴",city_level:"二线城市",dealer_abbreviation:"嘉兴禾旗",dealer_fullName:"嘉兴禾旗汽车销售服务有限公司",openingTime:"2019.10.16",storeType:"改建B2",address:"浙江省嘉兴市嘉杭路640号",lng:"120.730555",lat:"30.736285"},
+        {province:"江苏",city:"泰州",city_level:"三线城市",dealer_abbreviation:"泰州海沃",dealer_fullName:"泰州海沃汽车销售服务有限公司",openingTime:"2019.10.18",storeType:"改建C1",address:"泰州市经济开发区国际汽车城内",lng:"119.908353",lat:"32.424264"},
+        {province:"天津",city:"天津",city_level:"一线城市",dealer_abbreviation:"天津永濠",dealer_fullName:"天津市永濠红旗汽车销售服务有限公司",openingTime:"2019.10.18",storeType:"改建B2",address:"天津市西青区中北镇卉康道13号",lng:"117.085892",lat:"39.121953"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"上海绅亚",dealer_fullName:"上海绅亚汽车销售服务有限公司",openingTime:"2019.10.28",storeType:"改建B3",address:"上海市闵行区中春路9998号",lng:"121.336121",lat:"31.173178"},
+        {province:"广东",city:"揭阳",city_level:"三线城市",dealer_abbreviation:"广东容大星旗",dealer_fullName:"广东容大星旗汽车有限公司",openingTime:"2019.10.28",storeType:"改建B3",address:"揭阳市揭东区206国道中国银行揭东支行右侧",lng:"116.421688",lat:"23.578499"},
+        {province:"湖南",city:"娄底",city_level:"四线城市",dealer_abbreviation:"娄底宝盛",dealer_fullName:"娄底市宝盛汽车销售服务有限公司",openingTime:"2019.10.29",storeType:"改建B3",address:"娄底市娄星区湘中大道市政府往西2公里，湘中大道与紫鹊界路交叉处",lng:"111.973274",lat:"27.701999"},
+        {province:"山东",city:"济南",city_level:"二线城市",dealer_abbreviation:"济南民福",dealer_fullName:"济南民福汽车服务有限公司",openingTime:"2019.10.29",storeType:"改建B3",address:"济南市莱芜高新区汇源大街39号北姜庄小区",lng:"117.734741",lat:"36.203327"},
+        {province:"山东",city:"泰安",city_level:"三线城市",dealer_abbreviation:"泰安利华晟旗悦",dealer_fullName:"泰安利华晟旗悦汽车销售服务有限公司",openingTime:"2019.11.12",storeType:"改建B3",address:"山东省泰安市岱岳区泰东路国际汽车城龙信汽车广场3号",lng:"117.038993",lat:"36.159037"},
+        {province:"河南",city:"周口",city_level:"三线城市",dealer_abbreviation:"周口昱旗",dealer_fullName:"周口市昱旗汽车销售有限公司",openingTime:"2019.11.14",storeType:"改建B1",address:"周口市太清路中段路南（北环路）",lng:"114.693669",lat:"33.655295"},
+        {province:"江西",city:"抚州",city_level:"四线城市",dealer_abbreviation:"抚州龙旗",dealer_fullName:"抚州市龙旗汽车销售有限公司",openingTime:"2019.11.21",storeType:"改建B2",address:"抚州市迎宾大道赣东国际汽车城",lng:"116.337382",lat:"27.960012"},
+        {province:"湖南",city:"邵阳",city_level:"四线城市",dealer_abbreviation:"邵阳旗乐",dealer_fullName:"邵阳旗乐汽车销售服务有限公司",openingTime:"2019.11.21",storeType:"改建B1",address:"湖南省邵阳市邵阳经开区邵阳大道建龙路口",lng:"111.564432",lat:"27.262376"},
+        {province:"云南",city:"玉溪",city_level:"五线城市",dealer_abbreviation:"玉溪国臻",dealer_fullName:"玉溪国臻汽车销售服务有限公司",openingTime:"2019.11.27",storeType:"新建B3",address:"玉溪市红塔区太极路中段（中升丰田斜对面）",lng:"102.551125",lat:"24.391509"},
+        {province:"江苏",city:"苏州",city_level:"一线城市",dealer_abbreviation:"苏州华朔",dealer_fullName:"苏州华朔汽车销售服务有限公司",openingTime:"2019.11.27",storeType:"改建B1",address:"苏州市吴中区木渎镇凯马大街88号",lng:"120.551984",lat:"31.26063"},
+        {province:"湖北",city:"孝感",city_level:"四线城市",dealer_abbreviation:"孝感祥沃",dealer_fullName:"孝感祥沃汽车销售服务有限公司",openingTime:"2019.11.27",storeType:"改建B1",address:"孝南市经济开发区澴川路325号",lng:"113.976832",lat:"30.910956"},
+        {province:"四川",city:"凉山",city_level:"五线城市",dealer_abbreviation:"西昌璞瑞",dealer_fullName:"西昌璞瑞汽车销售服务有限责任公司",openingTime:"2019.11.29",storeType:"改建C1",address:"西昌市机场路安宁段（108国道）",lng:"102.203182",lat:"27.960004"},
+        {province:"北京",city:"北京",city_level:"一线城市",dealer_abbreviation:"北京中润发",dealer_fullName:"北京中润发汽车销售有限公司",openingTime:"2019.11.29",storeType:"改建B2",address:"北京市丰台区西三环与丽泽路交汇",lng:"116.323313",lat:"39.874017"},
+        {province:"河北",city:"唐山",city_level:"三线城市",dealer_abbreviation:"唐山岳泰宏旗",dealer_fullName:"唐山岳泰宏旗汽车销售服务有限公司",openingTime:"2019.12.04",storeType:"新建B1",address:"唐山市开平区规划北新东道南侧、中心环线东侧（开平区工业园区路2号）",lng:"118.263999",lat:"39.632918"},
+        {province:"贵州",city:"黔东南",city_level:"四线城市",dealer_abbreviation:"凯里凯通",dealer_fullName:"凯里市凯通汽车贸易有限公司",openingTime:"2019.12.09",storeType:"改建C1",address:"凯里市经济开发区经纬国际汽车红绿灯路口下坡50米",lng:"107.864631",lat:"26.526933"},
+        {province:"河北",city:"衡水",city_level:"四线城市",dealer_abbreviation:"衡水华奕",dealer_fullName:"衡水华奕汽车销售服务有限公司",openingTime:"2019.12.11",storeType:"改建B1",address:"衡水市桃城区榕花北大街高速路口南388米路东",lng:"115.705877",lat:"37.780997"},
+        {province:"湖南",city:"常德",city_level:"四线城市",dealer_abbreviation:"常德时茂",dealer_fullName:"常德时茂汽车销售服务有限公司",openingTime:"2019.12.11",storeType:"新建B1",address:"常德市武陵区双拥路与常德大道交汇处东北角",lng:"111.729725",lat:"29.007804"},
+        {province:"湖北",city:"十堰",city_level:"四线城市",dealer_abbreviation:"十堰亨运红晟",dealer_fullName:"十堰亨运红晟汽车销售服务有限公司",openingTime:"2019.12.11",storeType:"改建C1",address:"十堰市茅箭区东风大道40号",lng:"110.852229",lat:"32.611147"},
+        {province:"贵州",city:"毕节",city_level:"五线城市",dealer_abbreviation:"贵州毕节丽安",dealer_fullName:"贵州毕节丽安汽车销售服务有限公司",openingTime:"2019.12.12",storeType:"新建B3",address:"毕节小瓦路双山国际汽车城",lng:"105.454464",lat:"27.272796"},
+        {province:"江西",city:"南昌",city_level:"二线城市",dealer_abbreviation:"南昌美乘",dealer_fullName:"南昌美乘汽车销售服务有限公司",openingTime:"2019.12.13",storeType:"改建B1",address:"南昌市东湖区洪都北大道336号",lng:"115.928284",lat:"28.701527"},
+        {province:"内蒙古",city:"鄂尔多斯",city_level:"四线城市",dealer_abbreviation:"鄂尔多斯宏旗",dealer_fullName:"鄂尔多斯市宏旗汽车销售有限公司",openingTime:"2019.12.10",storeType:"改建C2",address:"鄂尔多斯市东胜区铜川镇北二环路",lng:"110.107785",lat:"39.792128"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"上海岳宏泰",dealer_fullName:"上海岳宏泰汽车销售服务有限公司",openingTime:"2019.12.13",storeType:"改建B3",address:"上海市浦东新区北蔡镇康杉路118号2号楼101室",lng:"121.563597",lat:"31.163534"},
+        {province:"福建",city:"福州",city_level:"二线城市",dealer_abbreviation:"福州华奥鸿旗",dealer_fullName:"福州华奥鸿旗汽车销售有限公司",openingTime:"2019.12.13",storeType:"新建B3",address:"福州市闽侯县青口镇镜上村",lng:"119.387839",lat:"25.917067"},
+        {province:"云南",city:"普洱",city_level:"五线城市",dealer_abbreviation:"普洱海伟宏亦",dealer_fullName:"普洱海伟宏亦汽车销售有限公司",openingTime:"2019.12.16",storeType:"改建B3",address:"普洱市思茅区普洱路中段",lng:"100.981496",lat:"22.805141"},
+        {province:"黑龙江",city:"牡丹江",city_level:"五线城市",dealer_abbreviation:"牡丹江中信恒安",dealer_fullName:"牡丹江中信恒安汽车销售服务有限公司",openingTime:"2019.12.17",storeType:"改建B3",address:"牡丹江市裕民路南兴业路西777号",lng:"129.686375",lat:"44.630519"},
+        {province:"湖南",city:"株洲",city_level:"三线城市",dealer_abbreviation:"株洲宏旗",dealer_fullName:"株洲宏旗汽车销售服务有限公司",openingTime:"2019.12.17",storeType:"改建B3",address:"株洲市荷塘区红港路汽车城汽贸路株洲宏福店右边",lng:"113.161756",lat:"27.868675"},
+        {province:"陕西",city:"咸阳",city_level:"三线城市",dealer_abbreviation:"西咸新骏益",dealer_fullName:"西咸新区骏益汽车销售有限公司",openingTime:"2019.12.18",storeType:"新建B2",address:"陕西省西咸新区秦汉新城北上召汽车产业园五陵塬路",lng:"108.669598",lat:"34.378514"},
+        {province:"江西",city:"九江",city_level:"三线城市",dealer_abbreviation:"九江华宏昇",dealer_fullName:"九江华宏昇汽车有限公司",openingTime:"2019.12.18",storeType:"改建B3",address:"九江市濂溪区新港镇太平村13组九湖路旁",lng:"116.106284",lat:"29.743648"},
+        {province:"浙江",city:"丽水",city_level:"四线城市",dealer_abbreviation:"丽水君悦宏旗",dealer_fullName:"丽水君悦宏旗汽车有限公司",openingTime:"2019.12.20",storeType:"改建C1",address:"丽水市南明山街道文丽二路99号—水阁汽车城二号地块",lng:"119.856473",lat:"28.413958"},
+        {province:"湖北",city:"黄冈",city_level:"三线城市",dealer_abbreviation:"黄冈旗胜",dealer_fullName:"黄冈旗胜汽车服务有限公司",openingTime:"2019.12.20",storeType:"改建B1",address:"黄冈市黄州区南湖大道南湖办事处旁",lng:"114.974859",lat:"30.449744"},
+        {province:"福建",city:"漳州",city_level:"三线城市",dealer_abbreviation:"漳州宏旗",dealer_fullName:"漳州市宏旗汽车销售服务有限公司",openingTime:"2019.12.20",storeType:"改建C1",address:"福建省漳州市龙文北路90号",lng:"117.724024",lat:"24.529661"},
+        {province:"安徽",city:"马鞍山",city_level:"三线城市",dealer_abbreviation:"马鞍山金福联",dealer_fullName:"马鞍山金福联汽车销售服务有限公司",openingTime:"2019.12.21",storeType:"改建C1",address:"马鞍山经济技术开发区湖西南路3380号2栋",lng:"118.505084",lat:"31.646072"},
+        {province:"浙江",city:"绍兴",city_level:"二线城市",dealer_abbreviation:"诸暨悦旗",dealer_fullName:"诸暨悦旗汽车有限公司",openingTime:"2019.12.23",storeType:"改建A",address:"浙江省诸暨市陶朱街道北二环路10号",lng:"120.19939",lat:"29.74865"},
+        {province:"西藏",city:"拉萨",city_level:"四线城市",dealer_abbreviation:"西藏泰立",dealer_fullName:"西藏泰立汽车销售服务有限公司",openingTime:"2019.12.23",storeType:"改建C2",address:"拉萨市金珠西路169号",lng:"91.035954",lat:"29.65091"},
+        {province:"吉林",city:"四平",city_level:"五线城市",dealer_abbreviation:"四平通立",dealer_fullName:"四平通立汽车销售服务有限公司",openingTime:"2020.01.02",storeType:"改建B2",address:"四平市经济开发区大路4111号",lng:"124.457894",lat:"43.143083"},
+        {province:"贵州",city:"黔南",city_level:"四线城市",dealer_abbreviation:"黔南州大雍汇盛",dealer_fullName:"黔南州大雍汇盛汽车销售服务有限公司",openingTime:"2020.01.02",storeType:"改建B2",address:"都匀市绿茵湖办事处毛尖大道汽车产业园美炬电器大楼B-1号",lng:"107.46945",lat:"26.315742"},
+        {province:"四川",city:"广安",city_level:"五线城市",dealer_abbreviation:"广安祥龙车业",dealer_fullName:"广安祥龙车业有限公司",openingTime:"2020.01.02",storeType:"改建C2",address:"四川省广安市前锋区护安镇护安村汽车城建国汽车产业园",lng:"106.702778",lat:"30.513479"},
+        {province:"内蒙古",city:"通辽",city_level:"五线城市",dealer_abbreviation:"通辽大鹏泰达",dealer_fullName:"通辽市大鹏泰达汽车销售服务有限公司",openingTime:"2020.01.06",storeType:"改建B3",address:"内蒙古通辽市经济技术开发区瑞丰汽贸物流园区L1区L1",lng:"122.227397",lat:"43.656373"},
+        {province:"河北",city:"邯郸",city_level:"三线城市",dealer_abbreviation:"邯郸鸿博",dealer_fullName:"邯郸市鸿博汽车销售服务有限公司",openingTime:"2020.01.06",storeType:"改建B1",address:"邯郸市复兴区北环路88号",lng:"114.475706",lat:"36.654693"},
+        {province:"广东",city:"肇庆",city_level:"三线城市",dealer_abbreviation:"肇庆诚利",dealer_fullName:"肇庆市诚利汽车销售服务有限公司",openingTime:"2020.01.09",storeType:"改建C1",address:"肇庆市端州区321国道肇庆学院牌坊往东800",lng:"112.509583",lat:"23.111591"},
+        {province:"安徽",city:"亳州",city_level:"四线城市",dealer_abbreviation:"亳州远景特润",dealer_fullName:"亳州市远景特润汽车销售服务有限责任公司",openingTime:"2020.01.12",storeType:"改建B2",address:"亳州市谯城区工业园区杜仲路",lng:"115.767639",lat:"33.837254"},
+        {province:"四川",city:"眉山",city_level:"四线城市",dealer_abbreviation:"四川融裕",dealer_fullName:"四川融裕汽车贸易有限责任公司",openingTime:"2020.01.13",storeType:"新建B3",address:"四川省眉山市东坡区本草大道",lng:"103.801134",lat:"30.079662"},
+        {province:"江苏",city:"镇江",city_level:"三线城市",dealer_abbreviation:"镇江利正",dealer_fullName:"镇江利正汽车销售服务有限公司",openingTime:"2020.01.11",storeType:"改建B2",address:"镇江市丁卯街道丁卯桥路303号",lng:"119.5217",lat:"32.18459"},
+        {province:"河北",city:"承德",city_level:"四线城市",dealer_abbreviation:"承德天美",dealer_fullName:"承德天美汽车销售有限公司",openingTime:"2020.02.10",storeType:"改建B2",address:"承德市双滦区狮子园路汽车小镇",lng:"117.82847",lat:"41.021848"},
+        {province:"贵州",city:"六盘水",city_level:"五线城市",dealer_abbreviation:"星尊程悦航",dealer_fullName:"贵州省星尊程悦航汽车销售服务有限公司",openingTime:"2020.03.24",storeType:"改建B1",address:"六盘水市钟山区会展中心底层商铺S-2-12号",lng:"104.906549",lat:"26.548686"},
+        {province:"内蒙古",city:"赤峰",city_level:"五线城市",dealer_abbreviation:"赤峰天永",dealer_fullName:"赤峰天永汽车销售服务有限公司",openingTime:"2020.03.25",storeType:"改建B3",address:"赤峰市红山区桥北物流园辽河路西",lng:"118.921483",lat:"42.338333"},
+        {province:"广东",city:"湛江",city_level:"三线城市",dealer_abbreviation:"湛江宝旗",dealer_fullName:"湛江市宝旗汽车销售服务有限公司",openingTime:"2020.03.25",storeType:"改建B2",address:"湛江市赤坎区东盛路7号-Z104",lng:"110.385775",lat:"21.301709"},
+        {province:"湖南",city:"郴州",city_level:"四线城市",dealer_abbreviation:"郴州恒晨",dealer_fullName:"郴州市恒晨汽车销售服务有限公司",openingTime:"2020.04.16",storeType:"改建C1",address:"郴州市北湖区南岭大道城前岭立交桥南侧",lng:"113.002887",lat:"25.753647"},
+        {province:"湖北",city:"荆州",city_level:"三线城市",dealer_abbreviation:"荆州旗阳",dealer_fullName:"荆州旗阳汽车销售服务有限公司",openingTime:"2020.04.16",storeType:"改建B3",address:"荆州市荆州区荆州大道188号荆州竹叶山车世界第C9栋103号",lng:"112.212464",lat:"30.389206"},
+        {province:"广东",city:"江门",city_level:"三线城市",dealer_abbreviation:"江门裕立",dealer_fullName:"江门市裕立汽车销售服务有限公司",openingTime:"2020.04.22",storeType:"改建B3",address:"江门市江海区五邑路119号1幢",lng:"113.082832",lat:"22.559548"},
+        {province:"湖南",city:"岳阳",city_level:"三线城市",dealer_abbreviation:"岳阳广宸",dealer_fullName:"岳阳广宸汽车销售服务有限公司",openingTime:"2020.04.22",storeType:"新建B1",address:"岳阳市岳阳楼区梅溪乡滨湖村，联港路以西",lng:"113.177529",lat:"29.428161"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广东广物鸿福",dealer_fullName:"广东广物鸿福汽车销售服务有限公司",openingTime:"2020.05.20",storeType:"改建B1",address:"广州市荔湾区龙溪大道488号",lng:"113.196954",lat:"23.072205"},
+        {province:"黑龙江",city:"齐齐哈尔",city_level:"四线城市",dealer_abbreviation:"齐齐哈尔粤华",dealer_fullName:"齐齐哈尔粤华汽贸集团有限公司",openingTime:"2020.05.26",storeType:"改建B3",address:"齐齐哈尔市龙沙区鹤城路1号",lng:"123.93966",lat:"47.312308"},
+        {province:"河南",city:"平顶山",city_level:"四线城市",dealer_abbreviation:"平顶山盛大",dealer_fullName:"平顶山市盛大汽车销售服务有限公司",openingTime:"2020.05.26",storeType:"新建B2",address:"河南省平顶山市建设路东段许平南高速出口西一公里",lng:"113.494135",lat:"33.741732"},
+        {province:"云南",city:"昭通",city_level:"五线城市",dealer_abbreviation:"昭通国源",dealer_fullName:"昭通国源汽车销售服务有限公司",openingTime:"2020.06.09",storeType:"改建B3",address:"昭通市昭阳区工业园区石渣河社区",lng:"103.789584",lat:"27.38877"},
+        {province:"辽宁",city:"沈阳",city_level:"一线城市",dealer_abbreviation:"辽宁神州",dealer_fullName:"辽宁神州红旗汽车销售服务有限公司",openingTime:"2020.06.09",storeType:"改建B1",address:"沈阳市铁西区北二中路41号",lng:"123.363357",lat:"41.820795"},
+        {province:"湖南",city:"益阳",city_level:"四线城市",dealer_abbreviation:"益阳宏旗",dealer_fullName:"益阳宏旗汽车销售服务有限公司",openingTime:"2020.06.12",storeType:"改建B3",address:"益阳市赫山区十洲路（益阳蓝马北京现代4S店）",lng:"112.398011",lat:"28.577559"},
+        {province:"河南",city:"焦作",city_level:"四线城市",dealer_abbreviation:"焦作天宏",dealer_fullName:"焦作市天宏汽车销售服务有限公司",openingTime:"2020.06.16",storeType:"新建B2",address:"焦作市迎宾路沙河桥南550米路西",lng:"113.268818",lat:"35.15789"},
+        {province:"江苏",city:"连云港",city_level:"三线城市",dealer_abbreviation:"连云港海旗",dealer_fullName:"连云港海旗汽车销售服务有限公司",openingTime:"2020.06.17",storeType:"改建C1",address:"连云港市海州区解放东路振兴汽车城",lng:"119.196077",lat:"34.646751"},
+        {province:"云南",city:"西双版纳",city_level:"五线城市",dealer_abbreviation:"西双版纳骏杰",dealer_fullName:"西双版纳骏杰汽车销售服务有限公司",openingTime:"2020.06.18",storeType:"新建B3",address:"西双版纳州景洪农场三分场场部旁原胶厂（214国道交叉线旁）",lng:"100.7607",lat:"21.992564"},
+        {province:"安徽",city:"宿州",city_level:"三线城市",dealer_abbreviation:"宿州韵昌",dealer_fullName:"宿州市韵昌汽车销售服务有限责任公司",openingTime:"2020.06.24",storeType:"改建B3",address:"宿州市开发区鞋城西昌南路，卓耕广场东侧，广汽丰田4S店南侧",lng:"116.976705",lat:"33.598482"},
+        {province:"山西",city:"太原",city_level:"二线城市",dealer_abbreviation:"山西大昌福源",dealer_fullName:"山西大昌福源汽车销售服务有限公司",openingTime:"2020.06.23",storeType:"改建B1",address:"山西省太原市小店区平阳南路88号，大昌汽贸园立体展厅一楼",lng:"112.560106",lat:"37.788618"},
+        {province:"江苏",city:"徐州",city_level:"二线城市",dealer_abbreviation:"徐州世纪恒望",dealer_fullName:"徐州市世纪恒望汽车销售服务有限公司",openingTime:"2020.06.20",storeType:"改建B3",address:"徐州市铜山区欣欣路大成物流汽车园",lng:"117.231875",lat:"34.209854"},
+        {province:"广东",city:"韶关",city_level:"四线城市",dealer_abbreviation:"韶关荣耀",dealer_fullName:"韶关市荣耀汽车销售服务有限公司",openingTime:"2020.06.23",storeType:"改建C1",address:"韶关市浈江区韶南大道七公里东侧",lng:"113.587651",lat:"24.74414"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"深圳通利华",dealer_fullName:"深圳市通利华实业有限公司",openingTime:"2020.06.24",storeType:"改建B3",address:"深圳市龙岗区园山街道银盛路33号信义汽车城17、18号展位",lng:"114.229897",lat:"22.673173"},
+        {province:"黑龙江",city:"哈尔滨",city_level:"二线城市",dealer_abbreviation:"华之诚万家",dealer_fullName:"黑龙江省华之诚万家汽车销售服务有限公司",openingTime:"2020.06.22",storeType:"改建B2",address:"哈尔滨市道里区机场路18号",lng:"126.557874",lat:"45.710433"},
+        {province:"山东",city:"威海",city_level:"三线城市",dealer_abbreviation:"威海鸿运",dealer_fullName:"威海鸿运汽车销售服务有限公司",openingTime:"2020.06.29",storeType:"改建B1",address:"威海市环翠区温泉镇冶口村金蚂蚁汽车广场38号",lng:"122.141562",lat:"37.37188"},
+        {province:"安徽",city:"滁州",city_level:"三线城市",dealer_abbreviation:"滁州钰祥",dealer_fullName:"滁州钰祥汽车销售服务有限公司",openingTime:"2020.06.29",storeType:"改建B3",address:"滁州市花亭路889号",lng:"118.352488",lat:"32.273406"},
+        {province:"湖南",city:"湘西",city_level:"五线城市",dealer_abbreviation:"湘西旗胜",dealer_fullName:"湘西旗胜汽车销售有限责任公司",openingTime:"2020.06.30",storeType:"改建B2",address:"湘西土家族苗族自治州吉首市武陵国际汽车城兰天大道12号",lng:"109.68167",lat:"28.232844"},
+        {province:"吉林",city:"通化",city_level:"五线城市",dealer_abbreviation:"通化汇升",dealer_fullName:"通化市汇升汽车销售服务有限公司",openingTime:"2020.07.02",storeType:"改建B1",address:"通化市东昌区环通乡长流村303国道旁距收费站500米",lng:"125.9247",lat:"41.780037"},
+        {province:"福建",city:"龙岩",city_level:"四线城市",dealer_abbreviation:"龙岩亿海冠旗",dealer_fullName:"龙岩市亿海冠旗汽车销售有限公司",openingTime:"2020.07.10",storeType:"改建B2",address:"龙岩市新罗区龙门镇物流大道328号",lng:"116.960716",lat:"25.106733"},
+        {province:"云南",city:"文山",city_level:"五线城市",dealer_abbreviation:"文山鑫桥",dealer_fullName:"文山市鑫桥汽车销售服务有限公司",openingTime:"2020.07.10",storeType:"新建C1",address:"文山壮族苗族自治州文山市城南路花桥国际汽车城内",lng:"104.286631",lat:"23.328988"},
+        {province:"云南",city:"楚雄",city_level:"五线城市",dealer_abbreviation:"楚雄安晟",dealer_fullName:"楚雄安晟汽车销售服务有限公司",openingTime:"2020.07.15",storeType:"改建C",address:"楚雄彝族自治州楚雄市鹿城镇河前社区滇大商汇109幢101号",lng:"101.496412",lat:"25.070972"},
+        {province:"福建",city:"莆田",city_level:"三线城市",dealer_abbreviation:"莆田星奥",dealer_fullName:"莆田星奥汽车销售服务有限公司",openingTime:"2020.07.21",storeType:"改建B2",address:"莆田市荔城区经济开发区洞湖工业小区地块一",lng:"119.04766",lat:"25.473232"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"深圳锦红",dealer_fullName:"深圳锦红汽车销售服务有限公司",openingTime:"2020.07.22",storeType:"改建B2",address:"深圳市宝安区航城街道三围社区航空路",lng:"113.849731",lat:"22.613191"},
+        {province:"山东",city:"枣庄",city_level:"四线城市",dealer_abbreviation:"枣庄旗尚",dealer_fullName:"枣庄旗尚汽车销售服务有限公司",openingTime:"2020.07.26",storeType:"改建B1",address:"枣庄市薛城区光明大街北侧",lng:"117.438745",lat:"34.827749"},
+        {province:"河北",city:"石家庄",city_level:"二线城市",dealer_abbreviation:"河北华晟",dealer_fullName:"河北华晟汽车服务有限公司",openingTime:"2020.07.26",storeType:"改建B1",address:"石家庄市北二环东路86号国际汽车贸易园区",lng:"114.553253",lat:"38.076774"},
+        {province:"湖北",city:"荆门",city_level:"四线城市",dealer_abbreviation:"荆门英驰",dealer_fullName:"荆门英驰汽车销售有限公司",openingTime:"2020.07.27",storeType:"改建C",address:"荆门市掇刀区月亮湖路76号",lng:"112.243711",lat:"31.047974"},
+        {province:"河北",city:"张家口",city_level:"四线城市",dealer_abbreviation:"张家口龙瀚",dealer_fullName:"张家口龙瀚汽车销售服务有限公司",openingTime:"2020.07.28",storeType:"改建B1",address:"河北省张家口市桥西区沙岭子镇屈家庄村张宣公路西侧（原豆粉厂）",lng:"114.929774",lat:"40.704432"},
+        {province:"陕西",city:"榆林",city_level:"四线城市",dealer_abbreviation:"榆林恒盛德岳",dealer_fullName:"榆林恒盛德岳汽车贸易有限公司",openingTime:"2020.07.28",storeType:"改建B1",address:"榆林市榆阳区榆麻路汽车产业园",lng:"109.87146",lat:"38.339861"},
+        {province:"辽宁",city:"大连",city_level:"二线城市",dealer_abbreviation:"大连汽贸",dealer_fullName:"大连汽贸集团华宇汽车销售服务有限公司",openingTime:"2020.07.30",storeType:"改建B3",address:"大连市甘井子区山东路80-9号",lng:"121.582797",lat:"38.971552"},
+        {province:"四川",city:"成都",city_level:"一线城市",dealer_abbreviation:"成都岳宏泰",dealer_fullName:"成都岳宏泰汽车销售服务有限公司",openingTime:"2020.08.13",storeType:"改建A",address:"成都市双流区东升街道宗申赛纳维54栋",lng:"103.960564",lat:"30.604977"},
+        {province:"湖北",city:"武汉",city_level:"一线城市",dealer_abbreviation:"武汉泰岳宏旗",dealer_fullName:"武汉泰岳宏旗汽车销售服务有限公司",openingTime:"2020.08.12",storeType:"改建B1",address:"湖北武汉黄陂区汉口北大道88号汽车大世界H-3#",lng:"114.323717",lat:"30.713746"},
+        {province:"湖北",city:"黄石",city_level:"四线城市",dealer_abbreviation:"黄石新兴振宇",dealer_fullName:"黄石市新兴振宇汽车销售有限公司",openingTime:"2020.08.12",storeType:"改建C",address:"黄石市金山街道办事处大棋大道358号",lng:"115.028644",lat:"30.141831"},
+        {province:"湖北",city:"随州",city_level:"五线城市",dealer_abbreviation:"湖北骏翔",dealer_fullName:"湖北骏翔汽车销售服务有限公司",openingTime:"2020.08.13",storeType:"改建B2",address:"随州市曾都区鹿鹤大道特28号",lng:"113.44238",lat:"31.709867"},
+        {province:"江西",city:"景德镇",city_level:"四线城市",dealer_abbreviation:"景德镇景旗",dealer_fullName:"景德镇市景旗汽车销售服务有限责任公司",openingTime:"2020.08.18",storeType:"改建B2",address:"景德镇市浮梁县洪源大桥北侧",lng:"117.162687",lat:"29.318011"},
+        {province:"湖北",city:"恩施",city_level:"四线城市",dealer_abbreviation:"恩施英驰",dealer_fullName:"恩施英驰汽车销售有限公司",openingTime:"2020.08.17",storeType:"改建C",address:"恩施土家族苗族自治州硒江路六角亭街道办事处松树坪国际汽车城第3号楼1单元",lng:"109.460527",lat:"30.287826"},
+        {province:"江苏",city:"南京",city_level:"一线城市",dealer_abbreviation:"南京天沃",dealer_fullName:"南京天沃汽车销售服务有限公司",openingTime:"2020.08.16",storeType:"改建B1",address:"南京市秦淮区土城头106号",lng:"118.802683",lat:"32.003028"},
+        {province:"浙江",city:"舟山",city_level:"三线城市",dealer_abbreviation:"舟山旗翔",dealer_fullName:"舟山旗翔汽车销售服务有限公司",openingTime:"2020.08.19",storeType:"改建B3",address:"舟山市定海区弘生大道158号",lng:"122.145842",lat:"30.001092"},
+        {province:"广东",city:"茂名",city_level:"四线城市",dealer_abbreviation:"广东广物鸿福",dealer_fullName:"广东广物鸿福汽车销售服务有限公司茂名分公司",openingTime:"2020.08.20",storeType:"改建C",address:"茂名市电白区高水路（茂名大道）278号",lng:"110.967561737706",lat:"21.6190467935535"},
+        {province:"广东",city:"汕头",city_level:"三线城市",dealer_abbreviation:"汕头众驰",dealer_fullName:"汕头市众驰汽车有限公司",openingTime:"2020.08.18",storeType:"改建B1",address:"汕头市龙湖区黄河路39号之一",lng:"116.738771",lat:"23.391749"},
+        {province:"辽宁",city:"鞍山",city_level:"三线城市",dealer_abbreviation:"鞍山天美",dealer_fullName:"鞍山天美汽车销售有限公司",openingTime:"2020.08.21",storeType:"改建B1",address:"鞍山市达道湾经济开发区建设大道593号",lng:"122.955192",lat:"41.164344"},
+        {province:"浙江",city:"台州",city_level:"二线城市",dealer_abbreviation:"台州星旗",dealer_fullName:"台州星旗汽车销售服务有限公司",openingTime:"2020.08.18",storeType:"改建B3",address:"台州市路桥区路南街道迎宾社区花卉路88号",lng:"121.390148",lat:"28.559545"},
+        {province:"辽宁",city:"锦州",city_level:"四线城市",dealer_abbreviation:"锦州新东方",dealer_fullName:"锦州新东方汽车销售服务有限公司",openingTime:"2020.08.15",storeType:"改建B3",address:"锦州市太和区新民乡大围子村锦州盛世汽车交易市场院内",lng:"121.111329",lat:"41.046977"},
+        {province:"安徽",city:"淮南",city_level:"四线城市",dealer_abbreviation:"淮南盛兆",dealer_fullName:"淮南盛兆汽车销售服务有限公司",openingTime:"2020.08.27",storeType:"改建C",address:"安徽省淮南市朝阳东路北侧2号工业厂房聚集区",lng:"117.062467",lat:"32.650363"},
+        {province:"黑龙江",city:"佳木斯",city_level:"五线城市",dealer_abbreviation:"佳木斯安盈",dealer_fullName:"佳木斯安盈汽车销售服务有限公司",openingTime:"2020.08.22",storeType:"改建B1",address:"佳木斯市郊区沿江乡国际汽车城经开一路西段",lng:"130.233879",lat:"46.80007"},
+        {province:"辽宁",city:"葫芦岛",city_level:"四线城市",dealer_abbreviation:"辽宁大地",dealer_fullName:"辽宁大地汽车销售服务有限公司",openingTime:"2020.08.28",storeType:"改建B3",address:"葫芦岛高新技术产业开发区通海大道892号",lng:"120.782488",lat:"40.739535"},
+        {province:"广东",city:"清远",city_level:"三线城市",dealer_abbreviation:"清远广汇利",dealer_fullName:"清远广汇利汽车销售服务有限公司",openingTime:"2020.08.24",storeType:"改建B3",address:"清远市奇鸿汽车城内B28号",lng:"113.063216",lat:"23.66598"},
+        {province:"黑龙江",city:"大庆",city_level:"三线城市",dealer_abbreviation:"大庆世纪恒达",dealer_fullName:"大庆世纪恒达汽车销售服务有限公司",openingTime:"2020.08.28",storeType:"改建B2",address:"大庆市让胡路区翔驰路21号",lng:"124.867665",lat:"46.680804"},
+        {province:"四川",city:"资阳",city_level:"五线城市",dealer_abbreviation:"资阳清巍茂美",dealer_fullName:"资阳市清巍茂美汽车销售服务有限公司",openingTime:"2020.08.26",storeType:"改建C",address:"资阳市雁江区沱东新区迎宾大道中段3号",lng:"104.69841",lat:"30.090223"},
+        {province:"吉林",city:"松原",city_level:"五线城市",dealer_abbreviation:"松原征途中和",dealer_fullName:"松原市征途中和汽车销售服务有限公司",openingTime:"2020.08.27",storeType:"改建B1",address:"松原市前郭县成吉思汗大街工业集中区",lng:"124.882708",lat:"45.101287"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广州锦耀",dealer_fullName:"广州锦耀汽车销售服务有限公司",openingTime:"2020.08.26",storeType:"改建B2",address:"广州市天河区奥体南路5号",lng:"113.420184",lat:"23.139898"},
+        {province:"山西",city:"忻州",city_level:"四线城市",dealer_abbreviation:"忻州华明",dealer_fullName:"忻州市华明汽车销售有限公司",openingTime:"2020.08.30",storeType:"改建B3",address:"忻州市开发区汽贸园汽贸路东纬四街南",lng:"112.737863",lat:"38.47165"},
+        {province:"四川",city:"内江",city_level:"五线城市",dealer_abbreviation:"内江利恒孚",dealer_fullName:"内江利恒孚车业有限公司",openingTime:"2020.08.25",storeType:"改建B3",address:"内江市市中区汉渝大道1636号建国汽车园区",lng:"105.014560406981",lat:"29.5797201310344"},
+        {province:"安徽",city:"宣城",city_level:"四线城市",dealer_abbreviation:"宣城天位",dealer_fullName:"宣城市天位汽车销售服务有限公司",openingTime:"2020.08.27",storeType:"改建C1",address:"宣城市水阳江西大道",lng:"118.733491",lat:"30.946944"},
+        {province:"辽宁",city:"沈阳",city_level:"一线城市",dealer_abbreviation:"沈阳神州川达",dealer_fullName:"沈阳神州川达汽车销售服务有限责任公司",openingTime:"2020.08.28",storeType:"改建B3",address:"沈阳市于洪区沈大路87号",lng:"123.289296",lat:"41.799848"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"深圳广旗",dealer_fullName:"深圳广旗汽车销售服务有限公司",openingTime:"2020.08.26",storeType:"改建B2",address:"深圳市宝安区龙华街道宝能科技园5栋",lng:"114.072807",lat:"22.678125"},
+        {province:"湖南",city:"永州",city_level:"四线城市",dealer_abbreviation:"永州达美",dealer_fullName:"永州达美汽车销售服务有限公司",openingTime:"2020.08.25",storeType:"改建B3",address:"永州市永州大道潇湘汽车城第二排原众泰4S店",lng:"111.639052",lat:"26.297858"},
+        {province:"云南",city:"保山",city_level:"五线城市",dealer_abbreviation:"保山上通",dealer_fullName:"保山市上通汽车销售服务有限公司",openingTime:"2020.08.27",storeType:"改建C",address:"保山市隆阳区永昌街道永昌路东侧",lng:"99.202041",lat:"25.141167"},
+        {province:"湖北",city:"咸宁",city_level:"四线城市",dealer_abbreviation:"咸宁东旗",dealer_fullName:"咸宁东旗汽车销售服务有限公司",openingTime:"2020.08.30",storeType:"新建B3",address:"咸宁市咸安经济开发区通江大道",lng:"114.242613",lat:"29.882645"},
+        {province:"江苏",city:"宿迁",city_level:"三线城市",dealer_abbreviation:"宿迁润旗",dealer_fullName:"宿迁市润旗汽车销售服务有限公司",openingTime:"2020.09.05",storeType:"改建B3",address:"宿迁市双庄汽车城迅驰路北首",lng:"118.244172",lat:"33.93569"},
+        {province:"安徽",city:"淮北",city_level:"四线城市",dealer_abbreviation:"淮北吉昌",dealer_fullName:"淮北市吉昌汽车销售服务有限责任公司",openingTime:"2020.09.06",storeType:"改建B3",address:"淮北市相山区瑞骑路8号2幢101和相山区瑞骑路8号4幢101",lng:"116.801872640311",lat:"33.9333195373268"},
+        {province:"安徽",city:"池州",city_level:"四线城市",dealer_abbreviation:"池州鑫瑞",dealer_fullName:"池州鑫瑞汽车销售服务有限公司",openingTime:"2020.09.25",storeType:"改建B3",address:"池州市平天湖风景区汽车集聚园国定汽车城1号楼",lng:"117.533445",lat:"30.623162"},
+        {province:"新疆",city:"巴音郭楞",city_level:"五线城市",dealer_abbreviation:"新疆晨运",dealer_fullName:"新疆晨运汽车销售有限公司",openingTime:"2020.09.25",storeType:"改建B2",address:"新疆库尔勒市神州汽车城四运汽车广场红旗店",lng:"86.217036",lat:"41.728564"},
+        {province:"吉林",city:"延边",city_level:"四线城市",dealer_abbreviation:"延吉神州嘉航",dealer_fullName:"延吉神州嘉航红旗汽车销售服务有限公司",openingTime:"2020.09.29",storeType:"改建C1",address:"延吉市人民路5108号",lng:"129.577639",lat:"42.91726"},
+        {province:"山西",city:"阳泉",city_level:"五线城市",dealer_abbreviation:"阳泉鼎晟",dealer_fullName:"阳泉市鼎晟汽车销售服务有限公司",openingTime:"2020.10.17",storeType:"改建B2",address:"阳泉市郊区李荫路168号黄沙岩路段",lng:"113.578828",lat:"37.923782"},
+        {province:"新疆",city:"伊犁",city_level:"五线城市",dealer_abbreviation:"伊犁冠邦",dealer_fullName:"伊犁冠邦汽车销售服务有限公司",openingTime:"2020.10.21",storeType:"改建C",address:"伊犁州伊宁市巴彦岱镇17中旁2-8-52",lng:"81.221101",lat:"43.977531"},
+        {province:"广东",city:"佛山",city_level:"一线城市",dealer_abbreviation:"佛山飞扬",dealer_fullName:"佛山飞扬红旗汽车销售服务有限公司",openingTime:"2020.10.22",storeType:"改建B1",address:"佛山禅城区魁奇西路与佛山大道交汇处佛山世纪车城",lng:"113.106509",lat:"23.000895"},
+        {province:"广西",city:"钦州",city_level:"五线城市",dealer_abbreviation:"钦州益辰",dealer_fullName:"钦州益辰汽车销售服务有限公司",openingTime:"2020.10.22",storeType:"新建B3",address:"钦州市扬帆北大道与东泉街交汇处东北角",lng:"108.651247",lat:"21.960375"},
+        {province:"吉林",city:"吉林",city_level:"四线城市",dealer_abbreviation:"吉林神州",dealer_fullName:"吉林市神州红旗汽车销售服务有限公司",openingTime:"2020.10.28",storeType:"改建B2",address:"吉林市船营区迎宾大路63号福源馆西行1000米路北",lng:"126.487032",lat:"43.875559"},
+        {province:"云南",city:"德宏",city_level:"五线城市",dealer_abbreviation:"德宏海伟宏亦",dealer_fullName:"德宏海伟宏亦汽车销售有限公司",openingTime:"2020.10.28",storeType:"改建B2",address:"德宏傣族景颇族自治州芒市环城东路133号丰田4S店旁",lng:"98.606327",lat:"24.456659"},
+        {province:"河南",city:"三门峡",city_level:"五线城市",dealer_abbreviation:"三门峡和骏",dealer_fullName:"三门峡和骏汽车销售服务有限公司",openingTime:"2020.11.03",storeType:"改建C",address:"三门峡市开发区汽车城北门口东侧",lng:"111.17713238023",lat:"34.8028644709064"},
+        {province:"浙江",city:"金华",city_level:"二线城市",dealer_abbreviation:"义乌正通",dealer_fullName:"义乌市正通汽车销售服务有限公司",openingTime:"2020.11.13",storeType:"改建B2",address:"浙江省义乌市后宅街道宗泽北路1157号",lng:"120.05254",lat:"29.373433"},
+        {province:"广西",city:"柳州",city_level:"三线城市",dealer_abbreviation:"广西宝旗",dealer_fullName:"广西宝旗汽车销售服务有限责任公司",openingTime:"2020.11.17",storeType:"改建B2",address:"柳州市柳南区汇轮路1-2号",lng:"109.372466",lat:"24.313295"},
+        {province:"辽宁",city:"朝阳",city_level:"五线城市",dealer_abbreviation:"朝阳神州川达",dealer_fullName:"朝阳神州川达汽车销售服务有限公司",openingTime:"2020.11.30",storeType:"改建B2",address:"朝阳市龙城区西大营子镇北山村44C号整座",lng:"120.397239",lat:"41.559994"},
+        {province:"福建",city:"三明",city_level:"四线城市",dealer_abbreviation:"三明旗展",dealer_fullName:"三明市旗展汽车销售服务有限公司",openingTime:"2020.11.30",storeType:"改建B3",address:"三明市梅列区陈大镇德安工业园16号一层",lng:"117.655921",lat:"26.300147"},
+        {province:"辽宁",city:"营口",city_level:"四线城市",dealer_abbreviation:"营口国之信",dealer_fullName:"营口市国之信汽车销售服务有限公司",openingTime:"2020.12.11",storeType:"改建B2",address:"营口市老边区新营路北11号",lng:"122.295756",lat:"40.682664"},
+        {province:"江西",city:"萍乡",city_level:"五线城市",dealer_abbreviation:"萍乡兰天嘉华",dealer_fullName:"萍乡市兰天嘉华汽车销售服务有限公司",openingTime:"2020.12.15",storeType:"改建B1",address:"萍乡市安源区大陂管理处320国道萍乡卫校旁",lng:"113.93487",lat:"27.653459"},
+        {province:"内蒙古",city:"呼伦贝尔",city_level:"五线城市",dealer_abbreviation:"呼伦贝尔大鹏睿达",dealer_fullName:"呼伦贝尔市大鹏睿达汽车贸易有限公司",openingTime:"2020.12.15",storeType:"改建B1",address:"呼伦贝尔市鄂温克旗海伊公路东侧大鹏汽车城",lng:"119.757278",lat:"49.119403"},
+        {province:"江西",city:"鹰潭",city_level:"五线城市",dealer_abbreviation:"鹰潭凯迪",dealer_fullName:"鹰潭市凯迪汽车销售服务有限公司",openingTime:"2020.12.15",storeType:"改建B1",address:"鹰潭市余江县中童镇206国道以东鹰西大道以南以西",lng:"116.986341",lat:"28.30068"},
+        {province:"广东",city:"梅州",city_level:"四线城市",dealer_abbreviation:"广东腾辉鸿旗",dealer_fullName:"广东腾辉鸿旗汽车销售服务有限公司",openingTime:"2020.12.15",storeType:"改建B1",address:"梅州市梅县区广梅中路657号",lng:"116.081823",lat:"24.294777"},
+        {province:"江苏",city:"无锡",city_level:"二线城市",dealer_abbreviation:"无锡和旗",dealer_fullName:"无锡和旗汽车销售服务有限公司",openingTime:"2020.12.15",storeType:"新建B2",address:"无锡市滨湖区钱胡路与芙蓉北路交叉口东北侧地块",lng:"120.142298",lat:"31.566492"},
+        {province:"黑龙江",city:"哈尔滨",city_level:"二线城市",dealer_abbreviation:"黑龙江万家祥和",dealer_fullName:"黑龙江省万家祥和汽车销售服务有限公司",openingTime:"2020.12.18",storeType:"改建B1",address:"哈尔滨市先锋路11号",lng:"126.75546",lat:"45.780809"},
+        {province:"广西",city:"百色",city_level:"五线城市",dealer_abbreviation:"百色健稳",dealer_fullName:"百色市健稳汽车科技有限公司",openingTime:"2020.12.21",storeType:"改建C",address:"百色市右江区大旺路12号大旺汽车广场内",lng:"106.666404",lat:"23.860496"},
+        {province:"山西",city:"吕梁",city_level:"四线城市",dealer_abbreviation:"山西吕梁大昌",dealer_fullName:"山西省吕梁市大昌汽车销售有限公司",openingTime:"2020.12.21",storeType:"改建B3",address:"吕梁市离市区乔家塔村，晋绥路与商业街交叉口，大昌汽贸园",lng:"111.103346159683",lat:"37.5055150477443"},
+        {province:"新疆",city:"昌吉",city_level:"五线城市",dealer_abbreviation:"昌吉亚中机电",dealer_fullName:"昌吉亚中机电有限公司",openingTime:"2021.01.05",storeType:"改建B2",address:"昌吉市乌伊西路南侧夹滩村北四路与中心路交汇处",lng:"87.247196",lat:"44.033183"},
+        {province:"吉林",city:"白山",city_level:"五线城市",dealer_abbreviation:"白山宝信",dealer_fullName:"白山市宝信汽车销售服务有限公司",openingTime:"2021.01.05",storeType:"改建C",address:"白山市北安大街305号",lng:"126.443612",lat:"41.963985"},
+        {province:"河南",city:"鹤壁",city_level:"五线城市",dealer_abbreviation:"鹤壁鹤天",dealer_fullName:"鹤壁市鹤天汽车销售服务有限公司",openingTime:"2021.01.05",storeType:"改建B2",address:"鹤壁市淇滨区107国到与渤海路交叉口",lng:"114.295546",lat:"35.781269"},
+        {province:"四川",city:"攀枝花",city_level:"五线城市",dealer_abbreviation:"攀枝花驭马车业",dealer_fullName:"攀枝花驭马车业有限公司",openingTime:"2021.01.05",storeType:"新建C",address:"攀枝花市仁和区弯腰树攀枝花大道建国汽车园区",lng:"101.7377",lat:"26.534327"},
+        {province:"江西",city:"上饶",city_level:"三线城市",dealer_abbreviation:"上饶君悦宏旗",dealer_fullName:"上饶市君悦宏旗汽车有限公司",openingTime:"2021.01.13",storeType:"新建B1",address:"上饶市信州区上饶大道18号3号地块",lng:"117.961797",lat:"28.411607"},
+        {province:"江苏",city:"苏州",city_level:"一线城市",dealer_abbreviation:"苏州和旗",dealer_fullName:"苏州和旗汽车销售服务有限公司",openingTime:"2021.01.14",storeType:"新建A",address:"苏州市吴中经济技术开发区尹山国际汽车城尹中国际汽车城尹中路西侧、尹新路北侧",lng:"120.672766",lat:"31.245361"},
+        {province:"湖南",city:"湘潭",city_level:"四线城市",dealer_abbreviation:"湘潭宏旗",dealer_fullName:"湘潭宏旗汽车销售服务有限公司",openingTime:"2021.01.15",storeType:"新建B1",address:"湘潭市雨湖区湘望路（五菱4S店旁）",lng:"112.941864",lat:"27.941789"},
+        {province:"甘肃",city:"庆阳",city_level:"五线城市",dealer_abbreviation:"庆阳金岛旗胜",dealer_fullName:"庆阳金岛旗胜汽车销售服务有限公司",openingTime:"2021.01.18",storeType:"新建B3",address:"庆阳市西峰区庆化大道陇东汽车城（庆阳金岛铖蔚东侧）",lng:"107.628126",lat:"35.771809"},
+        {province:"四川",city:"雅安",city_level:"五线城市",dealer_abbreviation:"雅安国创",dealer_fullName:"雅安国创汽车销售服务有限公司",openingTime:"2021.01.28",storeType:"改建C",address:"雅安市对岩镇新车管所对面",lng:"102.971057",lat:"29.986044"},
+        {province:"安徽",city:"黄山",city_level:"四线城市",dealer_abbreviation:"黄山旗胜",dealer_fullName:"黄山旗胜汽车销售服务有限公司",openingTime:"2021.01.28",storeType:"改建B2",address:"黄山市屯溪区齐云大道1号裕盛休闲广场华府名邸3幢101号",lng:"118.304792",lat:"29.727672"},
+        {province:"江西",city:"宜春",city_level:"三线城市",dealer_abbreviation:"宜春华宏昇",dealer_fullName:"宜春华宏昇汽车有限公司",openingTime:"2021.02.08",storeType:"新建B3",address:"宜春市宜春大道732号",lng:"114.39172",lat:"27.88499"},
+        {province:"浙江",city:"嘉兴",city_level:"二线城市",dealer_abbreviation:"桐乡裕旗",dealer_fullName:"桐乡裕旗汽车有限公司",openingTime:"2021.02.09",storeType:"新建B1",address:"浙江省嘉兴市桐乡中华东路",lng:"120.594411",lat:"30.623734"},
+        {province:"湖南",city:"张家界",city_level:"五线城市",dealer_abbreviation:"张家界旗胜",dealer_fullName:"张家界旗胜汽车销售服务有限责任公司",openingTime:"2021.03.20",storeType:"改建B3",address:"张家界市高新开发区科技大道义乌国际汽车城28号",lng:"112.941886",lat:"27.941859"},
+        {province:"陕西",city:"延安",city_level:"四线城市",dealer_abbreviation:"延安泽之泰",dealer_fullName:"延安泽之泰汽贸有限责任公司",openingTime:"2021.03.22",storeType:"新建B1",address:"延安市碾庄过境路捷达4S店旁",lng:"109.575854",lat:"36.668373"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"深圳锦龙",dealer_fullName:"深圳锦龙红旗汽车销售服务有限公司",openingTime:"-",storeType:"-",address:"深圳市南海大道与松湖路太子湾汽车园A3-101",lng:"113.913929",lat:"22.480942"},
+        {province:"河北",city:"廊坊",city_level:"二线城市",dealer_abbreviation:"北京龙泽",dealer_fullName:"北京龙泽红旗汽车销售有限公司",openingTime:"",storeType:"新建A",address:"廊坊市霸州市王伍庄南",lng:"116.39349",lat:"39.088362"},
+        {province:"安徽",city:"芜湖",city_level:"三线城市",dealer_abbreviation:"芜湖福禧",dealer_fullName:"芜湖福禧汽车销售服务有限公司",openingTime:"",storeType:"新建A",address:"芜湖市龙腾路与万春东路交叉口",lng:"118.465354",lat:"31.384252"},
+        {province:"陕西",city:"西安",city_level:"一线城市",dealer_abbreviation:"郑州大展",dealer_fullName:"郑州大展红旗汽车销售有限公司",openingTime:"",storeType:"改建B1",address:"西安浐灞生态区汽车主题公园内",lng:"109.058125",lat:"34.308778"},
+        {province:"甘肃",city:"酒泉",city_level:"五线城市",dealer_abbreviation:"兰州金岛煜奥",dealer_fullName:"兰州金岛煜奥汽车销售服务有限公司",openingTime:"",storeType:"新建B3",address:"酒泉市肃州区西郊工业园区光华路以北（酒泉金驰宝东侧）",lng:"98.428605",lat:"39.76713"},
+        {province:"甘肃",city:"张掖",city_level:"五线城市",dealer_abbreviation:"张掖金岛旗瑞",dealer_fullName:"张掖金岛旗瑞汽车销售服务有限公司",openingTime:"2021.03.30",storeType:"新建B3",address:"张掖市甘州区绿洲现代物流园崇业路以北、嘉信路以西（一汽大众西侧）",lng:"100.405739",lat:"38.941144"},
+        {province:"西藏",city:"日喀则",city_level:"五线城市",dealer_abbreviation:"拉萨丰田",dealer_fullName:"拉萨丰田汽车销售服务有限公司",openingTime:"",storeType:"新建B3",address:"日喀则市朗热路德勒林1335号",lng:"88.87011",lat:"29.252989"},
+        {province:"山西",city:"晋中",city_level:"四线城市",dealer_abbreviation:"山西大昌",dealer_fullName:"山西大昌汽车集团有限公司",openingTime:"",storeType:"新建B3",address:"晋中市榆次区迎宾西路西延段1号院",lng:"112.67861",lat:"37.702298"},
+        {province:"广东",city:"东莞",city_level:"一线城市",dealer_abbreviation:"吉林省神驰",dealer_fullName:"吉林省神驰汽车销售服务有限公司",openingTime:"",storeType:"新建A",address:"东莞市常平镇环城西路岗梓村路段西侧",lng:"113.97015",lat:"22.974732"},
+        {province:"云南",city:"临沧",city_level:"五线城市",dealer_abbreviation:"大理通源",dealer_fullName:"大理通源汽车销售服务有限公司",openingTime:"",storeType:"新建B3",address:"云南省临沧市临翔区忙畔街道文伟村缅宁大道与“214”过境线交叉口东南侧",lng:"100.118903",lat:"23.928579"},
+        {province:"黑龙江",city:"绥化",city_level:"五线城市",dealer_abbreviation:"绥化融展兴邦",dealer_fullName:"绥化融展兴邦汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"绥化市北林区康庄路",lng:"126.979964",lat:"46.619615"},
+        {province:"广东",city:"汕尾",city_level:"四线城市",dealer_abbreviation:"广物",dealer_fullName:"广物汽贸股份有限公司",openingTime:"2021.04.16",storeType:"改建B2",address:"汕尾市区海汕公路西侧红草工业园区范围内（三和村与拾和村之间）",lng:"115.355444",lat:"22.855944"},
+        {province:"青海",city:"海东",city_level:"五线城市",dealer_abbreviation:"青海恒欣",dealer_fullName:"青海恒欣投资管理有限公司",openingTime:"",storeType:"新建C",address:"海东市河湟新区星光路与柳湾路交汇处",lng:"102.014503",lat:"36.517775"},
+        {province:"广西",city:"贵港",city_level:"五线城市",dealer_abbreviation:"广东保利",dealer_fullName:"广东保利汽车销售有限公司",openingTime:"2021.04.16",storeType:"改建B3",address:"贵港市港北区福昆线与环城一级公路交叉路口(金港汽车城)",lng:"109.550345",lat:"23.112859"},
+        {province:"广西",city:"河池",city_level:"五线城市",dealer_abbreviation:"河池通盛",dealer_fullName:"河池通盛汽车贸易服务有限公司",openingTime:"2021.03.29",storeType:"改建B2",address:"河池市金城江区香炉村金水二级路南侧雪佛兰4S店",lng:"108.086733",lat:"24.681207"},
+        {province:"广东",city:"潮州",city_level:"三线城市",dealer_abbreviation:"潮州市侨山",dealer_fullName:"潮州市侨山汽车贸易有限公司",openingTime:"",storeType:"新建B1",address:"潮州市潮安区浮洋镇西郊村潮汕公路西郊路段",lng:"116.605542",lat:"23.602453"},
+        {province:"吉林",city:"辽源",city_level:"五线城市",dealer_abbreviation:"辽源市聚鑫",dealer_fullName:"辽源市聚鑫汽车销售服务有限公司",openingTime:"",storeType:"新建C",address:"辽源市龙山区福镇大路4888号",lng:"125.202582",lat:"42.871422"},
+        {province:"陕西",city:"安康",city_level:"五线城市",dealer_abbreviation:"榆林市恒源",dealer_fullName:"榆林市恒源汽贸有限公司",openingTime:"",storeType:"新建B2",address:"安康市汉滨区创业西路",lng:"108.995245",lat:"32.729483"},
+        {province:"辽宁",city:"铁岭",city_level:"五线城市",dealer_abbreviation:"辽宁天广",dealer_fullName:"辽宁天广汽车服务有限公司",openingTime:"",storeType:"改建B1",address:"铁岭市铁岭县凡河镇嘉陵江东路4A号1-1号",lng:"123.77353",lat:"42.22509"},
+        {province:"浙江",city:"温州",city_level:"二线城市",dealer_abbreviation:"欧龙",dealer_fullName:"欧龙汽车贸易集团有限公司",openingTime:"",storeType:"改建B3",address:"温州市瓯海区瓯海大道669号",lng:"120.670195",lat:"27.965747"},
+        {province:"甘肃",city:"天水",city_level:"五线城市",dealer_abbreviation:"甘肃天合",dealer_fullName:"甘肃天合实业有限公司",openingTime:"",storeType:"改建B2",address:"天水市麦积区华世汽车城",lng:"105.877402",lat:"34.559012"},
+        {province:"湖北",city:"武汉",city_level:"一线城市",dealer_abbreviation:"武汉大雍",dealer_fullName:"武汉大雍实业集团有限公司",openingTime:"",storeType:"改建B1",address:"武汉市汉阳区龙阳大道98号",lng:"114.206916",lat:"30.550363"},
+        {province:"宁夏",city:"吴忠",city_level:"五线城市",dealer_abbreviation:"银川大世界",dealer_fullName:"银川大世界红旗汽车销售有限公司",openingTime:"",storeType:"改建",address:"宁夏回族自治区吴忠市国际汽车城10号",lng:"106.226783",lat:"38.013281"},
+        {province:"云南",city:"昆明",city_level:"二线城市",dealer_abbreviation:"武汉大雍",dealer_fullName:"武汉大雍实业集团有限公司",openingTime:"",storeType:"改建B1",address:"昆明市盘龙区虹桥汽车财富中心",lng:"102.781893",lat:"25.043773"},
+        {province:"云南",city:"昆明",city_level:"二线城市",dealer_abbreviation:"昆明海伟",dealer_fullName:"昆明海伟国际贸易有限公司",openingTime:"",storeType:"改建A",address:"昆明市呈贡区韶光路",lng:"102.843746",lat:"24.862895"},
+        {province:"安徽",city:"合肥",city_level:"一线城市",dealer_abbreviation:"北京奥吉通",dealer_fullName:"北京奥吉通投资有限公司",openingTime:"",storeType:"改建B3",address:"合肥市庐阳区蒙城北路1111号恒信汽车博览园",lng:"117.26821",lat:"31.923959"},
+        {province:"福建",city:"宁德",city_level:"三线城市",dealer_abbreviation:"泉州华奥",dealer_fullName:"泉州华奥汽车销售服务有限公司",openingTime:"",storeType:"改建B2",address:"宁德市东侨经济开发区工业路5号",lng:"119.562127",lat:"26.725715"},
+        {province:"江苏",city:"苏州",city_level:"一线城市",dealer_abbreviation:"泰州金迪",dealer_fullName:"泰州金迪汽车销售服务有限公司",openingTime:"",storeType:"改建A",address:"苏州市高新区御风路66号",lng:"120.558996",lat:"31.327411"},
+        {province:"山东",city:"济南",city_level:"二线城市",dealer_abbreviation:"金阳光",dealer_fullName:"金阳光汽车集团有限公司",openingTime:"",storeType:"改建B1",address:"济南市历城区凤岐路4366号",lng:"117.180573",lat:"36.677583"},
+        {province:"山东",city:"烟台",city_level:"二线城市",dealer_abbreviation:"北京奥吉通",dealer_fullName:"北京奥吉通投资有限公司",openingTime:"",storeType:"改建B1",address:"烟台芝罘区幸福南路9号",lng:"121.342369",lat:"37.565205"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"上海联兴",dealer_fullName:"上海联兴汽车销售有限公司",openingTime:"",storeType:"新建B1",address:"上海市青浦区外青松公路5358号",lng:"121.126975",lat:"31.1838"},
+        {province:"浙江",city:"杭州",city_level:"一线城市",dealer_abbreviation:"浙江广成",dealer_fullName:"浙江广成汽车集团有限公司",openingTime:"",storeType:"改建A",address:"浙江省杭州市西湖区西溪路978号",lng:"120.073566",lat:"30.251167"},
+        {province:"浙江",city:"宁波",city_level:"二线城市",dealer_abbreviation:"苏州天利和",dealer_fullName:"苏州天利和汽车实业有限公司",openingTime:"",storeType:"新建B1",address:"宁波市北仑区小港纬十路598号",lng:"121.687196",lat:"29.9097"},
+        {province:"浙江",city:"宁波",city_level:"二线城市",dealer_abbreviation:"吉林省神州",dealer_fullName:"吉林省神州红旗汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"余姚市城区世南西路1758号",lng:"121.126406",lat:"30.041418"},
+        {province:"广东",city:"东莞",city_level:"一线城市",dealer_abbreviation:"吉林省神州",dealer_fullName:"吉林省神州红旗汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"东莞市虎门镇太安路370号",lng:"113.694678",lat:"22.845892"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广州南菱",dealer_fullName:"广州南菱汽车股份有限公司",openingTime:"",storeType:"改建B3",address:"广州市花都区花城街芙蓉大道9号之12（荣威店）",lng:"113.223346",lat:"23.43986"},
+        {province:"广东",city:"广州",city_level:"一线城市",dealer_abbreviation:"广东保利",dealer_fullName:"广东保利汽车销售有限公司",openingTime:"",storeType:"改建",address:"广州市海珠区新窖西路68号广通汽车市场",lng:"113.317111",lat:"23.082935"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"深圳通利华",dealer_fullName:"深圳通利华龙岗汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"深圳光明新区车城项目规划马田街道",lng:"113.899753",lat:"22.748196"},
+        {province:"广东",city:"深圳",city_level:"一线城市",dealer_abbreviation:"温岭金奥达",dealer_fullName:"温岭金奥达汽车销售服务有限公司",openingTime:"",storeType:"改建B2",address:"深圳市坪山新区坑梓街道金沙社区人民东路23号华文产业园1号楼1-3层",lng:"114.411745",lat:"22.759888"},
+        {province:"广西",city:"北海",city_level:"四线城市",dealer_abbreviation:"广物",dealer_fullName:"广物汽贸股份有限公司",openingTime:"",storeType:"改建C",address:"北海市海城区南珠大道52号（海城区检察院旁边）",lng:"109.175963",lat:"21.492281"},
+        {province:"广西",city:"贺州",city_level:"五线城市",dealer_abbreviation:"贺州中南丰田",dealer_fullName:"贺州中南丰田汽车销售服务有限公司",openingTime:"",storeType:"新建B3",address:"贺州市八步区207国道锡海线古柏汽车城内",lng:"111.621311",lat:"24.374859"},
+        {province:"陕西",city:"西安",city_level:"一线城市",dealer_abbreviation:"山东泰岳",dealer_fullName:"山东泰岳实业集团有限公司",openingTime:"",storeType:"改建B1",address:"陕西省西安市沣东新城丰景路西北角86号",lng:"108.852534",lat:"34.317917"},
+        {province:"河北",city:"保定",city_level:"二线城市",dealer_abbreviation:"保定市华达",dealer_fullName:"保定市华达汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"河北省保定市竞秀区创业路与向阳北大街交叉口北行180",lng:"115.465652",lat:"38.913936"},
+        {province:"辽宁",city:"大连",city_level:"二线城市",dealer_abbreviation:"大连汽贸",dealer_fullName:"大连市汽车贸易集团有限公司",openingTime:"",storeType:"新建A",address:"大连市甘井子区砬山村虹城路北侧宗地",lng:"121.507692",lat:"38.977529"},
+        {province:"辽宁",city:"抚顺",city_level:"四线城市",dealer_abbreviation:"抚顺大乘",dealer_fullName:"抚顺大乘汽车销售有限公司",openingTime:"",storeType:"新建B1",address:"抚顺市望花区工农街",lng:"123.776145",lat:"41.856218"},
+        {province:"辽宁",city:"阜新",city_level:"五线城市",dealer_abbreviation:"阜新全泰丰田",dealer_fullName:"阜新全泰丰田汽车销售服务有限公司",openingTime:"",storeType:"新建C",address:"辽宁阜新经济开发区海清路北、新山街西",lng:"121.612584",lat:"41.999829"},
+        {province:"辽宁",city:"盘锦",city_level:"四线城市",dealer_abbreviation:"盘锦富田富达",dealer_fullName:"盘锦富田富达汽车销售服务有限公司",openingTime:"",storeType:"改建B2",address:"盘锦市大洼区田家街道马圈子社区",lng:"122.044539",lat:"41.092922"},
+        {province:"上海",city:"上海",city_level:"一线城市",dealer_abbreviation:"山东泰岳",dealer_fullName:"山东泰岳实业集团有限公司",openingTime:"",storeType:"新建B1",address:"北松公路6638号",lng:"121.279025",lat:"31.008669"},
+        {province:"吉林",city:"长春",city_level:"二线城市",dealer_abbreviation:"吉林省神州",dealer_fullName:"吉林省神州红旗汽车销售服务有限公司",openingTime:"",storeType:"改建B1",address:"长春市绿园区景阳大路3588号",lng:"125.252192",lat:"43.88939"},
+        {province:"天津",city:"天津",city_level:"一线城市",dealer_abbreviation:"天津捷通达",dealer_fullName:"天津捷通达汽车投资集团有限公司",openingTime:"",storeType:"新建B1",address:"天津市滨海新区经济技术开发区第五大街53号",lng:"117.718128",lat:"39.047966"},
+        {province:"山西",city:"太原",city_level:"二线城市",dealer_abbreviation:"山西大昌",dealer_fullName:"山西大昌汽车集团有限公司",openingTime:"",storeType:"新建",address:"太原市小店区马练营路以西、马练营以北山西崇康食品集团，山西新汇众汽车园内",lng:"112.614478",lat:"37.767224"},
+        {province:"江苏",city:"南京",city_level:"一线城市",dealer_abbreviation:"南京协奥",dealer_fullName:"南京协奥汽车销售服务有限公司",openingTime:"",storeType:"新建B1",address:"南京市江宁区汤山纬八路以北、炮院路以西",lng:"119.077553",lat:"32.022856"},
+        {province:"江苏",city:"无锡",city_level:"二线城市",dealer_abbreviation:"江苏明都",dealer_fullName:"江苏明都汽车集团有限公司",openingTime:"",storeType:"新建B2",address:"无锡市惠山区江海西路1101号",lng:"120.235565",lat:"31.621396"},
+        {province:"江苏",city:"常州",city_level:"二线城市",dealer_abbreviation:"常州外事旅游",dealer_fullName:"常州外事旅游汽车集团有限公司",openingTime:"",storeType:"改建B1",address:"常州市溧阳市夏装村委夏庄村488号1幢",lng:"119.505895",lat:"31.472707"},
+        {province:"江苏",city:"南通",city_level:"二线城市",dealer_abbreviation:"江苏明都",dealer_fullName:"江苏明都汽车集团有限公司",openingTime:"",storeType:"改建B2",address:"南通市开发区驰远路28号",lng:"120.989492",lat:"31.923126"},
+        {province:"浙江",city:"台州",city_level:"二线城市",dealer_abbreviation:"欧龙",dealer_fullName:"欧龙汽车贸易集团有限公司",openingTime:"",storeType:"改建B3",address:"台州市椒江区东海大道188号",lng:"121.442358",lat:"28.650401"},
+        {province:"浙江",city:"绍兴",city_level:"二线城市",dealer_abbreviation:"浙江广成",dealer_fullName:"浙江广成汽车集团有限公司",openingTime:"",storeType:"改建B2",address:"绍兴市柯桥区钱陶公路万达广场往东500米",lng:"120.52339",lat:"30.096958"},
+        {province:"浙江",city:"金华",city_level:"二线城市",dealer_abbreviation:"欧龙",dealer_fullName:"欧龙汽车贸易集团有限公司",openingTime:"",storeType:"改建B2",address:"金华市东阳市世茂大道7779号",lng:"120.209553",lat:"29.291637"},
+        {province:"浙江",city:"嘉兴",city_level:"二线城市",dealer_abbreviation:"浙江广成",dealer_fullName:"浙江广成汽车集团有限公司",openingTime:"",storeType:"改建B2",address:"嘉兴市海宁市海宁经济开发区双树泾路1号2幢",lng:"120.6742",lat:"30.531489"},
+        {province:"江西",city:"南昌",city_level:"二线城市",dealer_abbreviation:"恒信",dealer_fullName:"恒信汽车集团股份有限公司",openingTime:"",storeType:"改建B2",address:"昌南大道、高新南大道",lng:"115.962172",lat:"28.603111"},
+        {province:"福建",city:"福州",city_level:"二线城市",dealer_abbreviation:"泉州大众",dealer_fullName:"泉州大众汽车销售服务有限公司",openingTime:"",storeType:"改建B2",address:"福州市仓山区盖山投资区高仕路7号[B]厂房",lng:"119.358388",lat:"26.026453"},
+        {province:"福建",city:"泉州",city_level:"二线城市",dealer_abbreviation:"厦门信达",dealer_fullName:"厦门信达国贸汽车集团股份有限公司",openingTime:"",storeType:"改建B1",address:"泉州经济技术开发区清蒙园区西片区F-12A-2、F-13B-1号地块",lng:"118.552015",lat:"24.876273"},
+        {province:"福建",city:"厦门",city_level:"二线城市",dealer_abbreviation:"厦门亿海",dealer_fullName:"厦门亿海红祺汽车服务有限公司",openingTime:"",storeType:"改建B1",address:"厦门市海沧区马青路1285号",lng:"118.023069",lat:"24.494755"},
+        {province:"福建",city:"厦门",city_level:"二线城市",dealer_abbreviation:"厦门信达",dealer_fullName:"厦门信达国贸汽车集团股份有限公司",openingTime:"",storeType:"改建B3",address:"厦门市思明区体育路36号七星汽车城内第2、5号楼",lng:"118.106208",lat:"24.491226"},
+        {province:"广东",city:"惠州",city_level:"二线城市",dealer_abbreviation:"武汉大雍",dealer_fullName:"武汉大雍实业集团有限公司",openingTime:"",storeType:"改建B2",address:"惠州市惠博大道江北西部7号小区（金山汽车城三街18号）",lng:"114.40381",lat:"23.139207"},
+        {province:"广东",city:"中山",city_level:"二线城市",dealer_abbreviation:"中山市中升",dealer_fullName:"中山市中升汽车销售服务有限公司",openingTime:"",storeType:"改建A",address:"中山市火炬开发区江陵西路22号",lng:"113.457673",lat:"22.53589"},
+        {province:"广西",city:"南宁",city_level:"二线城市",dealer_abbreviation:"广西长久",dealer_fullName:"广西长久汽车投资有限公司",openingTime:"",storeType:"新建",address:"南宁市高新区轨道交通三号线心圩车辆段南面、新际路与科创路交叉口西南角",lng:"108.256064",lat:"22.876188"},
+        {province:"贵州",city:"贵阳",city_level:"二线城市",dealer_abbreviation:"武汉大雍",dealer_fullName:"武汉大雍实业集团有限公司",openingTime:"",storeType:"改建",address:"贵阳市清镇市红枫顺达汽车城物流园区乘用车一号宗地1-15号",lng:"106.500512",lat:"26.551702"},
+        {province:"辽宁",city:"丹东",city_level:"四线城市",dealer_abbreviation:"丹东曙光",dealer_fullName:"丹东曙光汽车贸易有限责任公司",openingTime:"",storeType:"改建",address:"丹东市振兴区花园路49号",lng:"124.355081",lat:"40.128034"},
+        {province:"山西",city:"朔州",city_level:"五线城市",dealer_abbreviation:"朔州市鑫荣伟业",dealer_fullName:"朔州市鑫荣伟业汽车销售服务有限公司",openingTime:"",storeType:"改建",address:"朔州市开发区振华东街振华车城院内7号店",lng:"112.473026",lat:"39.352774"},
+        {province:"广西",city:"玉林",city_level:"四线城市",dealer_abbreviation:"泰州金迪",dealer_fullName:"泰州金迪汽车销售服务有限公司",openingTime:"",storeType:"改建",address:"玉林市玉州区二环东路21号",lng:"110.201594",lat:"22.642419"},
+        {province:"江西",city:"新余",city_level:"五线城市",dealer_abbreviation:"湖北英驰",dealer_fullName:"湖北英驰汽车集团有限公司",openingTime:"",storeType:"改建",address:"江西省新余市渝水区郑家村四路558号",lng:"114.873587",lat:"27.80187"},
+
+
+
     ];
 
-    
+    //红旗多元化数据
+    var hongqi_data_zaijian = [
+        {province:"甘肃",city:"兰州",city_level:"",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"兰州市城关区天水北路828号1层F105展位",lng:"103.871091",lat:"36.075517"},
+        {province:"广东",city:"中山",city_level:"",dealer_abbreviation:"中山中升",dealer_fullName:"中山市中升汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"中山市小榄菊城大道永宁路段西",lng:"113.230506",lat:"22.651561"},
+        {province:"山东",city:"济南",city_level:"",dealer_abbreviation:"济南泊思",dealer_fullName:"济南泊思汽车服务有限公司",openingTime:"",storeType:"1S",address:"济南市槐荫区经十西路2300号",lng:"116.865366",lat:"36.651653"},
+        {province:"四川",city:"成都",city_level:"",dealer_abbreviation:"成都新元素",dealer_fullName:"成都新元素红旗汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"成都金牛高新技术产业园区蜀西路48号1层102-4号",lng:"103.995212",lat:"30.721669"},
+        {province:"重庆",city:"重庆",city_level:"",dealer_abbreviation:"重庆璐菲",dealer_fullName:"重庆璐菲汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"重庆北部新区经开园金渝大道99号",lng:"106.577705",lat:"29.64758"},
+        {province:"山东",city:"济宁",city_level:"",dealer_abbreviation:"济宁昱朗",dealer_fullName:"济宁昱朗汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"济宁高新区金宇路27号（置城国际东150米路北）",lng:"116.635498",lat:"35.436916"},
+        {province:"江西",city:"赣州",city_level:"",dealer_abbreviation:"赣州凯迪",dealer_fullName:"赣州市凯迪汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"赣州市南康区龙岭镇赣南汽车城康顺大道与驰翔大道交汇汽车城B-10地块",lng:"114.83191",lat:"25.741398"},
+        {province:"山东",city:"临沂",city_level:"",dealer_abbreviation:"临沂美华",dealer_fullName:"临沂美华汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"山东临沂市河东区北京东路与温泉路交汇河东远通汽车超市院内",lng:"118.435704",lat:"35.105099"},
+        {province:"江苏",city:"淮安",city_level:"",dealer_abbreviation:"江苏腾起",dealer_fullName:"江苏腾起汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"淮安市淮海北路678号",lng:"119.03562",lat:"33.659436"},
+        {province:"江苏",city:"盐城",city_level:"",dealer_abbreviation:"盐城洪兆连",dealer_fullName:"盐城市洪兆连车业有限公司",openingTime:"",storeType:"1S",address:"盐城市亭湖区开放大道27号",lng:"120.161829",lat:"33.381624"},
+        {province:"内蒙古",city:"包头",city_level:"",dealer_abbreviation:"包头宏腾",dealer_fullName:"包头市宏腾汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"包头市稀土开发区幸福南路58号包头德众院内东门 ",lng:"109.872264",lat:"40.638278"},
+        {province:"四川",city:"广元",city_level:"",dealer_abbreviation:"广元峰帆",dealer_fullName:"广元市峰帆汽车商贸有限公司",openingTime:"",storeType:"1S",address:"广元市利州东路三段575号红旗城市展厅",lng:"105.869544",lat:"32.437294"},
+        {province:"山西",city:"临汾",city_level:"",dealer_abbreviation:"临汾荣翔",dealer_fullName:"临汾荣翔汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"山西省临汾市尧庙镇往南3公里",lng:"111.486049",lat:"36.034077"},
+        {province:"山东",city:"菏泽",city_level:"",dealer_abbreviation:"菏泽兴邦",dealer_fullName:"菏泽兴邦汽车销售有限公司",openingTime:"",storeType:"2S",address:"菏泽黄河东路1255号",lng:"115.55274",lat:"35.267879"},
+        {province:"河南",city:"洛阳",city_level:"",dealer_abbreviation:"洛阳随诺",dealer_fullName:"洛阳随诺汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"洛阳市瀍河回族区九都路与启明南路交叉口西100米路北",lng:"112.510424",lat:"34.686326"},
+        {province:"云南",city:"曲靖",city_level:"",dealer_abbreviation:"曲靖开源",dealer_fullName:"曲靖开源汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"云南省曲靖市麒麟区紫云路北段（原环城东路）1幢1-2层 ",lng:"103.820411",lat:"25.532374"},
+        {province:"宁夏",city:"银川",city_level:"",dealer_abbreviation:"银川大世界",dealer_fullName:"银川大世界红旗汽车销售有限公司",openingTime:"",storeType:"1S服务",address:"宁夏银川市贺兰德胜工业园区宁夏汽车大世界市场内德鑫路1号 ",lng:"106.327693",lat:"38.543719"},
+        {province:"广东",city:"云浮",city_level:"",dealer_abbreviation:"阳江鑫通达",dealer_fullName:"阳江市鑫通达汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"环市西路",lng:"112.027362",lat:"22.920902"},
+        {province:"广东",city:"佛山",city_level:"",dealer_abbreviation:"佛山南海罗村骏乔",dealer_fullName:"佛山市南海区罗村骏乔汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"吉利大道西永和巷4号",lng:"113.041128",lat:"22.960448"},
+        {province:"广东",city:"佛山",city_level:"",dealer_abbreviation:"佛山挥扬",dealer_fullName:"佛山挥扬汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"三水区南丰大道81号友好汽车城",lng:"112.92409",lat:"23.199912"},
+        {province:"广东",city:"佛山",city_level:"",dealer_abbreviation:"佛山南海罗村骏乔",dealer_fullName:"佛山市南海区罗村骏乔汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"狮山广云路与一环交汇",lng:"113.020035",lat:"23.133326"},
+        {province:"湖南",city:"长沙",city_level:"",dealer_abbreviation:"长沙旗展",dealer_fullName:"长沙旗展汽车销售有限公司",openingTime:"",storeType:"2S",address:"天心区雀园路60号(同1)",lng:"113.005089",lat:"28.093072"},
+        {province:"湖南",city:"长沙",city_level:"",dealer_abbreviation:"长沙美捷",dealer_fullName:"长沙美捷汽车贸易有限公司",openingTime:"",storeType:"2S",address:"浏阳花炮大道29号(同2)",lng:"113.602963",lat:"28.158389"},
+        {province:"湖南",city:"长沙",city_level:"",dealer_abbreviation:"湖南兰天",dealer_fullName:"湖南兰天天旗汽车销售有限公司",openingTime:"",storeType:"1S",address:"宁乡市楚湘汽车城19号(同3)",lng:"112.541211",lat:"28.242968"},
+        {province:"河南",city:"郑州",city_level:"",dealer_abbreviation:"郑州泰岳宏旗",dealer_fullName:"郑州泰岳宏旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"西四环228号9-10号楼",lng:"113.534734",lat:"34.808869"},
+        {province:"甘肃",city:"平凉",city_level:"",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"来远路",lng:"106.65617",lat:"35.56098"},
+        {province:"辽宁",city:"本溪",city_level:"",dealer_abbreviation:"辽宁神州",dealer_fullName:"辽宁神州红旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"本溪市明山区唐家路41号",lng:"123.79974",lat:"41.302335"},
+        {province:"宁夏",city:"固原",city_level:"",dealer_abbreviation:"银川大世界",dealer_fullName:"银川大世界红旗汽车销售有限公司",openingTime:"",storeType:"2S",address:"经济开发区九龙路",lng:"106.265113",lat:"36.005992"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京泰岳",dealer_fullName:"北京泰岳宏旗汽车销售服务有限公司",openingTime:"",storeType:"1S商超",address:"十里河居然之家",lng:"116.480456",lat:"39.864863"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京泰岳",dealer_fullName:"北京泰岳宏旗汽车销售服务有限公司",openingTime:"",storeType:"1S商超",address:"双桥北京塞隆文化园",lng:"116.610355",lat:"39.901045"},
+        {province:"甘肃",city:"临夏",city_level:"",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"临夏州牛津河大道（原京东汽车超市）",lng:"103.24851",lat:"35.59725"},
+        {province:"甘肃",city:"陇南",city_level:"",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"陇南市武都区吉石坝长江大道",lng:"104.85727",lat:"33.413801"},
+        {province:"甘肃",city:"武威",city_level:"",dealer_abbreviation:"兰州金岛",dealer_fullName:"兰州金岛红旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"武威市盛大西北国际汽贸城2号楼",lng:"102.602247",lat:"37.95497"},
+        {province:"广东",city:"佛山",city_level:"",dealer_abbreviation:"佛山挥扬",dealer_fullName:"佛山挥扬汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"广东佛山顺德区容桂容边天河路1号与桂洲大道交叉处",lng:"113.312603",lat:"22.755453"},
+        {province:"黑龙江",city:"黑河",city_level:"",dealer_abbreviation:"齐齐哈尔粤华",dealer_fullName:"齐齐哈尔粤华汽贸集团有限公司",openingTime:"",storeType:"2S",address:"黑龙江省黑河市北安市汽车服务产业园区202国道西侧  ",lng:"126.463805",lat:"48.240599"},
+        {province:"湖北",city:"鄂州",city_level:"",dealer_abbreviation:"黄冈旗胜",dealer_fullName:"黄冈旗胜汽车服务有限公司",openingTime:"",storeType:"2S",address:"湖北省鄂州市鄂城区鄂城大道22号鄂东国际汽车城",lng:"115.048343",lat:"30.268818"},
+        {province:"湖南",city:"常德",city_level:"",dealer_abbreviation:"常德时茂",dealer_fullName:"常德时茂汽车销售服务有限公司",openingTime:"",storeType:"1S",address:"湖南省常德市武陵区龙岗路湘西北汽贸城2栋",lng:"111.681897",lat:"29.079577"},
+        {province:"湖南",city:"长沙",city_level:"",dealer_abbreviation:"湖南兰天",dealer_fullName:"湖南兰天天旗汽车销售有限公司",openingTime:"",storeType:"1S",address:"长沙市岳麓区云栖路268号",lng:"112.923408",lat:"28.148239"},
+        {province:"江苏",city:"连云港",city_level:"",dealer_abbreviation:"连云港海旗",dealer_fullName:"连云港海旗汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"连云港市海州区瀛州南路99号             ",lng:"119.238774",lat:"34.553688"},
+        {province:"江西",city:"九江",city_level:"",dealer_abbreviation:"九江华宏昇",dealer_fullName:"九江华宏昇汽车有限公司",openingTime:"",storeType:"1S",address:"九江市濂溪区九瑞大道与抗洪大道交叉口聆湖春天商铺",lng:"115.946771",lat:"29.708115"},
+        {province:"四川",city:"绵阳",city_level:"",dealer_abbreviation:"绵阳兴艾潇商贸",dealer_fullName:"绵阳兴艾潇商贸有限公司",openingTime:"",storeType:"1S",address:"四川省绵阳市涪城区绵州大道中段1号   ",lng:"104.783609",lat:"31.425305"},
+        {province:"云南",city:"丽江",city_level:"",dealer_abbreviation:"大理国源",dealer_fullName:"大理国源汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"云南省丽江市玉龙纳西族自治县南口路中和汽贸城内(蓝天宾馆南100米)",lng:"100.257089",lat:"26.835467"},
+        {province:"内蒙古",city:"乌兰察布",city_level:"",dealer_abbreviation:"内蒙古思旗",dealer_fullName:"内蒙古思旗汽车销售有限责任公司",openingTime:"",storeType:"2S",address:"乌兰察布市察哈尔工业园区208国道东11698-8 ",lng:"113.126242",lat:"40.944386"},
+        {province:"宁夏",city:"中卫",city_level:"",dealer_abbreviation:"银川大世界",dealer_fullName:"银川大世界红旗汽车销售有限公司",openingTime:"",storeType:"2S",address:"宁夏中卫市长城东路",lng:"105.22515",lat:"37.525878"},
+        {province:"内蒙古",city:"锡林郭勒",city_level:"",dealer_abbreviation:"赤峰天永",dealer_fullName:"赤峰天永汽车销售服务有限公司",openingTime:"",storeType:"2S",address:"锡林郭勒盟锡林浩特市经济开发区火车站北300米利丰汽车园区",lng:"116.033258",lat:"43.929889"},
 
+    ]
+
+    //BBA 北上广深
+    var benchi_data = [
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海利星",dealer_fullName:"上海利星汽车维修有限公司 ",openingTime:"",storeType:"乘商服",address:"闵行区沪青平公路939号",lng:"121.339067",lat:"31.174465"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士瑞达",dealer_fullName:"北京波士瑞达汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"朝阳区平房乡平房村姚家园路78号",lng:"116.53721",lat:"39.947043"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海星瀚",dealer_fullName:"上海星瀚汽车维修服务有限公司",openingTime:"",storeType:"乘服",address:"普陀区红柳路288号",lng:"121.36253",lat:"31.302159"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京利星行金港",dealer_fullName:"北京利星行金港汽车销售服务有限公司",openingTime:"",storeType:"服",address:"朝阳区金盏乡金港大道1号金港汽车公园C区5号-2",lng:"116.571239867458",lat:"40.0189996207108"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京中升之星",dealer_fullName:"北京中升之星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"朝阳区王四营马房寺路333号",lng:"116.541971",lat:"39.876372"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海利星",dealer_fullName:"上海利星汽车维修有限公司延安西路分公司",openingTime:"",storeType:"乘",address:"延安西路1339 号利星国际广场1、3、5、6楼",lng:"121.431474",lat:"31.216707"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州仁孚",dealer_fullName:"广州仁孚汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"白云区同和北路193号",lng:"113.333569",lat:"23.209085"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海宝利德",dealer_fullName:"上海宝利德汽车有限公司",openingTime:"",storeType:"乘服",address:"松江区车墩镇北松公路6656号2幢",lng:"121.277165",lat:"31.008565"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京亚奥之星",dealer_fullName:"北京亚奥之星汽车服务有限公司",openingTime:"",storeType:"乘商服",address:"昌平区北七家镇北京北辰亚运村汽车交易市场中心3-1、3-2",lng:"116.422371",lat:"40.099333"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州市龙星行",dealer_fullName:"广州市龙星行汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"海珠区新滘东路611号",lng:"113.368213",lat:"23.090789"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州锦星行",dealer_fullName:"广州锦星行汽车贸易有限公司",openingTime:"",storeType:"乘服",address:"天河区科林路18号",lng:"113.456021",lat:"23.147383"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳中升星辉",dealer_fullName:"深圳中升星辉汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"龙华新区梅观高速坂田出口（中裕冠产业园内）",lng:"114.058255",lat:"22.636494"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行平治（北京）",dealer_fullName:"利星行平治（北京）汽车有限公司",openingTime:"",storeType:"乘服",address:"朝阳区来广营东路临乙2号",lng:"116.528217",lat:"40.030206"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"利星行（上海）",dealer_fullName:"利星行（上海）汽车销售服务有限公司",openingTime:"",storeType:"服",address:"浦东新区沪南公路3093-3097号4幢",lng:"121.57379",lat:"31.136806"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行（北京）",dealer_fullName:"利星行（北京）汽车有限公司",openingTime:"",storeType:"乘服",address:"丰台区南四环西路123号北京旧机动车交易市场G118号",lng:"116.318610655",lat:"39.8377237038"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东华之星",dealer_fullName:"上海东华之星汽车维修服务有限公司",openingTime:"",storeType:"乘商服",address:"中国（上海）自由贸易试验区申江路500号",lng:"121.6311615",lat:"31.30065931"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行之星（北京）",dealer_fullName:"利星行之星（北京）汽车有限公司",openingTime:"",storeType:"乘商服",address:"通州园金桥科技产业基地景盛中街12号",lng:"116.574675",lat:"39.743998"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海闵星",dealer_fullName:"上海闵星汽车服务有限公司",openingTime:"",storeType:"乘商服",address:"闵行区三鲁公路3088号",lng:"121.529919",lat:"31.082865"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市仁孚特力",dealer_fullName:"深圳市仁孚特力汽车服务有限公司",openingTime:"",storeType:"乘商服",address:"罗湖区布心东昌路42号新永通大厦",lng:"114.142282",lat:"22.583989"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士通达",dealer_fullName:"北京波士通达汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"京通高速高碑店桥东南角",lng:"116.538837",lat:"39.914843"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京极光星徽",dealer_fullName:"北京极光星徽汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"朝阳区京顺路109号院2号楼",lng:"116.469427",lat:"39.974591"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海闵星",dealer_fullName:"上海闵星汽车服务有限公司徐汇分公司",openingTime:"",storeType:"乘",address:"徐汇区宜山路700号A7幢103室",lng:"121.4225",lat:"31.182715"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市大兴宝德",dealer_fullName:"深圳市大兴宝德汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"宝安区西乡街道前进二路口（洲石大道旁）",lng:"113.866363",lat:"22.625027"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙星徽",dealer_fullName:"北京鹏龙星徽汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"朝阳区华威里10号楼",lng:"116.458635",lat:"39.869462"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州鸿粤星辉",dealer_fullName:"广州鸿粤星辉汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"番禺区沙头街桥兴大道989号",lng:"113.347632",lat:"22.975198"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京百得利之星",dealer_fullName:"北京百得利之星汽车销售有限公司",openingTime:"",storeType:"乘服",address:"海淀区西四环北路143号",lng:"116.280127",lat:"39.937383"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市大兴宝誉",dealer_fullName:"深圳市大兴宝誉汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"罗湖区宝安北路笋岗仓库829栋1楼东侧5楼、6楼",lng:"114.115272",lat:"22.565818"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海中升之星",dealer_fullName:"上海中升之星汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"嘉定区江桥镇金运路99号",lng:"121.326056",lat:"31.239781"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士畅达",dealer_fullName:"北京波士畅达汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"房山区昊天大街广阳西路东口西南100米",lng:"116.163176",lat:"39.761079"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东仁孚怡邦",dealer_fullName:"广东仁孚怡邦汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"中山大道西901号",lng:"113.394042",lat:"23.131714"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京福瑞之星",dealer_fullName:"北京福瑞之星汽车销售服务有限公司",openingTime:"",storeType:"商服",address:"海淀区阜石路59号东侧",lng:"116.246026",lat:"39.932148"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙大道",dealer_fullName:"北京鹏龙大道汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"南三环西路85号甲-1",lng:"116.347416",lat:"39.854148"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州市龙星翔鹏",dealer_fullName:"广州市龙星翔鹏汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"番禺区番禺大道北自编1682号101",lng:"113.401436224",lat:"22.9240102272"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海冠松之星",dealer_fullName:"上海冠松之星汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"静安区汶水路801号（近高平路）",lng:"121.43266",lat:"31.295814"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京庞大兴驰",dealer_fullName:"北京庞大兴驰汽车科技有限公司",openingTime:"",storeType:"商服",address:"庄经济技术开发区东环北路北1号",lng:"116.515129",lat:"39.81937"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行天竺之星",dealer_fullName:"利星行天竺之星汽车有限公司",openingTime:"",storeType:"乘商服",address:"顺义区天竺镇府右街3号",lng:"116.582432",lat:"40.067791"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州鸿粤星驰",dealer_fullName:"广州鸿粤星驰汽车销售服务有限公司",openingTime:"",storeType:"商服",address:"白云区白云大道北1377号",lng:"113.310037",lat:"23.23653"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳中升之星",dealer_fullName:"深圳中升之星汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"宝安区沙井街道新和大道40号",lng:"113.832531",lat:"22.756212"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海银佳",dealer_fullName:"上海银佳汽车销售服务有限公司",openingTime:"",storeType:"商服",address:"浦东新区建豪路8号W90园区6-7幢",lng:"121.576637",lat:"31.10129"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士诚达",dealer_fullName:"北京波士诚达汽车销售服务有限公司",openingTime:"",storeType:"乘商服",address:"通州区九棵树西路90号",lng:"116.657538",lat:"39.888675"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京德奥达",dealer_fullName:"北京德奥达汽车进出口有限公司",openingTime:"",storeType:"商服",address:"朝阳区北四环十字口甲一号",lng:"116.460996",lat:"39.986071"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海越星",dealer_fullName:"上海越星汽车有限公司",openingTime:"",storeType:"乘服",address:"闵行区莲花南路2338号3幢",lng:"121.433528",lat:"31.076904"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海星瀚",dealer_fullName:"上海星瀚汽车维修服务有限公司长寿路分公司",openingTime:"",storeType:"乘",address:"静安区长寿路943、947、949、951号底层102室",lng:"121.436408",lat:"31.239326"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海中升奉星",dealer_fullName:"上海中升奉星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"奉贤区航南公路5890号3幢一层",lng:"121.462007",lat:"30.935584"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳中升聚星",dealer_fullName:"深圳中升聚星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"龙岗区南湾街道平吉大道80号",lng:"114.133207",lat:"22.666673"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海可达",dealer_fullName:"上海可达汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"浦东新区川桥路500号",lng:"121.615332",lat:"31.25017"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海中升星宏",dealer_fullName:"上海中升星宏汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"青浦区外青松公路4690号1、2幢",lng:"121.12612",lat:"31.200704"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海可达",dealer_fullName:"上海可达汽车销售服务有限公司临港分公司",openingTime:"",storeType:"乘",address:"浦东新区临港新城云鹃路78号4幢101室",lng:"121.931206517578",lat:"30.9099431572766"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳览之星",dealer_fullName:"深圳览之星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"龙岗区龙平西路20号",lng:"114.247075",lat:"22.735944"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"鹏星行",dealer_fullName:"鹏星行汽车服务（深圳）有限公司",openingTime:"",storeType:"乘服",address:"龙华新区观澜富坑社区皇帝印工业区观光路1308号",lng:"114.045509",lat:"22.731169"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"鹏星行",dealer_fullName:"鹏星行汽车服务（深圳）有限公司南山分公司",openingTime:"",storeType:"乘服",address:"南山区粤海街道科华路8号讯美科技广场2号楼一层、负一层",lng:"113.946632",lat:"22.50781"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京之星",dealer_fullName:"北京之星汽车服务有限公司",openingTime:"",storeType:"乘服",address:"经济技术开发区文化园东路甲6号",lng:"116.511815",lat:"39.818675"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海嘉德星",dealer_fullName:"上海嘉德星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"嘉定区澄浏中路1533号",lng:"121.292265",lat:"31.370653"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市仁孚特力",dealer_fullName:"深圳市仁孚特力汽车服务有限公司罗湖分公司",openingTime:"",storeType:"乘",address:"罗湖区宝安南路1881号华润中心万象城N118铺",lng:"114.117133",lat:"22.547678"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海淞之星",dealer_fullName:"上海淞之星汽车服务有限公司",openingTime:"",storeType:"乘服",address:"松江区沪松公路3778号11幢",lng:"121.270726670027",lat:"31.0812934509613"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州市大兴宝鸿",dealer_fullName:"广州市大兴宝鸿汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"荔湾区龙溪大道293号场地",lng:"113.218568",lat:"23.075945"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市南方腾星",dealer_fullName:"深圳市南方腾星汽车销售服务有限公司福田分公司",openingTime:"",storeType:"服",address:"福田区梅华路深华科技工业园2号",lng:"114.056473",lat:"22.568788"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德星",dealer_fullName:"上海德星汽车销售有限公司",openingTime:"",storeType:"乘服",address:"宝山区江杨南路980-2号",lng:"121.473551",lat:"31.330672"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东仁孚怡邦",dealer_fullName:"广东仁孚怡邦汽车销售服务有限公司广州分公司",openingTime:"",storeType:"乘",address:"天河区临江大道391号天德广场东门101铺",lng:"113.334894",lat:"23.121935"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙瑞星",dealer_fullName:"北京鹏龙瑞星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"朝阳区来广营西路甲9号",lng:"116.45803",lat:"40.026076"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德星",dealer_fullName:"上海德星汽车销售有限公司普陀分公司",openingTime:"",storeType:"乘",address:"普陀区金沙江路2098弄2-6号",lng:"121.377236",lat:"31.242012"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州市龙星骏宜",dealer_fullName:"广州市龙星骏宜汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"天河区广园东路博汇街6号",lng:"113.381259",lat:"23.146311"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州中升之星",dealer_fullName:"广州中升之星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"增城朱村街朱村大道西133号",lng:"113.688313",lat:"23.280377"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙海依捷",dealer_fullName:"北京鹏龙海依捷汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"海淀区车公庄西路38号21号楼",lng:"116.325757",lat:"39.938687"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行平治（北京）",dealer_fullName:"利星行平治（北京）汽车有限公司望京分公司",openingTime:"",storeType:"乘",address:"朝阳区望京街8号戴姆勒大厦奔驰展厅",lng:"116.488286",lat:"39.999607"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东仁孚怡邦",dealer_fullName:"广东仁孚怡邦汽车销售服务有限公司新塘分公司",openingTime:"",storeType:"服",address:"增城区新塘镇广深大道中153号太阳城广场东侧首层",lng:"113.6140917709",lat:"23.127063226"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士顺达",dealer_fullName:"北京波士顺达汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"通州区草寺475号2幢1层01",lng:"116.682374",lat:"39.997576"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东驰",dealer_fullName:"上海东驰汽车有限公司",openingTime:"",storeType:"乘服",address:"浦东新区康梧路386号",lng:"121.558454081",lat:"31.1359461029"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京利星行南法信",dealer_fullName:"北京利星行南法信汽车有限公司",openingTime:"",storeType:"乘服",address:"顺义区南法信镇东支路6号",lng:"116.623095",lat:"40.127459"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海汇之星",dealer_fullName:"上海汇之星汽车维修服务有限公司",openingTime:"",storeType:"乘服",address:"浦东新区南六公路1233号",lng:"121.710219",lat:"31.115055"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市鹏峰",dealer_fullName:"深圳市鹏峰汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"福田区深南中路福田汽车站东侧",lng:"114.026507",lat:"22.53617"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市南方腾星",dealer_fullName:"深圳市南方腾星汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"月亮湾大道嘉进隆前海汽车城C区1号",lng:"113.914818",lat:"22.551308"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海鹏龙大众星徽",dealer_fullName:"上海鹏龙大众星徽汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"青浦区北青公路4228号1幢",lng:"121.243755",lat:"31.20594"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海冠松之星",dealer_fullName:"上海冠松之星汽车销售服务有限公司虹口分公司（便捷服务中心）",openingTime:"",storeType:"服",address:"虹口区大连路295号",lng:"121.520921",lat:"31.261828"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"梅赛德斯-奔驰EQ电动车体验站（北京王府中环）",dealer_fullName:"梅赛德斯-奔驰EQ电动车体验站（北京王府中环）",openingTime:"",storeType:"",address:"东城区王府井大街269号及王府井大街269号院1号楼1层110b号商铺",lng:"116.415065",lat:"39.918906"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"梅赛德斯-奔驰EQ电动车体验站（上海五角场合生汇）",dealer_fullName:"梅赛德斯-奔驰EQ电动车体验站（上海五角场合生汇）",openingTime:"",storeType:"",address:"杨浦区翔殷路1099号L1层L1-19A号",lng:"121.524878044267",lat:"31.3064189803821"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"梅赛德斯-奔驰EQ电动车体验站（上海陆家嘴中心商场L+Mall）",dealer_fullName:"梅赛德斯-奔驰EQ电动车体验站（上海陆家嘴中心商场L+Mall）",openingTime:"",storeType:"",address:"浦东新区浦东南路899号陆家嘴中心商场L106A",lng:"121.521371707876",lat:"31.237368863486"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东仁孚怡邦",dealer_fullName:"广东仁孚怡邦汽车销售服务有限公司岑村分公司",openingTime:"",storeType:"服",address:"天河区岑村沙埔大街323号C4-C6栋",lng:"113.393403",lat:"23.162842"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"利星行（北京）",dealer_fullName:"利星行（北京）汽车维修服务有限公司",openingTime:"",storeType:"服",address:"12 金桥科技产业基地景盛中街12号",lng:"116.574019",lat:"39.743229"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海利星",dealer_fullName:"上海利星汽车维修有限公司莘庄分公司",openingTime:"",storeType:"服",address:"闵行区七莘路695号L1057室",lng:"121.37860559445",lat:"31.1246654901116"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市南方腾星",dealer_fullName:"深圳市南方腾星汽车销售服务有限公司东滨路分公司（便捷服务中心）",openingTime:"",storeType:"服",address:"南山区粤海街道东滨路86号南华印染有限公司厂房B115-B116",lng:"113.923886",lat:"22.518622"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京运通兴驰",dealer_fullName:"北京运通兴驰汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"大兴区金时大街7号院4号楼",lng:"116.4318002723",lat:"39.7439405022"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京金冠",dealer_fullName:"北京金冠汽车服务有限公司",openingTime:"",storeType:"乘服",address:"海淀区瑞王坟甲12号",lng:"116.2248878153",lat:"39.975753611"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东驰",dealer_fullName:"上海东驰汽车有限公司世纪大道分公司",openingTime:"",storeType:"乘",address:"浦东新区杨高南路428号3号楼底层",lng:"121.5411165777",lat:"31.2227636115"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙星徽",dealer_fullName:"北京鹏龙星徽汽车销售服务有限公司分钟寺销售服务中心",openingTime:"",storeType:"乘服",address:"朝阳区十八里店乡白墙子村271号",lng:"116.458858",lat:"39.869143"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京博瑞祥驰",dealer_fullName:"北京博瑞祥驰汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"朝阳区德胜门外双泉堡花虎沟二号",lng:"116.37344",lat:"40.019301"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州鸿粤嘉丰",dealer_fullName:"广州鸿粤嘉丰汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"白云区白云大道北1377号首层",lng:"113.309817",lat:"23.236144"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州鸿粤昱辉",dealer_fullName:"广州鸿粤昱辉汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"花都区迎春路15号",lng:"113.261605939096",lat:"23.3580578870201"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳市仁孚特力",dealer_fullName:"深圳市仁孚特力汽车服务有限公司龙岗分公司",openingTime:"",storeType:"服",address:"龙岗区坂田街道办坂澜大道一号",lng:"114.081171",lat:"22.650036"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州市龙星行",dealer_fullName:"广州市龙星行汽车销售服务有限公司番禺分公司",openingTime:"",storeType:"服",address:"番禺区大石街迎宾路366号",lng:"113.340708",lat:"23.023286"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳百汇之星",dealer_fullName:"深圳百汇之星实业有限公司",openingTime:"",storeType:"乘服",address:"盐田区海山街道深盐路2002号大百汇科技园2期1号楼",lng:"114.256825",lat:"22.573817"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳百汇之星",dealer_fullName:"深圳百汇之星实业有限公司龙岗分公司",openingTime:"",storeType:"乘服",address:"龙岗区园山街道荷坳社区长江埔二路1号A栋",lng:"114.233775257315",lat:"22.6746888937852"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士福达",dealer_fullName:"北京波士福达汽车销售服务有限公司",openingTime:"",storeType:"乘服",address:"石景山区古城大街北京国际汽车贸易服务园区F区26号",lng:"116.189582",lat:"39.922919"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京波士通达",dealer_fullName:"北京波士通达汽车销售服务有限公司第一分公司",openingTime:"",storeType:"乘",address:"朝阳区兴隆庄甲3号1号楼一层",lng:"116.540882174426",lat:"39.9167585356726"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳驰星",dealer_fullName:"深圳驰星汽车销售服务有限公司",openingTime:"",storeType:"乘",address:"清湖工业区宝能科技园（南区）一期B区B5栋101",lng:"114.072405063201",lat:"22.6797807238495"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京鹏龙大道",dealer_fullName:"北京鹏龙大道汽车销售服务有限公司三里屯分公司",openingTime:"",storeType:"服",address:"朝阳区工人体育场北路4号凯富大厦院内",lng:"116.462815890777",lat:"39.9386022193544"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海星瀚",dealer_fullName:"上海星瀚汽车维修服务有限公司曹安路分公司",openingTime:"",storeType:"服",address:"嘉定区曹安公路1500-1520号1幢101室",lng:"121.378568",lat:"31.257731"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京市北奔",dealer_fullName:"北京市北奔汽车修理厂（暂停营业）",openingTime:"",storeType:"服",address:"毗邻南三环，方庄桥向南300米",lng:"116.451501",lat:"39.860698"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海星瀚",dealer_fullName:"上海星瀚汽车维修服务有限公司真陈路分公司",openingTime:"",storeType:"服",address:"普陀区真陈路8弄99号",lng:"121.360409",lat:"31.300853"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海星瀚",dealer_fullName:"上海星瀚汽车维修服务有限公司",openingTime:"",storeType:"",address:"普陀区金沙江路2098弄2-6号",lng:"121.377171",lat:"31.24212"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海利之星",dealer_fullName:"上海利之星汽车有限公司",openingTime:"",storeType:"",address:"静安区长寿路943-951 号",lng:"121.436406",lat:"31.239326"},
+
+
+    ]
+    var baoma_data = [
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥吉通国门",dealer_fullName:"北京奥吉通国门汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区李桥镇李天路南半壁店14号",lng:"116.634687",lat:"40.039934"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京博瑞祥星",dealer_fullName:"北京博瑞祥星汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区西大望路20号 ",lng:"116.483528",lat:"39.903825"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京新丰泰博奥",dealer_fullName:"北京新丰泰博奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区杜杨北街21号 ",lng:"116.637728",lat:"40.109545"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京国服信奥众",dealer_fullName:"北京国服信奥众汽车有限公司",openingTime:"",storeType:"4S",address:"北京丰台区南四环东路榴乡桥东200米路北",lng:"116.434834",lat:"39.839319"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京兴奥晟通",dealer_fullName:"北京兴奥晟通汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市大兴区西红门镇中鼎路21-1号",lng:"116.43465",lat:"39.742858"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京百得利国际商贸",dealer_fullName:"北京百得利国际商贸有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区五孔桥35号68号楼一层",lng:"116.280706",lat:"39.935995"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京安洋伟业",dealer_fullName:"北京安洋伟业汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市大兴区黄村镇狼垡芦花路临52号",lng:"116.300251",lat:"39.78658"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京运通嘉奥",dealer_fullName:"北京运通嘉奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区赵全营镇牛板路板桥段43号",lng:"116.515157",lat:"40.217314"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京正德永新",dealer_fullName:"北京正德永新汽车贸易服务有限公司",openingTime:"",storeType:"4S",address:"北京市昌平区城南街道西关郝庄路105号",lng:"116.312099",lat:"40.07913"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京东方华奥",dealer_fullName:"北京东方华奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市通州区梨园南街99号",lng:"116.698802",lat:"39.889899"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京华阳奥通",dealer_fullName:"北京华阳奥通汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区来广营乡北苑东路顾家庄桥北300米路西 ",lng:"116.447644",lat:"40.032913"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥嘉世茂",dealer_fullName:"北京奥嘉世茂汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区金盏乡东苇路北北京金港展览展示有限公司C区19号 ",lng:"116.57345",lat:"40.018204"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥之旅",dealer_fullName:"北京奥之旅汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市房山区阎村镇前沿村村委会向南200米",lng:"116.110018",lat:"39.726988"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京名尊奥翔",dealer_fullName:"北京名尊奥翔汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区王四营桥马房寺路331号",lng:"116.545412",lat:"39.876576"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京国服信奥兴",dealer_fullName:"北京国服信奥兴汽车有限公司",openingTime:"",storeType:"4S",address:"北京市石景山区古城大街北京国际汽车贸易服务园区F区9号",lng:"116.190382",lat:"39.923306"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京首汽腾迪",dealer_fullName:"北京首汽腾迪汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区紫竹院南路甲5号",lng:"116.32623",lat:"39.943121"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥吉通",dealer_fullName:"北京奥吉通汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区朝阳北路甲45号",lng:"116.564303",lat:"39.931282"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京寰宇恒通",dealer_fullName:"北京寰宇恒通汽车有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区闵庄路11号 ",lng:"116.260269",lat:"39.979824"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京百得利",dealer_fullName:"北京百得利汽车贸易有限公司",openingTime:"",storeType:"4S",address:"北京市亦庄经济开发区东环北路1号",lng:"116.51843",lat:"39.816867"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京运通博奥",dealer_fullName:"北京运通博奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区东四环南路366号(小武基桥西南) ",lng:"116.490437",lat:"39.861921"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京德奥达",dealer_fullName:"北京德奥达汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区北四环东路太阳宫十字口甲1号",lng:"116.460168",lat:"39.986157"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京博瑞祥云",dealer_fullName:"北京博瑞祥云汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区花虎沟2号",lng:"116.371323",lat:"40.018079"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京中润发",dealer_fullName:"北京中润发汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市丰台区丽泽路99号（丽泽桥东北角）",lng:"116.323247",lat:"39.874481"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海益申",dealer_fullName:"上海益申汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市青浦区嘉松中路1396号",lng:"121.220853",lat:"31.242631"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德旋",dealer_fullName:"上海德旋汽车发展有限公司",openingTime:"",storeType:"销售+快修（含钣喷）",address:"上海市金山区阳镇亭卫公路1955号",lng:"121.364244",lat:"30.778588"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海冠松华奥",dealer_fullName:"上海冠松华奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区张江路1160号",lng:"121.628672",lat:"31.204144"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海五角场开隆",dealer_fullName:"上海五角场开隆汽车贸易有限公司",openingTime:"",storeType:"4S",address:"上海市杨浦区民约路98号",lng:"121.527553",lat:"31.321479"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海沪奥",dealer_fullName:"上海沪奥汽车销售服务有限公司",openingTime:"",storeType:"二手车+单一服务（老项目）",address:"上海市闵行区华翔路69号",lng:"121.34303",lat:"31.230709"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海骐润茂",dealer_fullName:"上海骐润茂汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市奉贤区团青公路7239号（近林海公路）",lng:"121.592209",lat:"30.936544"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东联松奥",dealer_fullName:"上海东联松奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市松江区车墩镇北松公路6278号",lng:"121.283793",lat:"31.008845"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达弘杰",dealer_fullName:"上海永达弘杰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区杨思路1279号",lng:"121.515193",lat:"31.170513"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达奥诚",dealer_fullName:"上海永达奥诚汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区申江路288号",lng:"121.631194",lat:"31.304941"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达奥诚中环",dealer_fullName:"上海永达奥诚中环汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海宝山区长江西路1139号",lng:"121.466269",lat:"31.345689"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海交运起腾",dealer_fullName:"上海交运起腾汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市徐汇区枫林路858号",lng:"121.467314",lat:"31.192986"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德辰",dealer_fullName:"上海德辰汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海闵行区颛兴东路1280弄3号（都会路口）",lng:"121.42375",lat:"31.080844"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东昌金桥豪迪",dealer_fullName:"上海东昌金桥豪迪汽车服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区锦绣东路2053号（近川桥路金滇路） ",lng:"121.615369",lat:"31.246076"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海宝友",dealer_fullName:"上海宝友汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市宝山区铁山路338号",lng:"121.464501",lat:"31.387272"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海西上海奥杰",dealer_fullName:"上海西上海奥杰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市普陀区真北路2158号 ",lng:"121.399248",lat:"31.259355"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东昌",dealer_fullName:"上海东昌汽车嘉定销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市嘉定区安亭镇国际汽车城核心贸易区步行街755号 ",lng:"121.17889",lat:"31.288741"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海一汽沪奥",dealer_fullName:"上海一汽沪奥汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市闵行区北翟路1800号 ",lng:"121.34303",lat:"31.230709"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达",dealer_fullName:"上海永达汽车浦东销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区康桥东路388号",lng:"121.612641",lat:"31.158337"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海开隆",dealer_fullName:"上海开隆汽车贸易有限公司",openingTime:"",storeType:"4S",address:"上海市闵行区吴中路1439号 ",lng:"121.379159",lat:"31.178389"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海南空",dealer_fullName:"上海南空军械厂",openingTime:"",storeType:"单一服务（老项目）",address:"上海市虹口区场中路445号",lng:"121.482979",lat:"31.313292"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东联沪港",dealer_fullName:"上海东联沪港汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市静安区场中路1980号(近一号线彭浦新村站)",lng:"121.46023",lat:"31.311116"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州广物君迪",dealer_fullName:"广州广物君迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市白云区白云大道北733号A",lng:"113.299921",lat:"23.222088"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东锦泰",dealer_fullName:"广东锦泰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广东省广州市黄埔区科学城新瑞路11号 ",lng:"113.493352",lat:"23.161941"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州南菱奥申",dealer_fullName:"广州南菱奥申汽车有限公司",openingTime:"",storeType:"4S",address:"广州市白云区新广花路石马路段136号",lng:"113.26008",lat:"23.259133"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州德迪",dealer_fullName:"广州市德迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市南沙区黄阁镇东泽一路1号101",lng:"113.530611",lat:"22.826611"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州兴迪",dealer_fullName:"广州兴迪汽车销售有限公司",openingTime:"",storeType:"4S",address:" 广州市番禺区G105国道以东创源路（大夫山北门）",lng:"113.306696",lat:"22.969667"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州和泰同辉",dealer_fullName:"广州和泰同辉汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市花都区镜湖大道南29号 ",lng:"113.258709",lat:"23.358055"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州伟兴",dealer_fullName:"广州伟兴汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市白云区沙太路668号 ",lng:"113.339914",lat:"23.184738"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州晨峰",dealer_fullName:"广州市晨峰贸易有限公司",openingTime:"",storeType:"4S",address:"广州市海珠区新滘东路中1号（海珠湿地斜对面，蓝海大厦旁） ",lng:"113.352752",lat:"23.086981"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州锦龙",dealer_fullName:"广州市锦龙汽车发展有限公司销售展厅",openingTime:"",storeType:"Sport展厅",address:"广州市越秀区二沙岛渔唱街3号101房",lng:"113.419083",lat:"23.141123"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东粤奥",dealer_fullName:"广东粤奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市番禺区南村镇官堂村兴南大道268号之二 ",lng:"113.353336",lat:"23.016641"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州奥德",dealer_fullName:"广州市奥德汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市天河区博汇街3号",lng:"113.379493",lat:"23.14674"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东中奥",dealer_fullName:"广东中奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广东省广州市石井凰岗",lng:"113.23202",lat:"23.203945"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东君奥",dealer_fullName:"广东君奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市荔湾区凤西二路与龙溪大道交叉口北100米 ",lng:"113.195464",lat:"23.072074"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州锦龙",dealer_fullName:"广州市锦龙汽车发展有限公司",openingTime:"",storeType:"4S",address:"广东省广州市天河区奥体路55号",lng:"113.419083",lat:"23.141123"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州南菱奥欣",dealer_fullName:"广州南菱奥欣汽车有限公司",openingTime:"",storeType:"风险过渡（仅销售功能开业）",address:"广州市花都区建设北路333号",lng:"",lat:""},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州中瑞",dealer_fullName:"广州中瑞汽车销售服务有限公司",openingTime:"",storeType:"风险过渡（仅销售功能开业）",address:"广东省广州市番禺区大龙街番禺大道北1243号",lng:"",lat:""},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳中升汇迪",dealer_fullName:"深圳中升汇迪汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市宝安区福永凤业一路",lng:"113.840673",lat:"22.707615"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳德迪",dealer_fullName:"深圳市德迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市南山区招商街道蛇口港湾大道26号A2 ",lng:"113.914593",lat:"22.480929"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳恒信奥龙",dealer_fullName:"深圳恒信奥龙汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市罗湖区清水河街道清水河三路18号深业车城博隆大厦BL106 ",lng:"114.116934",lat:"22.583734"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥泽",dealer_fullName:"深圳奥泽汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区梅林路42路",lng:"114.072107",lat:"22.574441"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳广物君奥",dealer_fullName:"深圳广物君奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市龙华新区民康路1号龙华名车广场内 ",lng:"114.062229",lat:"22.621597"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳晨峰",dealer_fullName:"深圳市晨峰投资有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区八卦二路2号 ",lng:"114.110265",lat:"22.565934"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥羽",dealer_fullName:"深圳市奥羽汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市宝安区西乡大道与金湾大道交汇处(大铲湾佳鸿世界名车博览中心内) ",lng:"113.860193",lat:"22.56728"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳锦奥",dealer_fullName:"深圳市锦奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市龙岗区龙城街道回龙路200号 ",lng:"114.239555",lat:"22.740383"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳鹏峰奥星",dealer_fullName:"深圳市鹏峰奥星汽车有限公司",openingTime:"",storeType:"4S",address:"深圳市龙岗区宝安区宝民一路189号宝安汽车站旁",lng:"113.903866",lat:"22.571764"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳锦龙",dealer_fullName:"深圳市锦龙汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市南山区前海湾汽车物流园平方奥德大楼",lng:"113.894655",lat:"22.513897"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳增特",dealer_fullName:"深圳市增特汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区福荣路12号(新洲路南行到底左转100米) ",lng:"114.052148",lat:"22.518543"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳新奥",dealer_fullName:"深圳市新奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区深南大道6068号联合华鹏汽车市场A5A6片区",lng:"114.039656",lat:"22.546613"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥德",dealer_fullName:"深圳市奥德汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广东省深圳市罗湖区延芳路号55号一仓",lng:"114.146471",lat:"22.548619"},
+    ]
+    var aodi_data = [
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海益申",dealer_fullName:"上海益申汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市青浦区嘉松中路1396号",lng:"121.220853",lat:"31.242631"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德旋",dealer_fullName:"上海德旋汽车发展有限公司",openingTime:"",storeType:"销售+快修（含钣喷）",address:"上海市金山区阳镇亭卫公路1955号",lng:"121.364244",lat:"30.778588"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海冠松华奥",dealer_fullName:"上海冠松华奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区张江路1160号",lng:"121.628672",lat:"31.204144"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳中升汇迪",dealer_fullName:"深圳中升汇迪汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市宝安区福永凤业一路",lng:"113.840673",lat:"22.707615"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海五角场开隆",dealer_fullName:"上海五角场开隆汽车贸易有限公司",openingTime:"",storeType:"4S",address:"上海市杨浦区民约路98号",lng:"121.527553",lat:"31.321479"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥吉通国门",dealer_fullName:"北京奥吉通国门汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区李桥镇李天路南半壁店14号",lng:"116.634687",lat:"40.039934"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳德迪",dealer_fullName:"深圳市德迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市南山区招商街道蛇口港湾大道26号A2 ",lng:"113.914593",lat:"22.480929"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州广物君迪",dealer_fullName:"广州广物君迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市白云区白云大道北733号A",lng:"113.299921",lat:"23.222088"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳恒信奥龙",dealer_fullName:"深圳恒信奥龙汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市罗湖区清水河街道清水河三路18号深业车城博隆大厦BL106 ",lng:"114.116934",lat:"22.583734"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥泽",dealer_fullName:"深圳奥泽汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区梅林路42路",lng:"114.072107",lat:"22.574441"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳广物君奥",dealer_fullName:"深圳广物君奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市龙华新区民康路1号龙华名车广场内 ",lng:"114.062229",lat:"22.621597"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳晨峰",dealer_fullName:"深圳市晨峰投资有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区八卦二路2号 ",lng:"114.110265",lat:"22.565934"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海沪奥",dealer_fullName:"上海沪奥汽车销售服务有限公司",openingTime:"",storeType:"二手车+单一服务（老项目）",address:"上海市闵行区华翔路69号",lng:"121.34303",lat:"31.230709"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东锦泰",dealer_fullName:"广东锦泰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广东省广州市黄埔区科学城新瑞路11号 ",lng:"113.493352",lat:"23.161941"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京博瑞祥星",dealer_fullName:"北京博瑞祥星汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区西大望路20号 ",lng:"116.483528",lat:"39.903825"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥羽",dealer_fullName:"深圳市奥羽汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"深圳市宝安区西乡大道与金湾大道交汇处(大铲湾佳鸿世界名车博览中心内) ",lng:"113.860193",lat:"22.56728"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州南菱奥申",dealer_fullName:"广州南菱奥申汽车有限公司",openingTime:"",storeType:"4S",address:"广州市白云区新广花路石马路段136号",lng:"113.26008",lat:"23.259133"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州德迪",dealer_fullName:"广州市德迪汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市南沙区黄阁镇东泽一路1号101",lng:"113.530611",lat:"22.826611"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州兴迪",dealer_fullName:"广州兴迪汽车销售有限公司",openingTime:"",storeType:"4S",address:" 广州市番禺区G105国道以东创源路（大夫山北门）",lng:"113.306696",lat:"22.969667"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京新丰泰博奥",dealer_fullName:"北京新丰泰博奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区杜杨北街21号 ",lng:"116.637728",lat:"40.109545"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州和泰同辉",dealer_fullName:"广州和泰同辉汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市花都区镜湖大道南29号 ",lng:"113.258709",lat:"23.358055"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京国服信奥众",dealer_fullName:"北京国服信奥众汽车有限公司",openingTime:"",storeType:"4S",address:"北京丰台区南四环东路榴乡桥东200米路北",lng:"116.434834",lat:"39.839319"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京兴奥晟通",dealer_fullName:"北京兴奥晟通汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市大兴区西红门镇中鼎路21-1号",lng:"116.43465",lat:"39.742858"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州伟兴",dealer_fullName:"广州伟兴汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市白云区沙太路668号 ",lng:"113.339914",lat:"23.184738"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州晨峰",dealer_fullName:"广州市晨峰贸易有限公司",openingTime:"",storeType:"4S",address:"广州市海珠区新滘东路中1号（海珠湿地斜对面，蓝海大厦旁） ",lng:"113.352752",lat:"23.086981"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京百得利国际商贸",dealer_fullName:"北京百得利国际商贸有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区五孔桥35号68号楼一层",lng:"116.280706",lat:"39.935995"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京安洋伟业",dealer_fullName:"北京安洋伟业汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市大兴区黄村镇狼垡芦花路临52号",lng:"116.300251",lat:"39.78658"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳锦奥",dealer_fullName:"深圳市锦奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市龙岗区龙城街道回龙路200号 ",lng:"114.239555",lat:"22.740383"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海骐润茂",dealer_fullName:"上海骐润茂汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市奉贤区团青公路7239号（近林海公路）",lng:"121.592209",lat:"30.936544"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东联松奥",dealer_fullName:"上海东联松奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市松江区车墩镇北松公路6278号",lng:"121.283793",lat:"31.008845"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳鹏峰奥星",dealer_fullName:"深圳市鹏峰奥星汽车有限公司",openingTime:"",storeType:"4S",address:"深圳市龙岗区宝安区宝民一路189号宝安汽车站旁",lng:"113.903866",lat:"22.571764"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达弘杰",dealer_fullName:"上海永达弘杰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区杨思路1279号",lng:"121.515193",lat:"31.170513"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达奥诚",dealer_fullName:"上海永达奥诚汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区申江路288号",lng:"121.631194",lat:"31.304941"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达奥诚中环",dealer_fullName:"上海永达奥诚中环汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海宝山区长江西路1139号",lng:"121.466269",lat:"31.345689"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京运通嘉奥",dealer_fullName:"北京运通嘉奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市顺义区赵全营镇牛板路板桥段43号",lng:"116.515157",lat:"40.217314"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京正德永新",dealer_fullName:"北京正德永新汽车贸易服务有限公司",openingTime:"",storeType:"4S",address:"北京市昌平区城南街道西关郝庄路105号",lng:"116.312099",lat:"40.07913"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京东方华奥",dealer_fullName:"北京东方华奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市通州区梨园南街99号",lng:"116.698802",lat:"39.889899"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京华阳奥通",dealer_fullName:"北京华阳奥通汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区来广营乡北苑东路顾家庄桥北300米路西 ",lng:"116.447644",lat:"40.032913"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州锦龙",dealer_fullName:"广州市锦龙汽车发展有限公司销售展厅",openingTime:"",storeType:"Sport展厅",address:"广州市越秀区二沙岛渔唱街3号101房",lng:"113.419083",lat:"23.141123"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥嘉世茂",dealer_fullName:"北京奥嘉世茂汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区金盏乡东苇路北北京金港展览展示有限公司C区19号 ",lng:"116.57345",lat:"40.018204"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东粤奥",dealer_fullName:"广东粤奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市番禺区南村镇官堂村兴南大道268号之二 ",lng:"113.353336",lat:"23.016641"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海交运起腾",dealer_fullName:"上海交运起腾汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市徐汇区枫林路858号",lng:"121.467314",lat:"31.192986"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥之旅",dealer_fullName:"北京奥之旅汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市房山区阎村镇前沿村村委会向南200米",lng:"116.110018",lat:"39.726988"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海德辰",dealer_fullName:"上海德辰汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海闵行区颛兴东路1280弄3号（都会路口）",lng:"121.42375",lat:"31.080844"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京名尊奥翔",dealer_fullName:"北京名尊奥翔汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区王四营桥马房寺路331号",lng:"116.545412",lat:"39.876576"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳锦龙",dealer_fullName:"深圳市锦龙汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市南山区前海湾汽车物流园平方奥德大楼",lng:"113.894655",lat:"22.513897"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东昌金桥豪迪",dealer_fullName:"上海东昌金桥豪迪汽车服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区锦绣东路2053号（近川桥路金滇路） ",lng:"121.615369",lat:"31.246076"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京国服信奥兴",dealer_fullName:"北京国服信奥兴汽车有限公司",openingTime:"",storeType:"4S",address:"北京市石景山区古城大街北京国际汽车贸易服务园区F区9号",lng:"116.190382",lat:"39.923306"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海宝友",dealer_fullName:"上海宝友汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市宝山区铁山路338号",lng:"121.464501",lat:"31.387272"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京首汽腾迪",dealer_fullName:"北京首汽腾迪汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区紫竹院南路甲5号",lng:"116.32623",lat:"39.943121"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳增特",dealer_fullName:"深圳市增特汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区福荣路12号(新洲路南行到底左转100米) ",lng:"114.052148",lat:"22.518543"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海西上海奥杰",dealer_fullName:"上海西上海奥杰汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市普陀区真北路2158号 ",lng:"121.399248",lat:"31.259355"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳新奥",dealer_fullName:"深圳市新奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"深圳市福田区深南大道6068号联合华鹏汽车市场A5A6片区",lng:"114.039656",lat:"22.546613"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京奥吉通",dealer_fullName:"北京奥吉通汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区朝阳北路甲45号",lng:"116.564303",lat:"39.931282"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东昌",dealer_fullName:"上海东昌汽车嘉定销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市嘉定区安亭镇国际汽车城核心贸易区步行街755号 ",lng:"121.17889",lat:"31.288741"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京寰宇恒通",dealer_fullName:"北京寰宇恒通汽车有限公司",openingTime:"",storeType:"4S",address:"北京市海淀区闵庄路11号 ",lng:"116.260269",lat:"39.979824"},
+        {province:"广东",city:"深圳",city_level:"",dealer_abbreviation:"深圳奥德",dealer_fullName:"深圳市奥德汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广东省深圳市罗湖区延芳路号55号一仓",lng:"114.146471",lat:"22.548619"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京百得利",dealer_fullName:"北京百得利汽车贸易有限公司",openingTime:"",storeType:"4S",address:"北京市亦庄经济开发区东环北路1号",lng:"116.51843",lat:"39.816867"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京运通博奥",dealer_fullName:"北京运通博奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区东四环南路366号(小武基桥西南) ",lng:"116.490437",lat:"39.861921"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海一汽沪奥",dealer_fullName:"上海一汽沪奥汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市闵行区北翟路1800号 ",lng:"121.34303",lat:"31.230709"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京德奥达",dealer_fullName:"北京德奥达汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区北四环东路太阳宫十字口甲1号",lng:"116.460168",lat:"39.986157"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京博瑞祥云",dealer_fullName:"北京博瑞祥云汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"北京市朝阳区花虎沟2号",lng:"116.371323",lat:"40.018079"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州奥德",dealer_fullName:"广州市奥德汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广州市天河区博汇街3号",lng:"113.379493",lat:"23.14674"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东中奥",dealer_fullName:"广东中奥汽车销售服务有限公司",openingTime:"",storeType:"4S",address:"广东省广州市石井凰岗",lng:"113.23202",lat:"23.203945"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广东君奥",dealer_fullName:"广东君奥汽车贸易有限公司",openingTime:"",storeType:"4S",address:"广州市荔湾区凤西二路与龙溪大道交叉口北100米 ",lng:"113.195464",lat:"23.072074"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州锦龙",dealer_fullName:"广州市锦龙汽车发展有限公司",openingTime:"",storeType:"4S",address:"广东省广州市天河区奥体路55号",lng:"113.419083",lat:"23.141123"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海永达",dealer_fullName:"上海永达汽车浦东销售服务有限公司",openingTime:"",storeType:"4S",address:"上海市浦东新区康桥东路388号",lng:"121.612641",lat:"31.158337"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海开隆",dealer_fullName:"上海开隆汽车贸易有限公司",openingTime:"",storeType:"4S",address:"上海市闵行区吴中路1439号 ",lng:"121.379159",lat:"31.178389"},
+        {province:"北京",city:"北京",city_level:"",dealer_abbreviation:"北京中润发",dealer_fullName:"北京中润发汽车销售有限公司",openingTime:"",storeType:"4S",address:"北京市丰台区丽泽路99号（丽泽桥东北角）",lng:"116.323247",lat:"39.874481"},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海南空",dealer_fullName:"上海南空军械厂",openingTime:"",storeType:"单一服务（老项目）",address:"上海市虹口区场中路445号",lng:"121.482979",lat:"31.313292"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州南菱奥欣",dealer_fullName:"广州南菱奥欣汽车有限公司",openingTime:"",storeType:"风险过渡（仅销售功能开业）",address:"广州市花都区建设北路333号",lng:"",lat:""},
+        {province:"上海",city:"上海",city_level:"",dealer_abbreviation:"上海东联沪港",dealer_fullName:"上海东联沪港汽车销售有限公司",openingTime:"",storeType:"4S",address:"上海市静安区场中路1980号(近一号线彭浦新村站)",lng:"121.46023",lat:"31.311116"},
+        {province:"广东",city:"广州",city_level:"",dealer_abbreviation:"广州中瑞",dealer_fullName:"广州中瑞汽车销售服务有限公司",openingTime:"",storeType:"风险过渡（仅销售功能开业）",address:"广东省广州市番禺区大龙街番禺大道北1243号",lng:"",lat:""},
+
+    ]
+
+    var aaa=[
+
+    
+    ]
 </script>
